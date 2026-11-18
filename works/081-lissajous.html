@@ -1,21 +1,43 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lissajous Scope</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=B612+Mono&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#c9c3b6;display:grid;place-items:center;font-family:'B612 Mono',monospace;color:#2b2a27}
-.dev{display:grid;grid-template-columns:auto 230px;gap:22px;background:linear-gradient(#5d6a72,#46525a);padding:24px;border-radius:12px;box-shadow:0 30px 60px rgba(0,0,0,.4),inset 0 1px 0 #8a99a3;max-width:96vw}
-.scr{width:min(70vh,62vw);aspect-ratio:1.1;background:#08121a;border-radius:18px;border:10px solid #1b2329;position:relative;overflow:hidden;box-shadow:inset 0 0 40px #000}.scr canvas{width:100%;height:100%;display:block}
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;user-select:none;-webkit-user-select:none}
+body{background:radial-gradient(80% 70% at 50% 30%,#d8d2c4,#a9a294);display:grid;place-items:center;font-family:'B612 Mono',monospace;color:#2b2a27}
+.dev{display:grid;grid-template-columns:auto 240px;gap:22px;background:linear-gradient(#5d6a72,#46525a);padding:24px;border-radius:12px;box-shadow:0 30px 60px rgba(0,0,0,.4),inset 0 1px 0 #8a99a3,inset 0 -3px 0 rgba(0,0,0,.25);max-width:96vw;animation:in .9s cubic-bezier(.2,.8,.2,1) backwards}@keyframes in{from{opacity:0;transform:translateY(20px)}}
+.scr{width:min(70vh,60vw);aspect-ratio:1.1;background:#08121a;border-radius:18px;border:10px solid #1b2329;position:relative;overflow:hidden;box-shadow:inset 0 0 40px #000}.scr canvas{width:100%;height:100%;display:block}
 .scr::after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(140,200,255,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(140,200,255,.12) 1px,transparent 1px);background-size:10% 12.5%;background-position:-1px -1px;pointer-events:none}
-.pn{display:flex;flex-direction:column;gap:16px;color:#e8eef0;font-size:11px;letter-spacing:.12em}.pn h1{font-size:15px;letter-spacing:.2em}.pn label{display:grid;gap:6px}.pn input{accent-color:#f2b134}.pn b{color:#f2b134}
-.pn button{padding:10px;border-radius:6px;border:0;background:#f2b134;color:#2b2a27;font:12px 'B612 Mono';letter-spacing:.15em;cursor:pointer}.pr{display:flex;flex-wrap:wrap;gap:6px}.pr button{flex:1;padding:6px;background:#2b3338;color:#e8eef0}
-@media(max-width:760px){.dev{grid-template-columns:1fr}.scr{width:86vw}}</style></head><body>
-<div class="dev"><div class="scr"><canvas id="c"></canvas></div><div class="pn"><h1>XY MODE · CH1/CH2</h1>
-<label>CH1 FREQ <b id="va">3</b><input id="a" type="range" min="1" max="9" value="3"></label><label>CH2 FREQ <b id="vb">2</b><input id="b" type="range" min="1" max="9" value="2"></label><label>PHASE DRIFT <b id="vp">0.20</b><input id="p" type="range" min="0" max="100" value="20"></label>
-<div class="pr" id="pr"></div><button id="snd">▶ LISTEN (L/R)</button><div style="opacity:.7;line-height:1.6">Each channel drives one deflection axis. Integer ratios close the curve.</div></div></div>
+.scr::before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(60% 40% at 30% 20%,rgba(255,255,255,.07),transparent 70%)}
+.scr span{position:absolute;left:12px;top:8px;font-size:10px;letter-spacing:.14em;color:var(--tr,#7fd4ff);opacity:.8;z-index:3}
+.pn{display:flex;flex-direction:column;gap:12px;color:#e8eef0;font-size:11px;letter-spacing:.12em}.pn h1{font-size:15px;letter-spacing:.2em}.pn label{display:grid;gap:6px}.pn input{accent-color:#f2b134}.pn b{color:#f2b134}
+.pn button{padding:9px;border-radius:6px;border:0;background:#f2b134;color:#2b2a27;font:12px 'B612 Mono';letter-spacing:.15em;cursor:pointer;box-shadow:0 3px 0 #a87818}.pn button:active{transform:translateY(2px);box-shadow:none}
+.pr{display:flex;flex-wrap:wrap;gap:6px}.pr button{flex:1;padding:6px;background:#2b3338;color:#e8eef0;box-shadow:0 3px 0 #11171a}.pr button[aria-pressed="true"]{background:#e8eef0;color:#2b3338}
+.wv{display:flex;gap:4px}.wv button{flex:1;padding:5px 0;background:#2b3338;color:#e8eef0;font-size:11px;box-shadow:0 3px 0 #11171a}.wv button[aria-pressed="true"]{background:#f2b134;color:#2b2a27}
+@media(max-width:760px){.dev{grid-template-columns:1fr;padding:14px}.scr{width:86vw}.pn{gap:8px}}
+</style></head><body>
+<div class="dev"><div class="scr"><span id="md">XY · MATH</span><canvas id="c"></canvas></div><div class="pn"><h1>XY MODE · CH1/CH2</h1>
+<label>CH1 FREQ <b id="va">3</b><input id="a" type="range" min="1" max="9" value="3"></label><div class="wv" id="w1"></div>
+<label>CH2 FREQ <b id="vb">2</b><input id="b" type="range" min="1" max="9" value="2"></label><div class="wv" id="w2"></div>
+<label>PHASE DRIFT <b id="vp">0.20</b><input id="p" type="range" min="0" max="100" value="20"></label><label>DECAY (HARMONOGRAPH) <b id="vd">0.00</b><input id="d" type="range" min="0" max="100" value="0"></label>
+<div class="pr" id="pr"></div><div class="pr"><button id="mo" aria-pressed="false">AUTO-MORPH</button><button id="ph2">P31 / P7</button></div><button id="snd">▶ LISTEN (L/R)</button><div style="opacity:.7;line-height:1.6">Each channel drives one deflection axis. While listening, the trace is drawn from the live audio.</div></div></div>
 <script>
 const c=document.getElementById('c'),x=c.getContext('2d');let W,H,ph=0;function size(){W=c.width=c.clientWidth*2;H=c.height=c.clientHeight*2}size();addEventListener('resize',size);
-const v=id=>+document.getElementById(id).value;['a','b','p'].forEach(id=>document.getElementById(id).oninput=()=>{document.getElementById('v'+id).textContent=id==='p'?(v('p')/100).toFixed(2):v(id);upd()});
-[[1,1],[1,2],[3,2],[5,4],[3,4],[7,6]].forEach(([a,b])=>{const e=document.createElement('button');e.textContent=a+':'+b;e.onclick=()=>{document.getElementById('a').value=a;document.getElementById('b').value=b;document.getElementById('va').textContent=a;document.getElementById('vb').textContent=b;upd()};document.getElementById('pr').appendChild(e)});
-let A=null,oL,oR;function upd(){if(!A)return;oL.frequency.value=110*v('a');oR.frequency.value=110*v('b')+v('p')/100}
-document.getElementById('snd').onclick=e=>{if(A){A.close();A=null;e.target.textContent='▶ LISTEN (L/R)';return}A=new AudioContext();const m=A.createChannelMerger(2),g=A.createGain();g.gain.value=.08;oL=A.createOscillator();oR=A.createOscillator();oL.connect(m,0,0);oR.connect(m,0,1);m.connect(g);g.connect(A.destination);oL.start();oR.start();upd();e.target.textContent='■ STOP'};
-function f(){ph+=v('p')/100*.03;x.fillStyle='rgba(8,18,26,.22)';x.fillRect(0,0,W,H);const a=v('a'),b=v('b');x.lineWidth=3;x.strokeStyle='rgba(170,230,255,.9)';x.shadowColor='#7fd4ff';x.shadowBlur=18;x.beginPath();
-for(let i=0;i<=2000;i++){const t=i/2000*Math.PI*2;const X=W/2+Math.sin(a*t+ph)*W*.4,Y=H/2+Math.sin(b*t)*H*.4;i?x.lineTo(X,Y):x.moveTo(X,Y)}x.stroke();x.shadowBlur=0;requestAnimationFrame(f)}f();
+const v=id=>+document.getElementById(id).value;const WAV=['sine','triangle','square'];let w1=0,w2=0,morph=false,p7=false;
+['w1','w2'].forEach((id,k)=>WAV.forEach((w,i)=>{const b=document.createElement('button');b.textContent=['∿','⋀','⊓'][i];b.setAttribute('aria-pressed',i===0);b.onclick=()=>{if(k)w2=i;else w1=i;document.querySelectorAll('#'+id+' button').forEach((o,j)=>o.setAttribute('aria-pressed',j===i));upd()};document.getElementById(id).appendChild(b)}));
+['a','b','p','d'].forEach(id=>document.getElementById(id).oninput=()=>{document.getElementById('v'+id).textContent=id==='p'||id==='d'?(v(id)/100).toFixed(2):v(id);upd()});
+const PRE=[[1,1],[1,2],[3,2],[5,4],[3,4],[7,6]];PRE.forEach(([a,b])=>{const e=document.createElement('button');e.textContent=a+':'+b;e.onclick=()=>setR(a,b);document.getElementById('pr').appendChild(e)});
+function setR(a,b){document.getElementById('a').value=a;document.getElementById('b').value=b;document.getElementById('va').textContent=a;document.getElementById('vb').textContent=b;upd()}
+document.getElementById('mo').onclick=e=>{morph=!morph;e.target.setAttribute('aria-pressed',morph)};document.getElementById('ph2').onclick=()=>{p7=!p7;document.querySelector('.scr').style.setProperty('--tr',p7?'#ffd36a':'#7fd4ff')};
+let A=null,oL,oR,aL,aR,bufL,bufR;function upd(){if(!A)return;oL.type=WAV[w1];oR.type=WAV[w2];oL.frequency.setTargetAtTime(110*v('a'),A.currentTime,.02);oR.frequency.setTargetAtTime(110*v('b')+v('p')/100,A.currentTime,.02)}
+document.getElementById('snd').onclick=e=>{if(A){A.close();A=null;e.target.textContent='▶ LISTEN (L/R)';document.getElementById('md').textContent='XY · MATH';return}A=new (window.AudioContext||window.webkitAudioContext)();const m=A.createChannelMerger(2),g=A.createGain();g.gain.value=.08;oL=A.createOscillator();oR=A.createOscillator();aL=A.createAnalyser();aR=A.createAnalyser();aL.fftSize=aR.fftSize=2048;bufL=new Float32Array(2048);bufR=new Float32Array(2048);oL.connect(aL);oR.connect(aR);oL.connect(m,0,0);oR.connect(m,0,1);m.connect(g);g.connect(A.destination);oL.start();oR.start();upd();e.target.textContent='■ STOP';document.getElementById('md').textContent='XY · LIVE AUDIO'};
+const wf=(k,t)=>k===0?Math.sin(t):k===1?2/Math.PI*Math.asin(Math.sin(t)):(Math.sin(t)>=0?1:-1)*.92;
+let mt=0,mi=0;
+function f(now){ph+=v('p')/100*.03;x.fillStyle='rgba(8,18,26,.22)';x.fillRect(0,0,W,H);const a=v('a'),b=v('b'),dec=v('d')/100;
+if(morph&&now-mt>3500){mt=now;mi=(mi+1)%PRE.length;setR(...PRE[mi])}
+const col=p7?'rgba(255,220,140,.92)':'rgba(170,230,255,.9)';x.lineWidth=3;x.strokeStyle=col;x.shadowColor=p7?'#ffb34a':'#7fd4ff';x.shadowBlur=18;x.beginPath();
+if(A&&aL){aL.getFloatTimeDomainData(bufL);aR.getFloatTimeDomainData(bufR);for(let i=0;i<2048;i++){const X=W/2+bufL[i]*W*.4,Y=H/2-bufR[i]*H*.4;i?x.lineTo(X,Y):x.moveTo(X,Y)}}
+else{const N=dec>0?6000:2000,turns=dec>0?12:1;for(let i=0;i<=N;i++){const t=i/N*Math.PI*2*turns;const e=Math.exp(-dec*t*.08);const X=W/2+wf(w1,a*t+ph)*W*.4*e,Y=H/2+wf(w2,b*t)*H*.4*e;i?x.lineTo(X,Y):x.moveTo(X,Y)}}
+x.stroke();x.shadowBlur=0;
+// bright beam head
+const t0=now*.004;const hx=W/2+wf(w1,a*t0+ph)*W*.4,hy=H/2+wf(w2,b*t0)*H*.4;if(!A){x.fillStyle='#fff';x.beginPath();x.arc(hx,hy,4,0,7);x.fill()}
+requestAnimationFrame(f)}requestAnimationFrame(f);
 </script></body></html>
