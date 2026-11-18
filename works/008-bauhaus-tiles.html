@@ -1,25 +1,68 @@
 <!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bauhaus Tiles</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;700&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#e9e4d8;display:grid;grid-template-columns:minmax(0,1fr) auto;font-family:'Josefin Sans',Futura,sans-serif}
-.g{display:grid;grid-template-columns:repeat(var(--c),1fr);grid-auto-rows:1fr;height:100vh;gap:0}
-.t{position:relative;overflow:hidden;cursor:pointer}.t>div{position:absolute;transition:all .9s cubic-bezier(.7,0,.2,1)}
-.side{width:min(30vw,340px);padding:5vh 3vw;display:flex;flex-direction:column;justify-content:space-between;background:#1b1b1b;color:#e9e4d8}
-h1{font-weight:700;font-size:clamp(34px,5vw,74px);line-height:.85;letter-spacing:-.02em}h1 em{font-style:normal;color:#f4b400}
-.side p{font-weight:300;font-size:14px;line-height:1.5;opacity:.8}.sw{display:flex;gap:8px}.sw i{width:26px;height:26px;border-radius:50%}
-@media(max-width:700px){body{grid-template-columns:1fr;grid-template-rows:1fr auto}.side{width:auto;flex-direction:row;align-items:end;padding:16px}.g{height:auto}h1{font-size:34px}.side p{display:none}}</style></head><body>
-<div class="g" id="g"></div><aside class="side"><h1>form<br>folgt<br><em>funk&shy;tion</em></h1><p>Twenty-four tiles, five colours, four shapes. Each tile rearranges itself every few seconds; click any tile to rebuild it now.</p><div class="sw"><i style="background:#d7261e"></i><i style="background:#f4b400"></i><i style="background:#1f4e9c"></i><i style="background:#1b1b1b;border:1px solid #555"></i></div></aside>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;700&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}
+body{background:#e9e4d8;display:grid;grid-template-columns:minmax(0,1fr) auto;font-family:'Josefin Sans',Futura,sans-serif;--r:#d7261e;--y:#f4b400;--b:#1f4e9c;--k:#1b1b1b;--p:#e9e4d8}
+body.albers{--r:#c8553d;--y:#f2d0a4;--b:#588b8b;--k:#28536b;--p:#f6efe2}body.itten{--r:#b5179e;--y:#f9c80e;--b:#3a86ff;--k:#14213d;--p:#f1ece2}
+.g{display:grid;grid-template-columns:repeat(var(--c),1fr);grid-auto-rows:1fr;height:100vh;perspective:900px}
+.t{position:relative;overflow:hidden;cursor:pointer;transition:transform .5s cubic-bezier(.2,.9,.3,1.3),background .8s;transform-style:preserve-3d}
+.t:hover{transform:scale(.94) rotate(var(--tilt,0deg));z-index:2;box-shadow:0 16px 30px -14px rgba(0,0,0,.45)}
+.t.ping{animation:ping .45s cubic-bezier(.2,.8,.2,1)}@keyframes ping{40%{transform:scale(.86)}}
+.t.col{outline:3px solid var(--k);outline-offset:-3px}
+.t svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.t svg *{transition:all .9s cubic-bezier(.7,0,.2,1)}
+.t .lab{position:absolute;left:6px;bottom:5px;font:400 9px/1 'Josefin Sans';letter-spacing:.12em;text-transform:uppercase;opacity:0;transition:opacity .3s;mix-blend-mode:difference;color:#fff}
+.t:hover .lab{opacity:.9}
+.side{width:min(30vw,360px);padding:5vh 2.6vw;display:flex;flex-direction:column;justify-content:space-between;gap:20px;background:var(--k);color:var(--p);transition:background .8s,color .8s}
+h1{font-weight:700;font-size:clamp(34px,5vw,78px);line-height:.85;letter-spacing:-.02em}h1 em{font-style:normal;color:var(--y);transition:color .8s}
+h1 span{display:block;animation:in .9s cubic-bezier(.2,.9,.2,1) both}h1 span:nth-child(2){animation-delay:.1s}h1 span:nth-child(3){animation-delay:.2s}@keyframes in{from{transform:translateX(-30px);opacity:0}}
+.side p{font-weight:300;font-size:14px;line-height:1.5;opacity:.82}
+.k3{display:flex;gap:10px;align-items:center}.k3 svg{width:34px;height:34px}
+.ctl{display:flex;flex-direction:column;gap:12px}
+.row{display:flex;gap:6px;flex-wrap:wrap}.row button{font:400 11px/1 'Josefin Sans';letter-spacing:.14em;text-transform:uppercase;padding:9px 11px 7px;border:1px solid currentColor;background:transparent;color:inherit;cursor:pointer;transition:background .2s,color .2s}
+.row button:hover,.row button[aria-pressed="true"]{background:var(--p);color:var(--k)}
+.sm{font:300 11px/1.6 'Josefin Sans';letter-spacing:.1em;text-transform:uppercase;opacity:.6}
+@media(max-width:760px){body{grid-template-columns:1fr;grid-template-rows:1fr auto}.side{width:auto;padding:14px 16px;gap:10px}.g{height:auto}h1{font-size:30px}h1 span{display:inline}.side p,.k3{display:none}}
+</style></head><body>
+<div class="g" id="g"></div><aside class="side"><div><h1><span>form</span> <span>folgt</span> <span><em>funk&shy;tion</em></span></h1></div>
+<p>Kandinsky asked his students to pair shape with colour: the yellow triangle, the red square, the blue circle. Here each pairing also has a pitch. Click a tile to rebuild it and hear it; press Play to run the grid as a score, column by column.</p>
+<div class="k3"><svg viewBox="0 0 40 40"><polygon points="20,4 37,36 3,36" style="fill:var(--y)"/></svg><svg viewBox="0 0 40 40"><rect x="5" y="5" width="30" height="30" style="fill:var(--r)"/></svg><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" style="fill:var(--b)"/></svg><span class="sm">high · middle · low</span></div>
+<div class="ctl"><div class="row"><button id="play">▶ Play score</button><button id="shuf">Rebuild all</button></div>
+<div class="row" id="pals"><button data-p="" aria-pressed="true">Bauhaus</button><button data-p="albers">Albers</button><button data-p="itten">Itten</button></div>
+<span class="sm">Keys · P play · R rebuild · 1 2 3 palette</span></div></aside>
 <script>
-const C=['#d7261e','#f4b400','#1f4e9c','#1b1b1b','#e9e4d8'],g=document.getElementById('g');const cols=innerWidth<700?4:6;g.style.setProperty('--c',cols);
-const r=a=>a[Math.random()*a.length|0];
-function paint(t){const bg=r(C);let fg;do fg=r(C);while(fg===bg);t.style.background=bg;const s=t.firstChild,k=r(['q','h','c','tri','bar','ring']),rot=r([0,90,180,270]);
-const st={width:'100%',height:'100%',left:'0',top:'0',borderRadius:'0',background:fg,clipPath:'none',transform:`rotate(${rot}deg)`,border:'0',boxSizing:'border-box'};
-if(k==='q'){st.width='200%';st.height='200%';st.borderRadius='50%';st.left='-100%';st.top='-100%';st.transform='rotate(0)'; const p=r([[ '-100%','-100%'],['0','-100%'],['0','0'],['-100%','0']]);st.left=p[0];st.top=p[1]}
-if(k==='h'){st.borderRadius='50% 50% 0 0/100% 100% 0 0';st.height='50%';st.top='50%'}
-if(k==='c'){st.width=st.height='70%';st.left=st.top='15%';st.borderRadius='50%'}
-if(k==='tri'){st.clipPath='polygon(0 0,100% 100%,0 100%)'}
-if(k==='bar'){st.width='34%';st.left='33%'}
-if(k==='ring'){st.width=st.height='80%';st.left=st.top='10%';st.borderRadius='50%';st.background='transparent';st.border=`min(4vw,28px) solid ${fg}`}
-Object.assign(s.style,st)}
-for(let i=0;i<cols*4;i++){const t=document.createElement('div');t.className='t';t.appendChild(document.createElement('div'));g.appendChild(t);paint(t);t.onclick=()=>paint(t)}
-setInterval(()=>{const ts=g.children;for(let i=0;i<3;i++)paint(ts[Math.random()*ts.length|0])},1400);
+const g=document.getElementById('g');const cols=innerWidth<760?4:6,rowsN=innerWidth<760?5:4;g.style.setProperty('--c',cols);
+const C=['var(--r)','var(--y)','var(--b)','var(--k)','var(--p)'];const r=a=>a[Math.random()*a.length|0];const NS='http://www.w3.org/2000/svg';
+// shapes as svg in 100x100 space; each maps to a pitch family
+const S={
+quarter:(f,o)=>`<circle cx="${o[0]}" cy="${o[1]}" r="100" style="fill:${f}"/>`,
+half:(f)=>`<path d="M0 100 A50 50 0 0 1 100 100Z" style="fill:${f}"/>`,
+circle:(f)=>`<circle cx="50" cy="50" r="34" style="fill:${f}"/>`,
+tri:(f)=>`<polygon points="0,0 100,100 0,100" style="fill:${f}"/>`,
+peak:(f)=>`<polygon points="50,12 92,88 8,88" style="fill:${f}"/>`,
+bar:(f)=>`<rect x="33" y="0" width="34" height="100" style="fill:${f}"/>`,
+square:(f)=>`<rect x="20" y="20" width="60" height="60" style="fill:${f}"/>`,
+ring:(f)=>`<circle cx="50" cy="50" r="30" style="fill:none;stroke:${f}" stroke-width="16"/>`,
+dots:(f)=>[20,50,80].flatMap(a=>[20,50,80].map(b=>`<circle cx="${a}" cy="${b}" r="8" style="fill:${f}"/>`)).join(''),
+stripes:(f)=>[0,1,2,3,4].map(i=>`<rect x="0" y="${i*20+4}" width="100" height="10" style="fill:${f}"/>`).join(''),
+cross:(f)=>`<rect x="38" y="8" width="24" height="84" style="fill:${f}"/><rect x="8" y="38" width="84" height="24" style="fill:${f}"/>`,
+};
+const fam={tri:'tri',peak:'tri',square:'sq',bar:'sq',stripes:'sq',cross:'sq',circle:'ci',ring:'ci',quarter:'ci',half:'ci',dots:'ci'};
+const scale=[0,2,4,7,9];const base={tri:76,sq:64,ci:52};
+const tiles=[];
+function paint(t,sound){const bg=r(C);let fg;do fg=r(C);while(fg===bg);const k=r(Object.keys(S)),rot=r([0,90,180,270]),o=r([[0,0],[100,0],[100,100],[0,100]]);
+t.el.style.background=bg;t.el.style.setProperty('--tilt',(Math.random()*6-3).toFixed(1)+'deg');
+t.svg.innerHTML=`<g style="transform-origin:50px 50px;transform:rotate(${rot}deg)">${S[k](fg,o)}</g>`;
+t.k=k;t.note=base[fam[k]]+scale[Math.random()*5|0];t.el.querySelector('.lab').textContent=k+' · '+['C','D','E','G','A'][scale.indexOf(t.note-base[fam[k]])];
+t.el.classList.remove('ping');void t.el.offsetWidth;t.el.classList.add('ping');if(sound)play(t)}
+let ac;function play(t,when=0){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const now=ac.currentTime+when,f=440*Math.pow(2,(t.note-69)/12),o=ac.createOscillator(),g2=ac.createGain();const fm=fam[t.k];o.type=fm==='tri'?'triangle':fm==='sq'?'square':'sine';o.frequency.value=f;const v=fm==='sq'?.035:.09;g2.gain.setValueAtTime(.0001,now);g2.gain.exponentialRampToValueAtTime(v,now+.01);g2.gain.exponentialRampToValueAtTime(.0001,now+(fm==='ci'?1.2:.5));const lp=ac.createBiquadFilter();lp.type='lowpass';lp.frequency.value=2400;o.connect(lp).connect(g2).connect(ac.destination);o.start(now);o.stop(now+1.3)}catch(e){}}
+for(let i=0;i<cols*rowsN;i++){const el=document.createElement('div');el.className='t';const svg=document.createElementNS(NS,'svg');svg.setAttribute('viewBox','0 0 100 100');svg.setAttribute('preserveAspectRatio','none');el.appendChild(svg);const lab=document.createElement('span');lab.className='lab';el.appendChild(lab);g.appendChild(el);const t={el,svg};tiles.push(t);el.style.animation=`in .7s ${i*.025}s cubic-bezier(.2,.9,.2,1) both`;setTimeout(()=>el.style.animation='',800+i*25);paint(t,false);el.onclick=()=>paint(t,true)}
+let auto=setInterval(()=>{if(playing)return;for(let i=0;i<2;i++)paint(r(tiles),false)},1600);
+let playing=false,col=0,pt;const pb=document.getElementById('play');
+function step(){tiles.forEach((t,i)=>t.el.classList.toggle('col',i%cols===col));tiles.filter((t,i)=>i%cols===col).forEach((t,j)=>{play(t,j*.0);t.el.classList.remove('ping');void t.el.offsetWidth;t.el.classList.add('ping')});col=(col+1)%cols}
+function toggle(){playing=!playing;pb.textContent=playing?'■ Stop':'▶ Play score';pb.setAttribute('aria-pressed',playing);clearInterval(pt);if(playing){col=0;step();pt=setInterval(step,420)}else tiles.forEach(t=>t.el.classList.remove('col'))}
+pb.onclick=toggle;document.getElementById('shuf').onclick=()=>tiles.forEach((t,i)=>setTimeout(()=>paint(t,false),i*30));
+const pals=document.getElementById('pals');function setPal(p){document.body.className=p;[...pals.children].forEach(b=>b.setAttribute('aria-pressed',b.dataset.p===p))}
+pals.querySelectorAll('button').forEach(b=>b.onclick=()=>setPal(b.dataset.p));
+addEventListener('keydown',e=>{if(e.key==='p'||e.key==='P')toggle();if(e.key==='r'||e.key==='R')document.getElementById('shuf').click();if(e.key==='1')setPal('');if(e.key==='2')setPal('albers');if(e.key==='3')setPal('itten')});
 </script></body></html>

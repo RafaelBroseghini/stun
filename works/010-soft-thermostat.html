@@ -1,26 +1,71 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Soft Thermostat</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;600;800&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{--bg:#e4e9f2;--hi:#ffffff;--lo:#b8c1d1;background:var(--bg);font-family:Nunito,system-ui,sans-serif;color:#5a6680;display:grid;place-items:center;user-select:none}
-.wrap{display:flex;flex-direction:column;align-items:center;gap:34px}
-.head{display:flex;justify-content:space-between;width:min(380px,88vw);align-items:center}.head h1{font-size:15px;font-weight:800;letter-spacing:.18em;text-transform:uppercase}.head span{font-size:13px}
-.dial{position:relative;width:min(340px,80vw);aspect-ratio:1;border-radius:50%;background:var(--bg);box-shadow:20px 20px 50px var(--lo),-20px -20px 50px var(--hi);display:grid;place-items:center;touch-action:none;cursor:grab}
-svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(135deg)}
-.inner{width:62%;aspect-ratio:1;border-radius:50%;background:linear-gradient(145deg,#f0f4fa,#d3dae6);box-shadow:inset 6px 6px 14px var(--lo),inset -6px -6px 14px var(--hi);display:flex;flex-direction:column;align-items:center;justify-content:center}
-.temp{font-size:clamp(48px,14vw,76px);font-weight:300;color:#3c4760;line-height:1}.temp sup{font-size:.35em;vertical-align:top;position:relative;top:.3em}.lab{font-size:12px;letter-spacing:.2em;text-transform:uppercase;margin-top:6px}
-.knob{position:absolute;width:30px;height:30px;border-radius:50%;background:var(--bg);box-shadow:4px 4px 10px var(--lo),-4px -4px 10px var(--hi);left:50%;top:50%;margin:-15px}
-.modes{display:flex;gap:18px}.modes button{width:74px;height:74px;border-radius:22px;border:0;background:var(--bg);box-shadow:8px 8px 18px var(--lo),-8px -8px 18px var(--hi);color:#7c88a3;font:600 11px Nunito,sans-serif;letter-spacing:.1em;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;transition:.2s}
-.modes button b{font-size:22px;font-weight:400}.modes button.on{box-shadow:inset 6px 6px 12px var(--lo),inset -6px -6px 12px var(--hi);color:var(--ac)}
-.stats{display:flex;gap:40px;font-size:13px}.stats b{display:block;font-size:20px;color:#3c4760;font-weight:600}</style></head><body>
-<div class="wrap"><div class="head"><h1>Living Room</h1><span id="clock"></span></div>
-<div class="dial" id="d"><svg viewBox="0 0 200 200"><defs><linearGradient id="gr" x1="0" x2="1"><stop offset="0" stop-color="#53b7ff"/><stop offset=".5" stop-color="#ffb35c"/><stop offset="1" stop-color="#ff5c7a"/></linearGradient></defs><circle cx="100" cy="100" r="88" fill="none" stroke="#d3dae6" stroke-width="7" stroke-linecap="round" stroke-dasharray="414.7 553"/><circle id="arc" cx="100" cy="100" r="88" fill="none" stroke="url(#gr)" stroke-width="7" stroke-linecap="round" stroke-dasharray="0 553"/></svg>
-<div class="inner"><div class="temp" id="t">21<sup>°C</sup></div><div class="lab" id="lab">Heating to</div></div><div class="knob" id="k"></div></div>
-<div class="modes" id="m"><button class="on" data-m="Heating to" style="--ac:#ff7a59"><b>☼</b>HEAT</button><button data-m="Cooling to" style="--ac:#53b7ff"><b>❄</b>COOL</button><button data-m="Eco hold" style="--ac:#41c49a"><b>❦</b>ECO</button></div>
-<div class="stats"><div>Indoor<b>19.4°</b></div><div>Humidity<b>46%</b></div><div>Outside<b>7°</b></div></div></div>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;800&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}
+body{--bg:#e4e9f2;--hi:#ffffff;--lo:#b8c1d1;--ac:#ff7a59;background:var(--bg);font-family:Nunito,system-ui,sans-serif;color:#5a6680;display:grid;place-items:center;user-select:none;-webkit-user-select:none;transition:background 1.2s}
+.warm{position:fixed;inset:0;pointer-events:none;background:radial-gradient(60% 50% at 50% 45%,var(--tint,transparent),transparent 70%);transition:background 1s}
+.wrap{position:relative;display:flex;flex-direction:column;align-items:center;gap:clamp(18px,3.6vh,34px);animation:in 1s cubic-bezier(.2,.8,.2,1) both}@keyframes in{from{opacity:0;transform:scale(.96)}}
+.head{display:flex;justify-content:space-between;width:min(400px,88vw);align-items:center}.head h1{font-size:14px;font-weight:800;letter-spacing:.2em;text-transform:uppercase}.head span{font-size:13px;font-variant-numeric:tabular-nums}
+.head .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ac);margin-right:8px;box-shadow:0 0 0 0 var(--ac);animation:beat 2s infinite}@keyframes beat{70%{box-shadow:0 0 0 8px transparent}}
+.dial{position:relative;width:min(340px,78vw,46vh);aspect-ratio:1;border-radius:50%;background:var(--bg);box-shadow:20px 20px 50px var(--lo),-20px -20px 50px var(--hi);display:grid;place-items:center;touch-action:none;cursor:grab;transition:background 1.2s,box-shadow 1.2s}
+.dial:active{cursor:grabbing}
+.dial>svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(135deg);overflow:visible}
+.ticks line{stroke:#b3bccc;stroke-width:1.2;stroke-linecap:round;transition:stroke .2s}.ticks line.on{stroke:var(--ac)}
+.inner{position:relative;width:62%;aspect-ratio:1;border-radius:50%;background:linear-gradient(145deg,#f0f4fa,#d3dae6);box-shadow:inset 6px 6px 14px var(--lo),inset -6px -6px 14px var(--hi);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+.inner canvas{position:absolute;inset:0;width:100%;height:100%;opacity:.7}
+.temp{position:relative;font-size:clamp(48px,13vw,78px);font-weight:300;color:#3c4760;line-height:1;font-variant-numeric:tabular-nums}.temp sup{font-size:.32em;vertical-align:top;position:relative;top:.35em;margin-left:2px}
+.lab{position:relative;font-size:11px;letter-spacing:.22em;text-transform:uppercase;margin-top:6px;color:var(--ac);font-weight:800;transition:color .4s}
+.eta{position:relative;font-size:11px;margin-top:4px;opacity:.75}
+.knob{position:absolute;width:32px;height:32px;border-radius:50%;background:var(--bg);box-shadow:4px 4px 10px var(--lo),-4px -4px 10px var(--hi);left:50%;top:50%;margin:-16px;display:grid;place-items:center;transition:background 1.2s}
+.knob::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--ac);box-shadow:0 0 10px var(--ac);transition:background .4s}
+.pm{position:absolute;bottom:4%;display:flex;gap:min(150px,30vw)}
+.pm button{width:36px;height:36px;border-radius:50%;border:0;background:var(--bg);box-shadow:4px 4px 10px var(--lo),-4px -4px 10px var(--hi);color:#6b7790;font:300 22px/1 Nunito;cursor:pointer;transition:box-shadow .15s}.pm button:active{box-shadow:inset 3px 3px 6px var(--lo),inset -3px -3px 6px var(--hi)}
+.modes{display:flex;gap:18px}.modes button{width:78px;height:74px;border-radius:22px;border:0;background:var(--bg);box-shadow:8px 8px 18px var(--lo),-8px -8px 18px var(--hi);color:#7c88a3;font:700 10px Nunito,sans-serif;letter-spacing:.14em;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;transition:box-shadow .25s,color .25s,transform .2s}
+.modes button svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}.modes button.on{box-shadow:inset 6px 6px 12px var(--lo),inset -6px -6px 12px var(--hi);color:var(--m)}.modes button:hover{transform:translateY(-2px)}
+.sched{width:min(400px,88vw)}.sched .h{display:flex;justify-content:space-between;font-size:11px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px}
+.bars{display:flex;gap:3px;align-items:flex-end;height:46px;padding:8px;border-radius:16px;box-shadow:inset 4px 4px 10px var(--lo),inset -4px -4px 10px var(--hi)}
+.bars i{flex:1;border-radius:3px;background:#c7cfdc;transition:height .5s cubic-bezier(.2,.8,.2,1),background .3s;cursor:pointer}.bars i.now{background:var(--ac)}.bars i:hover{background:#9aa6bb}
+.stats{display:flex;gap:clamp(20px,6vw,44px);font-size:12px}.stats b{display:block;font-size:20px;color:#3c4760;font-weight:600;font-variant-numeric:tabular-nums}
+@media (max-height:720px){.sched{display:none}}
+</style></head><body><div class="warm"></div>
+<div class="wrap"><div class="head"><h1><span class="dot"></span>Living Room</h1><span id="clock"></span></div>
+<div class="dial" id="d"><svg viewBox="0 0 200 200"><defs><linearGradient id="gr" x1="0" x2="1"><stop offset="0" stop-color="#53b7ff"/><stop offset=".5" stop-color="#ffb35c"/><stop offset="1" stop-color="#ff5c7a"/></linearGradient><filter id="gl"><feGaussianBlur stdDeviation="3"/></filter></defs>
+<g class="ticks" id="tk"></g>
+<circle cx="100" cy="100" r="86" fill="none" stroke="#d3dae6" stroke-width="7" stroke-linecap="round" stroke-dasharray="405.3 541"/>
+<circle id="arc2" cx="100" cy="100" r="86" fill="none" stroke="url(#gr)" stroke-width="7" stroke-linecap="round" stroke-dasharray="0 541" filter="url(#gl)" opacity=".6"/>
+<circle id="arc" cx="100" cy="100" r="86" fill="none" stroke="url(#gr)" stroke-width="7" stroke-linecap="round" stroke-dasharray="0 541"/>
+<circle id="cur" r="3" fill="#3c4760" cx="100" cy="100"/></svg>
+<div class="inner"><canvas id="air"></canvas><div class="temp" id="t">21<sup>°C</sup></div><div class="lab" id="lab">Heating to</div><div class="eta" id="eta"></div></div><div class="knob" id="k"></div>
+<div class="pm"><button id="mi" aria-label="Lower">−</button><button id="pl" aria-label="Raise">+</button></div></div>
+<div class="modes" id="m"><button class="on" data-m="heat" style="--m:#ff7a59"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg>HEAT</button><button data-m="cool" style="--m:#53b7ff"><svg viewBox="0 0 24 24"><path d="M12 2v20M3.3 7l17.4 10M3.3 17 20.7 7M9 4l3 2 3-2M9 20l3-2 3 2"/></svg>COOL</button><button data-m="eco" style="--m:#41c49a"><svg viewBox="0 0 24 24"><path d="M5 19C5 10 11 5 20 4c-1 9-6 15-15 15zM5 19l7-7"/></svg>ECO</button></div>
+<div class="sched"><div class="h"><span>Today’s schedule</span><span id="sh">—</span></div><div class="bars" id="bars"></div></div>
+<div class="stats"><div>Indoor<b id="in">19.4°</b></div><div>Humidity<b>46%</b></div><div>Outside<b>7°</b></div></div></div>
 <script>
-const d=document.getElementById('d'),arc=document.getElementById('arc'),k=document.getElementById('k'),t=document.getElementById('t');let v=.55;const MIN=10,MAX=30;
-function draw(){const L=414.7*v;arc.setAttribute('stroke-dasharray',L+' 553');const a=(135+270*v)*Math.PI/180,R=d.clientWidth*.44;k.style.transform=`translate(${Math.cos(a)*R}px,${Math.sin(a)*R}px)`;t.innerHTML=(MIN+(MAX-MIN)*v).toFixed(1).replace('.0','')+'<sup>°C</sup>'}
-function set(e){const r=d.getBoundingClientRect();let a=Math.atan2(e.clientY-r.top-r.height/2,e.clientX-r.left-r.width/2)*180/Math.PI;a=(a-135+720)%360;if(a>270)a=a>315?0:270;v=Math.round(a/270*40)/40;draw()}
-d.addEventListener('pointerdown',e=>{d.setPointerCapture(e.pointerId);set(e);d.onpointermove=set});d.addEventListener('pointerup',()=>d.onpointermove=null);
-document.querySelectorAll('#m button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#m button').forEach(o=>o.classList.remove('on'));b.classList.add('on');document.getElementById('lab').textContent=b.dataset.m});
-addEventListener('resize',draw);draw();const ck=()=>document.getElementById('clock').textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});ck();setInterval(ck,10000);
+const $=id=>document.getElementById(id);const d=$('d'),arc=$('arc'),arc2=$('arc2'),k=$('k'),t=$('t');const MIN=10,MAX=30,STEPS=40;let v=.55,shown=.55,vel=0,mode='heat',indoor=19.4;
+const tk=$('tk');for(let i=0;i<=STEPS;i++){const a=i/STEPS*270*Math.PI/180,r1=97,r2=i%5?101:104;const l=document.createElementNS('http://www.w3.org/2000/svg','line');l.setAttribute('x1',100+Math.cos(a)*r1);l.setAttribute('y1',100+Math.sin(a)*r1);l.setAttribute('x2',100+Math.cos(a)*r2);l.setAttribute('y2',100+Math.sin(a)*r2);tk.appendChild(l)}
+const ticks=[...tk.children];
+let ac,lastStep=-1;function click(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type='sine';o.frequency.value=2200;g.gain.setValueAtTime(.03,ac.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+.03);o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+.04)}catch(e){}}
+const target=()=>MIN+(MAX-MIN)*v;
+function setV(nv){nv=Math.max(0,Math.min(1,Math.round(nv*STEPS)/STEPS));if(nv!==v){v=nv;const s=Math.round(v*STEPS);if(s!==lastStep){lastStep=s;click()}}}
+function set(e){const r=d.getBoundingClientRect();let a=Math.atan2(e.clientY-r.top-r.height/2,e.clientX-r.left-r.width/2)*180/Math.PI;a=(a-135+720)%360;if(a>270)a=a>315?0:270;setV(a/270)}
+d.addEventListener('pointerdown',e=>{if(e.target.closest('.pm'))return;d.setPointerCapture(e.pointerId);set(e);d.onpointermove=set});d.addEventListener('pointerup',()=>d.onpointermove=null);
+d.addEventListener('wheel',e=>{e.preventDefault();setV(v+(e.deltaY<0?1:-1)/STEPS)},{passive:false});
+$('mi').onclick=()=>setV(v-1/STEPS);$('pl').onclick=()=>setV(v+1/STEPS);
+addEventListener('keydown',e=>{if(e.key==='ArrowUp'||e.key==='ArrowRight'){e.preventDefault();setV(v+1/STEPS)}if(e.key==='ArrowDown'||e.key==='ArrowLeft'){e.preventDefault();setV(v-1/STEPS)}});
+const M={heat:['Heating to','#ff7a59','rgba(255,140,90,.14)','#ece6e4'],cool:['Cooling to','#53b7ff','rgba(83,183,255,.14)','#e1e9f4'],eco:['Eco hold','#41c49a','rgba(65,196,154,.12)','#e3ebe8']};
+function setMode(m){mode=m;document.querySelectorAll('#m button').forEach(o=>o.classList.toggle('on',o.dataset.m===m));$('lab').textContent=M[m][0];document.body.style.setProperty('--ac',M[m][1]);document.body.style.setProperty('--tint',M[m][2]);click()}
+document.querySelectorAll('#m button').forEach(b=>b.onclick=()=>setMode(b.dataset.m));
+// schedule
+const sched=[17,17,17,17,17,17,19,21,21,19,18,18,18,18,18,19,20,21,21.5,21.5,21,20,18,17];const bars=$('bars');sched.forEach((s,i)=>{const b=document.createElement('i');b.style.height=((s-15)/8*100)+'%';b.title=String(i).padStart(2,'0')+':00 · '+s+'°';b.onclick=()=>setV((s-MIN)/(MAX-MIN));bars.appendChild(b)});
+function hour(){const h=new Date().getHours();[...bars.children].forEach((b,i)=>b.classList.toggle('now',i===h));$('sh').textContent='Now '+String(h).padStart(2,'0')+':00 · '+sched[h]+'°'}hour();setInterval(hour,60000);
+// airflow particles inside the inner disc
+const air=$('air'),axx=air.getContext('2d');const parts=Array.from({length:40},()=>({x:Math.random(),y:Math.random(),s:.2+Math.random()*.8}));
+function draw(){shown+=(v-shown)*.18;const L=405.3*shown;arc.setAttribute('stroke-dasharray',L+' 541');arc2.setAttribute('stroke-dasharray',L+' 541');const a=(135+270*shown)*Math.PI/180,R=d.clientWidth*.43;k.style.transform=`translate(${Math.cos(a)*R}px,${Math.sin(a)*R}px)`;
+const ca=shown*270*Math.PI/180;$('cur').setAttribute('cx',100+Math.cos((indoor-MIN)/(MAX-MIN)*270*Math.PI/180)*86);$('cur').setAttribute('cy',100+Math.sin((indoor-MIN)/(MAX-MIN)*270*Math.PI/180)*86);
+const T=MIN+(MAX-MIN)*shown;t.innerHTML=(Math.round(T*2)/2).toFixed(1).replace('.0','')+'<sup>°C</sup>';ticks.forEach((l,i)=>l.classList.toggle('on',i/STEPS<=shown+.001));
+const tg=target();indoor+=(tg-indoor)*.0009*(mode==='eco'?.5:1);$('in').textContent=indoor.toFixed(1)+'°';const diff=tg-indoor;$('eta').textContent=Math.abs(diff)<.15?'Holding steady':`${diff>0?'Warming':'Cooling'} · ~${Math.max(1,Math.round(Math.abs(diff)*7))} min`;
+const r=air.getBoundingClientRect();if(air.width!==Math.round(r.width)){air.width=r.width;air.height=r.height}axx.clearRect(0,0,air.width,air.height);const up=mode==='heat'?-1:mode==='cool'?1:0,col=M[mode][1];axx.fillStyle=col;
+for(const p of parts){p.y+=up*.003*p.s*(.4+Math.min(1,Math.abs(diff)));p.x+=Math.sin(performance.now()/900+p.y*8)*.0008;if(mode==='eco'){p.x+=.0012*p.s}if(p.y<0)p.y=1;if(p.y>1)p.y=0;if(p.x>1)p.x=0;axx.globalAlpha=.25*p.s;axx.beginPath();axx.arc(p.x*air.width,p.y*air.height,1.2+p.s*1.6,0,7);axx.fill()}
+requestAnimationFrame(draw)}
+addEventListener('resize',()=>{});setMode('heat');draw();const ck=()=>$('clock').textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});ck();setInterval(ck,10000);
 </script></body></html>
