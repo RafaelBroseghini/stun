@@ -1,14 +1,41 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ASCII Torus</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@700&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#2a160d;display:grid;place-items:center;color:#ffb070}
-pre{font:700 clamp(7px,1.25vw,15px)/1 'Courier Prime',monospace;letter-spacing:.08em;background:linear-gradient(#ffe0a8,#ff8a3d 50%,#d9452a);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 6px rgba(255,138,61,.35))}
-p{position:fixed;left:24px;bottom:20px;font:700 12px 'Courier Prime',monospace;letter-spacing:.2em;color:#a86a48}</style></head><body>
-<pre id="o"></pre><p>R1=1 · R2=2 · K2=5 · luminance ramp .,-~:;=!*#$@ · move to spin faster</p>
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;user-select:none;-webkit-user-select:none}
+body{background:radial-gradient(80% 70% at 50% 45%,#3a1e10,#1a0c06);color:#ffb070;font-family:'Courier Prime',monospace}
+canvas{display:block;width:100%;height:100%;cursor:grab;touch-action:none}canvas:active{cursor:grabbing}
+.scan{position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(rgba(0,0,0,.18) 0 1px,transparent 1px 3px)}
+.ui{position:fixed;left:24px;bottom:20px;display:flex;flex-direction:column;gap:8px;font:700 11px 'Courier Prime',monospace;letter-spacing:.16em;color:#c88a62}
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.row button{font:700 11px 'Courier Prime';letter-spacing:.1em;color:#ffb070;background:transparent;border:1px solid #6a3a20;padding:5px 9px;cursor:pointer}.row button[aria-pressed="true"]{background:#ffb070;color:#2a160d;border-color:#ffb070}
+.ttl{position:fixed;right:24px;top:20px;text-align:right;font:700 11px/1.7 'Courier Prime';letter-spacing:.2em;color:#a86a48}.ttl b{display:block;font-size:22px;color:#ffd0a0;letter-spacing:.08em}
+</style></head><body>
+<canvas id="c"></canvas><div class="scan"></div>
+<div class="ttl"><b id="nm">TORUS</b><span id="eq">R1=1 · R2=2 · K2=5</span><br>drag to spin · wheel to zoom</div>
+<div class="ui"><div class="row" id="sh"><span>SHAPE</span></div><div class="row" id="rp"><span>RAMP&nbsp;</span></div><div class="row" id="ph"><span>INK&nbsp;&nbsp;</span></div></div>
 <script>
-const o=document.getElementById('o');let A=0,B=0,sp=1;const cw=88,ch=44;addEventListener('pointermove',e=>sp=.4+e.clientX/innerWidth*2.4);
-const R='.,-~:;=!*#$@';
-function f(){A+=.04*sp;B+=.02*sp;const z=new Float32Array(cw*ch),b=new Array(cw*ch).fill(' ');const cA=Math.cos(A),sA=Math.sin(A),cB=Math.cos(B),sB=Math.sin(B);
-for(let j=0;j<6.28;j+=.07){const ct=Math.cos(j),st=Math.sin(j);for(let i=0;i<6.28;i+=.02){const sp_=Math.sin(i),cp=Math.cos(i);const h=ct+2,D=1/(sp_*h*sA+st*cA+5),t=sp_*h*cA-st*sA;
-const X=Math.floor(cw/2+cw*.42*D*(cp*h*cB-t*sB)),Y=Math.floor(ch/2+cw*.29*D*(cp*h*sB+t*cB)),k=X+cw*Y;const N=Math.floor(8*((st*sA-sp_*ct*cA)*cB-sp_*ct*sA-st*cA-cp*ct*sB));
-if(Y>=0&&Y<ch&&X>=0&&X<cw&&D>z[k]){z[k]=D;b[k]=R[Math.max(0,Math.min(11,N))]}}}let s='';for(let y=0;y<ch;y++){s+=b.slice(y*cw,y*cw+cw).join('')+'\n'}o.textContent=s;requestAnimationFrame(f)}f();
+const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio||1,2);let W,H,cw,ch,cell;
+const RAMPS=[['classic','.,-~:;=!*#$@'],['blocks',' ░░▒▒▓▓██'],['dots','·∙•●⬤'],['kana','ﾞｰｨｳｴｵｶｷｸｹｺｻｼｽｾ']];let ri=0;
+const INKS=[['amber',[[90,40,20],[255,138,61],[255,224,168]]],['phosphor',[[10,40,16],[60,220,100],[200,255,210]]],['ice',[[20,30,60],[80,160,255],[230,245,255]]],['prism',null]];let ii=0;
+const SHAPES=['torus','sphere','twist','knot'];let si=0;
+const mk=(id,arr,set,cur)=>{const el=document.getElementById(id);arr.forEach((a,i)=>{const b=document.createElement('button');b.textContent=Array.isArray(a)?a[0]:a;b.setAttribute('aria-pressed',i===cur);b.onclick=()=>{set(i);[...el.querySelectorAll('button')].forEach((o,k)=>o.setAttribute('aria-pressed',k===i))};el.appendChild(b)})};
+mk('sh',SHAPES,i=>{si=i;document.getElementById('nm').textContent=SHAPES[i].toUpperCase();document.getElementById('eq').textContent=['R1=1 · R2=2 · K2=5','r=2 · lit from the cursor','torus with a quarter twist','(2,3) torus knot tube'][i]},0);
+mk('rp',RAMPS,i=>ri=i,0);mk('ph',INKS,i=>ii=i,0);
+let zoom=1;function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr;cell=Math.max(8,Math.round(Math.min(W/110,H/56)));cw=Math.floor(W/(cell*.62));ch=Math.floor(H/cell)}size();addEventListener('resize',size);
+let A=0,B=0,vA=.04,vB=.02,drag=null,lx=.3,ly=-.6;
+c.addEventListener('pointerdown',e=>{c.setPointerCapture(e.pointerId);drag={x:e.clientX,y:e.clientY}});c.addEventListener('pointermove',e=>{lx=(e.clientX/innerWidth-.5)*2;ly=(e.clientY/innerHeight-.5)*2;if(!drag)return;vB=(e.clientX-drag.x)*.004;vA=(e.clientY-drag.y)*.004;drag.x=e.clientX;drag.y=e.clientY});c.addEventListener('pointerup',()=>drag=null);
+c.addEventListener('wheel',e=>{e.preventDefault();zoom=Math.max(.5,Math.min(2,zoom*(e.deltaY>0?.92:1.08)))},{passive:false});
+addEventListener('keydown',e=>{const n=+e.key;if(n>=1&&n<=4)document.querySelectorAll('#sh button')[n-1].click()});
+const lerp=(a,b,t)=>a+(b-a)*t;
+function f(t){if(!drag){vA+=(.04-vA)*.01;vB+=(.02-vB)*.01}A+=vA;B+=vB;const N=cw*ch;const z=new Float32Array(N),L=new Float32Array(N).fill(-9);const cA=Math.cos(A),sA=Math.sin(A),cB=Math.cos(B),sB=Math.sin(B);
+const ln=Math.hypot(lx,ly,1),Lx=lx/ln,Ly=-ly/ln,Lz=-1/ln;const sc=Math.min(cw*.62,ch)*.62*zoom;
+const plot=(px,py,pz,nx,ny,nz)=>{// rotate around X by A, Z by B
+let y1=py*cA-pz*sA,z1=py*sA+pz*cA,x2=px*cB-y1*sB,y2=px*sB+y1*cB;let ny1=ny*cA-nz*sA,nz1=ny*sA+nz*cA,nx2=nx*cB-ny1*sB,ny2=nx*sB+ny1*cB;const D=1/(z1+5);const X=Math.floor(cw/2+sc*D*x2/.62),Y=Math.floor(ch/2-sc*D*y2);if(X<0||Y<0||X>=cw||Y>=ch)return;const k=X+cw*Y;if(D>z[k]){z[k]=D;L[k]=nx2*Lx+ny2*Ly+nz1*Lz}};
+if(si===0||si===2){for(let j=0;j<6.283;j+=.05){const ct=Math.cos(j),st=Math.sin(j);for(let i=0;i<6.283;i+=.018){const tw=si===2?Math.sin(i*2+t*.001)*.4:0;const cj=Math.cos(j+tw),sj=Math.sin(j+tw);const cp=Math.cos(i),sp=Math.sin(i);const h=2+cj;plot(h*cp,h*sp,sj,cj*cp,cj*sp,sj)}}}
+else if(si===1){for(let j=-1.57;j<1.57;j+=.03){const cj=Math.cos(j),sj=Math.sin(j);for(let i=0;i<6.283;i+=.03/Math.max(.2,cj)){const cp=Math.cos(i),sp=Math.sin(i);const r=2.6+Math.sin(j*6+t*.002)*.12*Math.cos(i*5);plot(r*cj*cp,r*cj*sp,r*sj,cj*cp,cj*sp,sj)}}}
+else{for(let u=0;u<6.283;u+=.006){const p=2,q=3;const r=1.6+.7*Math.cos(q*u);const cx=r*Math.cos(p*u),cy=r*Math.sin(p*u),cz=-.7*Math.sin(q*u);const du=.006,r2=1.6+.7*Math.cos(q*(u+du));const tx=r2*Math.cos(p*(u+du))-cx,ty=r2*Math.sin(p*(u+du))-cy,tz=-.7*Math.sin(q*(u+du))-cz;const tl=Math.hypot(tx,ty,tz);const T=[tx/tl,ty/tl,tz/tl];let Nn=[-T[1],T[0],0];const nl=Math.hypot(...Nn)||1;Nn=Nn.map(a=>a/nl);const Bv=[T[1]*Nn[2]-T[2]*Nn[1],T[2]*Nn[0]-T[0]*Nn[2],T[0]*Nn[1]-T[1]*Nn[0]];
+for(let v=0;v<6.283;v+=.25){const cv=Math.cos(v)*.45,sv=Math.sin(v)*.45;const nx=Nn[0]*Math.cos(v)+Bv[0]*Math.sin(v),ny=Nn[1]*Math.cos(v)+Bv[1]*Math.sin(v),nz=Nn[2]*Math.cos(v)+Bv[2]*Math.sin(v);plot(cx+nx*.45,cy+ny*.45,cz+nz*.45,nx,ny,nz)}}}
+x.fillStyle='rgba(26,12,6,1)';x.fillRect(0,0,W,H);x.font=`700 ${cell}px "Courier Prime",monospace`;x.textBaseline='top';const R=RAMPS[ri][1],ink=INKS[ii][1];
+for(let k=0;k<N;k++){const l=L[k];if(l<-8)continue;const v=Math.max(0,Math.min(1,(l+.35)/1.25));const chh=R[Math.min(R.length-1,Math.floor(v*R.length))];const X=(k%cw)*cell*.62,Y=Math.floor(k/cw)*cell;
+let col;if(ink){const a=v<.5?ink[0]:ink[1],b=v<.5?ink[1]:ink[2],u=v<.5?v*2:(v-.5)*2;col=`rgb(${lerp(a[0],b[0],u)|0},${lerp(a[1],b[1],u)|0},${lerp(a[2],b[2],u)|0})`}else col=`hsl(${(X/W*360+t*.05)%360},90%,${30+v*55}%)`;x.fillStyle=col;x.fillText(chh,X,Y)}
+requestAnimationFrame(f)}requestAnimationFrame(f);
 </script></body></html>
