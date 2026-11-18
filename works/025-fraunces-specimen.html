@@ -1,24 +1,57 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fraunces Specimen</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,100..900,0..100,0..1&family=JetBrains+Mono:wght@400&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%}body{background:#f7e9e3;color:#2b0f2a;font-family:Fraunces,Georgia,serif;overflow-x:hidden}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..900,0..100,0..1;1,9..144,100..900,0..100,0..1&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%}
+body{--bg:#f7e9e3;--fg:#2b0f2a;--ac:#ff8f6b;--mu:#8b4f6b;background:var(--bg);color:var(--fg);font-family:Fraunces,Georgia,serif;overflow-x:hidden;transition:background .5s,color .5s}
+body.t1{--bg:#14201b;--fg:#e9f1d8;--ac:#c7f25e;--mu:#8aa38a}body.t2{--bg:#fff7d6;--fg:#1b1e5c;--ac:#ff4f3b;--mu:#6a6aa0}
 :root{--w:600;--o:144;--s:50;--k:1}
 .hero{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);min-height:100vh}
-.g{display:grid;place-items:center;background:#2b0f2a;color:#ff8f6b;font-size:min(52vh,38vw);line-height:1;font-variation-settings:"wght" var(--w),"opsz" var(--o),"SOFT" var(--s),"WONK" var(--k);transition:font-variation-settings .3s}
-.r{padding:5vh 4vw;display:flex;flex-direction:column;gap:3vh;min-width:0}
-.mono{font:11px/1.5 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8b4f6b}
-h1{font-size:clamp(40px,6vw,96px);line-height:.9;font-variation-settings:"wght" 900,"opsz" 144,"SOFT" 100,"WONK" 1;letter-spacing:-.02em}
-.ctl{display:grid;gap:12px}.ctl label{display:grid;grid-template-columns:5em 1fr 3em;align-items:center;gap:10px;font:12px 'JetBrains Mono',monospace}
-input[type=range]{accent-color:#c2410c;width:100%}
-.wf p{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variation-settings:"wght" var(--w),"opsz" var(--o),"SOFT" var(--s),"WONK" var(--k)}
-.chars{font-size:clamp(18px,2vw,26px);line-height:1.5;word-break:break-all;font-variation-settings:"wght" var(--w),"opsz" 24,"SOFT" var(--s)}
-@media(max-width:800px){.hero{grid-template-columns:1fr}.g{min-height:55vh;font-size:40vh}}</style></head><body>
-<section class="hero"><div class="g" id="g" contenteditable spellcheck="false">Rg</div>
-<div class="r"><div class="mono">Specimen · Open Font License · 4 axes</div><h1>Fraunces</h1><p style="font-size:18px;line-height:1.5;max-width:42ch">A display, “Old Style” soft-serif inspired by the chunky early-20th-century faces of Windsor and its kin. Drag the axes; type into the big glyphs.</p>
-<div class="ctl"><label>Weight<input id="w" type="range" min="100" max="900" value="600"><span>600</span></label><label>Optical<input id="o" type="range" min="9" max="144" value="144"><span>144</span></label><label>Soft<input id="s" type="range" min="0" max="100" value="50"><span>50</span></label><label>Wonky<input id="k" type="range" min="0" max="1" step="1" value="1"><span>1</span></label></div>
-<div class="wf"><p style="font-size:48px">Quixotic jam</p><p style="font-size:32px">Soft serifs, sharp wit</p><p style="font-size:20px">The five boxing wizards jump quickly over the lazy dog.</p><p style="font-size:13px">Sphinx of black quartz, judge my vow — 0123456789 &amp; ¶ § € £</p></div>
-<div class="chars">AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz &amp;?!</div></div></section>
+.g{position:sticky;top:0;height:100vh;align-self:start;display:grid;place-items:center;background:var(--fg);color:var(--ac);font-size:min(52vh,36vw);line-height:1;font-variation-settings:"wght" var(--w),"opsz" var(--o),"SOFT" var(--s),"WONK" var(--k);outline:0;cursor:crosshair;overflow:hidden;transition:background .5s,color .5s}
+.g .gl{position:relative;z-index:1;transition:transform .4s cubic-bezier(.2,.9,.3,1.3);white-space:nowrap}
+.g .guide{position:absolute;left:0;right:0;height:1px;background:color-mix(in srgb,var(--ac) 35%,transparent);pointer-events:none}
+.g .guide b{position:absolute;left:12px;top:-14px;font:400 9px 'JetBrains Mono';letter-spacing:.14em;color:color-mix(in srgb,var(--ac) 60%,transparent);font-weight:400}
+.g .read{position:absolute;left:20px;bottom:18px;font:400 11px/1.6 'JetBrains Mono';letter-spacing:.12em;color:color-mix(in srgb,var(--ac) 70%,transparent);text-transform:uppercase;z-index:2}
+.g .xy{position:absolute;inset:0;pointer-events:none;z-index:2}.g .xy i{position:absolute;background:color-mix(in srgb,var(--ac) 30%,transparent)}.g .xy .h{left:0;right:0;height:1px}.g .xy .v{top:0;bottom:0;width:1px}
+.r{padding:5vh 4vw;display:flex;flex-direction:column;gap:2.6vh;min-width:0}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.mono{font:400 11px/1.5 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--mu)}
+.th{display:flex;gap:6px}.th button{width:22px;height:22px;border-radius:50%;border:2px solid var(--fg);cursor:pointer;transition:transform .2s}.th button:hover{transform:scale(1.15)}
+h1{font-size:clamp(44px,6.4vw,104px);line-height:.88;font-variation-settings:"wght" 900,"opsz" 144,"SOFT" 100,"WONK" 1;letter-spacing:-.025em;display:flex}
+h1 span{display:inline-block;animation:drop .9s cubic-bezier(.2,.9,.3,1.3) both}@keyframes drop{from{transform:translateY(-.5em) rotate(-8deg);opacity:0}}
+.ctl{display:grid;gap:12px}.ctl label{display:grid;grid-template-columns:5.2em 1fr 3em;align-items:center;gap:10px;font:400 12px 'JetBrains Mono',monospace}
+.ctl output{text-align:right;font-variant-numeric:tabular-nums}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:2px;background:color-mix(in srgb,var(--fg) 30%,transparent);border-radius:2px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--ac);border:2px solid var(--fg);cursor:grab}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--ac);border:2px solid var(--fg)}
+.sw{position:relative;width:42px;height:22px;border-radius:99px;background:color-mix(in srgb,var(--fg) 20%,transparent);border:0;cursor:pointer}.sw::after{content:"";position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:var(--fg);transition:transform .3s cubic-bezier(.2,.9,.3,1.4)}.sw[aria-pressed="true"]{background:var(--ac)}.sw[aria-pressed="true"]::after{transform:translateX(20px)}
+.wf{display:flex;flex-direction:column;gap:.1em}.wf p{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variation-settings:"wght" var(--w),"opsz" var(--o),"SOFT" var(--s),"WONK" var(--k);outline:0}
+.wf p:nth-child(2){font-style:italic}
+.chars{display:grid;grid-template-columns:repeat(auto-fill,minmax(2.1em,1fr));font-size:clamp(18px,2vw,26px);font-variation-settings:"wght" var(--w),"opsz" 24,"SOFT" var(--s)}
+.chars span{display:grid;place-items:center;aspect-ratio:1;border:1px solid color-mix(in srgb,var(--fg) 10%,transparent);margin:-1px 0 0 -1px;cursor:pointer;transition:background .15s,color .15s}
+.chars span:hover{background:var(--fg);color:var(--ac)}
+.pairs{font:400 10px 'JetBrains Mono';letter-spacing:.12em;color:var(--mu);text-transform:uppercase;display:flex;gap:10px;flex-wrap:wrap}.pairs button{font:inherit;color:inherit;background:none;border:1px solid color-mix(in srgb,var(--fg) 25%,transparent);padding:5px 9px;border-radius:99px;cursor:pointer}.pairs button:hover{border-color:var(--fg);color:var(--fg)}
+@media(max-width:800px){.hero{grid-template-columns:1fr}.g{position:relative;height:56vh;font-size:30vh}}
+</style></head><body>
+<section class="hero"><div class="g" id="g"><div class="guide" style="top:28%"><b>ASCENDER</b></div><div class="guide" style="top:46%"><b>X-HEIGHT</b></div><div class="guide" style="top:73%"><b>BASELINE</b></div><div class="xy"><i class="h" id="xh"></i><i class="v" id="xv"></i></div><div class="gl" id="gl" contenteditable spellcheck="false">Rg</div><div class="read" id="read">Move to drive weight × softness · type to change the glyphs</div></div>
+<div class="r"><div class="top"><div class="mono">Specimen · Open Font License · 4 axes</div><div class="th" id="th"><button style="background:#f7e9e3" aria-label="Rose theme"></button><button style="background:#14201b" aria-label="Forest theme"></button><button style="background:#fff7d6" aria-label="Butter theme"></button></div></div>
+<h1 id="h1">Fraunces</h1><p style="font-size:18px;line-height:1.5;max-width:42ch">A display, “Old Style” soft-serif inspired by the chunky early-twentieth-century faces of Windsor and its kin. Drag the axes, hover the panel, type anywhere.</p>
+<div class="ctl"><label>Weight<input id="w" type="range" min="100" max="900" value="600"><output>600</output></label><label>Optical<input id="o" type="range" min="9" max="144" value="144"><output>144</output></label><label>Soft<input id="s" type="range" min="0" max="100" value="50"><output>50</output></label><label>Wonky<button class="sw" id="k" aria-pressed="true" aria-label="Wonky"></button><output>1</output></label></div>
+<div class="pairs" id="pairs"><span>Try</span><button>Rg</button><button>&amp;</button><button>Qy</button><button>ffi</button><button>Ww</button><button>№</button></div>
+<div class="wf"><p style="font-size:clamp(32px,3.6vw,52px)" contenteditable spellcheck="false">Quixotic jam</p><p style="font-size:32px" contenteditable spellcheck="false">Soft serifs, sharp wit</p><p style="font-size:20px">The five boxing wizards jump quickly over the lazy dog.</p><p style="font-size:13px">Sphinx of black quartz, judge my vow — 0123456789 &amp; ¶ § € £</p></div>
+<div class="chars" id="chars"></div></div></section>
 <script>
-['w','o','s','k'].forEach(id=>{const i=document.getElementById(id);i.oninput=()=>{document.documentElement.style.setProperty('--'+id,i.value);i.nextElementSibling.textContent=i.value}});
-let t=0;const g=document.getElementById('g');const demo=setInterval(()=>{t+=.05;document.documentElement.style.setProperty('--w',Math.round(500+400*Math.sin(t)));document.documentElement.style.setProperty('--s',Math.round(50+50*Math.cos(t*.7)))},80);
-document.querySelectorAll('input').forEach(i=>i.addEventListener('pointerdown',()=>clearInterval(demo)));g.addEventListener('focus',()=>clearInterval(demo));
+const R=document.documentElement,$=id=>document.getElementById(id);let auto=true,t=0;
+const set=(k,v)=>{R.style.setProperty('--'+k,v);const i=$(k);if(i.type==='range'){i.value=v;i.nextElementSibling.textContent=v}};
+['w','o','s'].forEach(id=>{$(id).addEventListener('input',e=>{auto=false;set(id,e.target.value)})});
+$('k').onclick=()=>{const on=$('k').getAttribute('aria-pressed')!=='true';$('k').setAttribute('aria-pressed',on);R.style.setProperty('--k',on?1:0);$('k').nextElementSibling.textContent=on?1:0};
+const h1=$('h1');h1.innerHTML=[...h1.textContent].map((c,i)=>`<span style="animation-delay:${i*.06}s">${c}</span>`).join('');
+const chars=$('chars');[...'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz&?!@ßæøfiffl'].forEach(ch=>{const s=document.createElement('span');s.textContent=ch;s.onclick=()=>{$('gl').textContent=ch;bump()};chars.appendChild(s)});
+$('pairs').querySelectorAll('button').forEach(b=>b.onclick=()=>{$('gl').textContent=b.textContent;bump()});
+$('th').querySelectorAll('button').forEach((b,i)=>b.onclick=()=>document.body.className=i?'t'+i:'');
+function bump(){const g=$('gl');g.style.transform='scale(.9)';setTimeout(()=>g.style.transform='',120)}
+const g=$('g');g.addEventListener('pointermove',e=>{auto=false;const r=g.getBoundingClientRect(),fx=(e.clientX-r.left)/r.width,fy=(e.clientY-r.top)/r.height;set('w',Math.round(100+fx*800));set('s',Math.round((1-fy)*100));$('xh').style.top=(fy*100)+'%';$('xv').style.left=(fx*100)+'%';$('read').textContent=`wght ${Math.round(100+fx*800)} · SOFT ${Math.round((1-fy)*100)} · opsz ${$('o').value}`});
+g.addEventListener('wheel',e=>{e.preventDefault();auto=false;set('o',Math.max(9,Math.min(144,+$('o').value-Math.sign(e.deltaY)*6)))},{passive:false});
+g.addEventListener('pointerleave',()=>{$('xh').style.top='-10px';$('xv').style.left='-10px'});
+addEventListener('keydown',e=>{if(document.activeElement&&document.activeElement.isContentEditable)return;if(e.key.length===1&&/\S/.test(e.key)&&!e.metaKey&&!e.ctrlKey){const gl=$('gl');gl.textContent=(gl.textContent+e.key).slice(-3);bump()}});
+(function f(){if(auto){t+=.012;set('w',Math.round(500+400*Math.sin(t)));set('s',Math.round(50+50*Math.cos(t*.7)))}requestAnimationFrame(f)})();
 </script></body></html>
