@@ -1,29 +1,64 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dispersion Bench</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Red+Hat+Mono:wght@400;600&family=Red+Hat+Display:wght@900&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#0b0b0e}canvas{display:block;width:100%;height:100%;cursor:ns-resize}
-.r{position:fixed;left:24px;top:22px;color:#d7d7e0;font:12px/1.8 'Red Hat Mono',monospace}.r b{font:900 clamp(22px,3vw,40px)/1 'Red Hat Display',sans-serif;display:block;margin-bottom:10px;color:#fff;letter-spacing:-.01em}.r span{color:#ffd36a}</style></head><body>
-<canvas id="c"></canvas><div class="r"><b>Dispersion Bench</b>crown glass prism · apex 60°<br>angle of incidence <span id="ai">48.0°</span><br>deviation (589 nm) <span id="dv">—</span><br>drag up / down to aim the beam</div>
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#0b0b0e;user-select:none;-webkit-user-select:none}canvas{display:block;width:100%;height:100%;touch-action:none}
+.r{position:fixed;left:24px;top:22px;color:#d7d7e0;font:12px/1.85 'Red Hat Mono',monospace;pointer-events:none}.r b{font:900 clamp(22px,3vw,40px)/1 'Red Hat Display',sans-serif;display:block;margin-bottom:10px;color:#fff;letter-spacing:-.01em}.r span{color:#ffd36a}
+.ctl{position:fixed;left:24px;bottom:22px;display:flex;flex-direction:column;gap:8px}
+.row{display:flex;gap:6px;flex-wrap:wrap}.row button{font:400 11px 'Red Hat Mono';color:#d7d7e0;background:#16161c;border:1px solid #2a2a34;padding:7px 10px;border-radius:4px;cursor:pointer}.row button:hover{border-color:#8a8a99}.row button[aria-pressed="true"]{background:#ffd36a;color:#0b0b0e;border-color:#ffd36a}
+.row small{font:400 10px 'Red Hat Mono';color:#6a6a78;align-self:center;margin-right:4px;letter-spacing:.1em}
+.hint{position:fixed;right:24px;top:22px;font:11px/1.8 'Red Hat Mono';color:#6a6a78;text-align:right;pointer-events:none}
+@media (max-width:640px){.hint{display:none}}
+</style></head><body>
+<canvas id="c"></canvas>
+<div class="r"><b>Dispersion Bench</b><span id="mn">crown glass</span> prism · apex 60°<br>incidence <span id="ai">48.0°</span> · deviation (589 nm) <span id="dv">—</span><br>spread red→violet <span id="sp">—</span></div>
+<div class="hint">Drag the beam up and down to aim<br>Drag the prism to rotate it<br>Watch for minimum deviation</div>
+<div class="ctl"><div class="row" id="mat"><small>MATERIAL</small></div><div class="row" id="src"><small>SOURCE</small></div></div>
 <script>
-const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio,2);let W,H,aim=.0,ta=.0;
+const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio||1,2);let W,H,aim=0,ta=0,rot=0,tr=0;
 function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr}size();addEventListener('resize',size);
-addEventListener('pointermove',e=>{if(e.buttons||e.pointerType==='mouse')ta=(e.clientY/innerHeight-.5)*.5});
-const nOf=l=>1.5046+4200/(l*l);const wl=[];for(let l=400;l<=700;l+=6)wl.push(l);
-function rgb(l){let r=0,g=0,b=0;if(l<440){r=-(l-440)/40;b=1}else if(l<490){g=(l-440)/50;b=1}else if(l<510){g=1;b=-(l-510)/20}else if(l<580){r=(l-510)/70;g=1}else if(l<645){r=1;g=-(l-645)/65}else r=1;return[r*255|0,g*255|0,b*255|0]}
+// Cauchy coefficients A + B/λ²
+const MAT=[['crown glass',1.5046,4200],['flint glass',1.5970,10200],['water',1.3199,3100],['diamond',2.3800,13000]];let mi=0;
+const SRC=[['white',null],['sodium',[589]],['laser 532',[532]],['RGB',[630,532,450]]];let si=0;
+const mk=(id,arr,cb)=>{const el=document.getElementById(id);arr.forEach((m,i)=>{const b=document.createElement('button');b.textContent=m[0];b.setAttribute('aria-pressed',i===0);b.onclick=()=>{cb(i);[...el.querySelectorAll('button')].forEach((o,k)=>o.setAttribute('aria-pressed',k===i))};el.appendChild(b)})};
+mk('mat',MAT,i=>{mi=i;minDev=999;document.getElementById('mn').textContent=MAT[i][0]});mk('src',SRC,i=>si=i);
+const nOf=l=>MAT[mi][1]+MAT[mi][2]/(l*l);const WHITE=[];for(let l=400;l<=700;l+=4)WHITE.push(l);
+function rgb(l){let r=0,g=0,b=0;if(l<440){r=-(l-440)/40;b=1}else if(l<490){g=(l-440)/50;b=1}else if(l<510){g=1;b=-(l-510)/20}else if(l<580){r=(l-510)/70;g=1}else if(l<645){r=1;g=-(l-645)/65}else r=1;const f=l<420?.3+.7*(l-400)/20:l>680?.3+.7*(700-l)/20:1;return[r*255*f|0,g*255*f|0,b*255*f|0]}
 function inter(p,d,a,b){const ex=b[0]-a[0],ey=b[1]-a[1];const den=d[0]*ey-d[1]*ex;if(Math.abs(den)<1e-9)return null;const t=((a[0]-p[0])*ey-(a[1]-p[1])*ex)/den,u=((a[0]-p[0])*d[1]-(a[1]-p[1])*d[0])/den;return t>1e-6&&u>=0&&u<=1?[p[0]+d[0]*t,p[1]+d[1]*t,t]:null}
 function refr(d,n,r){let cs=-(n[0]*d[0]+n[1]*d[1]);if(cs<0){n=[-n[0],-n[1]];cs=-cs}const k=1-r*r*(1-cs*cs);if(k<0)return null;const q=r*cs-Math.sqrt(k);return[r*d[0]+q*n[0],r*d[1]+q*n[1]]}
-function f(){aim+=(ta-aim)*.08;x.fillStyle='#0b0b0e';x.fillRect(0,0,W,H);const S=Math.min(W,H)*.32,cx=W*.46,cy=H*.56;
-const A=[cx,cy-S*.95],B=[cx-S*.82,cy+S*.47],C=[cx+S*.82,cy+S*.47];
-x.strokeStyle='rgba(255,255,255,.06)';x.lineWidth=dpr;for(let i=0;i<W;i+=40*dpr){x.beginPath();x.moveTo(i,0);x.lineTo(i,H);x.stroke()}
-const src=[0,cy+S*.45+aim*H*.5];const tgt=[(A[0]+B[0])/2,(A[1]+B[1])/2];let d=[tgt[0]-src[0],tgt[1]-src[1]];const L=Math.hypot(...d);d=[d[0]/L,d[1]/L];
-const p1=inter(src,d,A,B);x.globalCompositeOperation='lighter';
-if(p1){x.strokeStyle='rgba(255,255,255,.95)';x.lineWidth=4*dpr;x.shadowColor='#fff';x.shadowBlur=20*dpr;x.beginPath();x.moveTo(...src);x.lineTo(p1[0],p1[1]);x.stroke();x.shadowBlur=0;
+const rotP=(p,o,a)=>{const s=Math.sin(a),co=Math.cos(a),dx=p[0]-o[0],dy=p[1]-o[1];return[o[0]+dx*co-dy*s,o[1]+dx*s+dy*co]};
+let mode=null,last=[0,0];
+c.addEventListener('pointerdown',e=>{c.setPointerCapture(e.pointerId);const X=e.clientX*dpr,Y=e.clientY*dpr;const S=Math.min(W,H)*.32,cx=W*.46,cy=H*.56;mode=Math.hypot(X-cx,Y-(cy-S*.1))<S*.75?'prism':'beam';last=[X,Y];if(mode==='beam')ta=(e.clientY/innerHeight-.5)*.5});
+c.addEventListener('pointermove',e=>{const X=e.clientX*dpr,Y=e.clientY*dpr;if(!mode){if(e.pointerType==='mouse'&&!e.buttons){}return}if(mode==='beam')ta=(e.clientY/innerHeight-.5)*.5;else{const cx=W*.46,cy=H*.56;const a0=Math.atan2(last[1]-cy,last[0]-cx),a1=Math.atan2(Y-cy,X-cx);let d=a1-a0;if(d>Math.PI)d-=6.283;if(d<-Math.PI)d+=6.283;tr+=d}last=[X,Y]});
+c.addEventListener('pointerup',()=>mode=null);
+addEventListener('keydown',e=>{if(e.key==='ArrowUp')ta-=.02;if(e.key==='ArrowDown')ta+=.02;if(e.key==='ArrowLeft')tr-=.03;if(e.key==='ArrowRight')tr+=.03});
+let minDev=999;
+function f(t){aim+=(ta-aim)*.08;rot+=(tr-rot)*.12;x.fillStyle='#0b0b0e';x.fillRect(0,0,W,H);const S=Math.min(W,H)*.32,cx=W*.46,cy=H*.56;const O=[cx,cy-S*.0];
+const A=rotP([cx,cy-S*.95],O,rot),B=rotP([cx-S*.82,cy+S*.47],O,rot),C=rotP([cx+S*.82,cy+S*.47],O,rot);
+x.strokeStyle='rgba(255,255,255,.05)';x.lineWidth=dpr;for(let i=0;i<W;i+=40*dpr){x.beginPath();x.moveTo(i,0);x.lineTo(i,H);x.stroke()}for(let i=0;i<H;i+=40*dpr){x.beginPath();x.moveTo(0,i);x.lineTo(W,i);x.stroke()}
+// source lamp
+const src=[W*.02,cy+S*.45+aim*H*.5];const tgt=[(A[0]+B[0])/2,(A[1]+B[1])/2];let d=[tgt[0]-src[0],tgt[1]-src[1]];const L=Math.hypot(...d);d=[d[0]/L,d[1]/L];
+x.fillStyle='#22222c';x.save();x.translate(src[0],src[1]);x.rotate(Math.atan2(d[1],d[0]));x.fillRect(-30*dpr,-12*dpr,40*dpr,24*dpr);x.fillStyle='#ffd36a';x.fillRect(8*dpr,-5*dpr,4*dpr,10*dpr);x.restore();
+const sides=[[A,B],[A,C],[B,C]];const p1=inter(src,d,A,B);const wx=W*.92;
+x.globalCompositeOperation='lighter';const lams=SRC[si][1]||WHITE;const white=!SRC[si][1];let spread=[null,null],dev589=null;
+if(p1){const bc=white?[255,255,255]:rgb(lams[0]);x.strokeStyle=`rgba(${bc},.95)`;x.lineWidth=4*dpr;x.shadowColor=`rgb(${bc})`;x.shadowBlur=20*dpr;x.beginPath();x.moveTo(...src);x.lineTo(p1[0],p1[1]);x.stroke();x.shadowBlur=0;
 const e1=[B[0]-A[0],B[1]-A[1]],n1=[e1[1],-e1[0]],nl=Math.hypot(...n1);const N1=[n1[0]/nl,n1[1]/nl];const ai=Math.acos(Math.abs(d[0]*N1[0]+d[1]*N1[1]))*180/Math.PI;document.getElementById('ai').textContent=ai.toFixed(1)+'°';
-const e2=[C[0]-A[0],C[1]-A[1]],n2=[-e2[1],e2[0]],n2l=Math.hypot(...n2),N2=[n2[0]/n2l,n2[1]/n2l];
-for(const l of wl){const n=nOf(l);const d2=refr(d,N1,1/n);if(!d2)continue;const p2=inter([p1[0],p1[1]],d2,A,C)||inter([p1[0],p1[1]],d2,B,C);if(!p2)continue;const d3=refr(d2,N2,n);const [r,g,b]=rgb(l);
-x.strokeStyle=`rgba(${r},${g},${b},.18)`;x.lineWidth=2*dpr;x.beginPath();x.moveTo(p1[0],p1[1]);x.lineTo(p2[0],p2[1]);x.stroke();if(!d3)continue;
-const far=[p2[0]+d3[0]*W,p2[1]+d3[1]*W];const wx=W*.92;const tt=(wx-p2[0])/d3[0];const hit=tt>0?[wx,p2[1]+d3[1]*tt]:far;x.strokeStyle=`rgba(${r},${g},${b},.55)`;x.lineWidth=3*dpr;x.beginPath();x.moveTo(p2[0],p2[1]);x.lineTo(hit[0],hit[1]);x.stroke();
-if(tt>0){x.fillStyle=`rgba(${r},${g},${b},.9)`;x.fillRect(wx,hit[1]-4*dpr,10*dpr,8*dpr);if(l%60===40||l===700-((700-400)%6)){x.globalCompositeOperation='source-over';x.fillStyle='#8a8a99';x.font=`${10*dpr}px "Red Hat Mono"`;x.fillText(l+' nm',wx+16*dpr,hit[1]+3*dpr);x.globalCompositeOperation='lighter'}
-if(l===586){const dev=Math.acos(d[0]*d3[0]+d[1]*d3[1])*180/Math.PI;document.getElementById('dv').textContent=dev.toFixed(1)+'°'}}}}
-x.globalCompositeOperation='source-over';x.fillStyle='rgba(180,220,255,.08)';x.strokeStyle='rgba(220,240,255,.7)';x.lineWidth=1.5*dpr;x.beginPath();x.moveTo(...A);x.lineTo(...B);x.lineTo(...C);x.closePath();x.fill();x.stroke();
-x.fillStyle='#1c1c24';x.fillRect(W*.92-4*dpr,H*.1,4*dpr,H*.8);requestAnimationFrame(f)}f();
+const e2=[C[0]-A[0],C[1]-A[1]],n2=[-e2[1],e2[0]],n2l=Math.hypot(...n2),N2=[n2[0]/n2l,n2[1]/n2l];const e3=[C[0]-B[0],C[1]-B[1]],n3=[-e3[1],e3[0]],n3l=Math.hypot(...n3),N3=[n3[0]/n3l,n3[1]/n3l];
+x.fillStyle='rgba(255,255,255,.08)';x.beginPath();x.arc(p1[0],p1[1],10*dpr,0,7);x.fill();
+for(const l of lams){const n=nOf(l);const d2=refr(d,N1,1/n);if(!d2)continue;let p2=inter([p1[0],p1[1]],d2,A,C),NN=N2;if(!p2){p2=inter([p1[0],p1[1]],d2,B,C);NN=N3}if(!p2)continue;const d3=refr(d2,NN,n);const [r,g,b]=rgb(l);const a=white?.2:.9;
+x.strokeStyle=`rgba(${r},${g},${b},${white?.16:.8})`;x.lineWidth=(white?2:3)*dpr;x.beginPath();x.moveTo(p1[0],p1[1]);x.lineTo(p2[0],p2[1]);x.stroke();
+if(!d3){// total internal reflection
+const dd=d2[0]*NN[0]+d2[1]*NN[1];const rf=[d2[0]-2*dd*NN[0],d2[1]-2*dd*NN[1]];x.strokeStyle=`rgba(${r},${g},${b},.3)`;x.beginPath();x.moveTo(p2[0],p2[1]);x.lineTo(p2[0]+rf[0]*S*.6,p2[1]+rf[1]*S*.6);x.stroke();continue}
+const tt=(wx-p2[0])/d3[0];const hit=tt>0?[wx,p2[1]+d3[1]*tt]:[p2[0]+d3[0]*W,p2[1]+d3[1]*W];x.strokeStyle=`rgba(${r},${g},${b},${white?.5:.95})`;x.lineWidth=(white?3:4)*dpr;if(!white){x.shadowColor=`rgb(${r},${g},${b})`;x.shadowBlur=14*dpr}x.beginPath();x.moveTo(p2[0],p2[1]);x.lineTo(hit[0],hit[1]);x.stroke();x.shadowBlur=0;
+if(tt>0){x.fillStyle=`rgba(${r},${g},${b},.95)`;x.fillRect(wx,hit[1]-(white?3:5)*dpr,12*dpr,(white?6:10)*dpr);if(l===400||l===700||l===400+Math.round((700-400)/4/2)*4)spread[l<550?1:0]=hit[1];if(l===700)spread[0]=hit[1];if(l===400)spread[1]=hit[1];
+if(white&&[656,588,516,488,432].includes(l)){x.globalCompositeOperation='source-over';x.fillStyle='rgba(11,11,14,.9)';x.fillRect(wx,hit[1]-dpr,12*dpr,1.4*dpr);x.globalCompositeOperation='lighter'}
+if(white&&l%100===0||!white){x.globalCompositeOperation='source-over';x.fillStyle='#8a8a99';x.font=`${10*dpr}px "Red Hat Mono"`;x.fillText(l+' nm',wx+18*dpr,hit[1]+3*dpr);x.globalCompositeOperation='lighter'}}
+if(l===588||l===589||(SRC[si][1]&&l===lams[0])){dev589=Math.acos(Math.max(-1,Math.min(1,d[0]*d3[0]+d[1]*d3[1])))*180/Math.PI}}}
+x.globalCompositeOperation='source-over';
+// prism glass
+const pg=x.createLinearGradient(B[0],B[1],C[0],A[1]);pg.addColorStop(0,'rgba(180,220,255,.12)');pg.addColorStop(1,'rgba(180,220,255,.04)');x.fillStyle=pg;x.strokeStyle='rgba(220,240,255,.75)';x.lineWidth=1.5*dpr;x.beginPath();x.moveTo(...A);x.lineTo(...B);x.lineTo(...C);x.closePath();x.fill();x.stroke();
+x.strokeStyle='rgba(255,255,255,.25)';x.lineWidth=3*dpr;x.beginPath();x.moveTo(A[0]+(B[0]-A[0])*.1,A[1]+(B[1]-A[1])*.1);x.lineTo(A[0]+(B[0]-A[0])*.6,A[1]+(B[1]-A[1])*.6);x.stroke();
+x.fillStyle='#1c1c24';x.fillRect(wx-4*dpr,H*.06,4*dpr,H*.88);
+if(dev589!==null){document.getElementById('dv').textContent=dev589.toFixed(1)+'°'+(dev589<=minDev+.15?' · near minimum':'');minDev=Math.min(minDev,dev589)}
+if(spread[0]!=null&&spread[1]!=null)document.getElementById('sp').textContent=(Math.abs(spread[0]-spread[1])/dpr).toFixed(0)+' px';
+requestAnimationFrame(f)}requestAnimationFrame(f);
 </script></body></html>

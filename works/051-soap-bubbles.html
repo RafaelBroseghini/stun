@@ -1,19 +1,49 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Soap Film</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;800&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:radial-gradient(ellipse at 30% 20%,#2a3f7a,#151a3a 50%,#0b0d1f);font-family:'Baloo 2',sans-serif}
-.b{position:absolute;border-radius:50%;cursor:pointer;background:radial-gradient(circle at 30% 28%,rgba(255,255,255,.9) 0 4%,rgba(255,255,255,0) 9%),radial-gradient(circle at 68% 74%,rgba(255,255,255,.35) 0 3%,transparent 7%),radial-gradient(circle,transparent 58%,rgba(255,255,255,.08) 66%,rgba(255,255,255,.5) 71%,transparent 72%),conic-gradient(from var(--a),#ff6ad5,#ffd36a,#6affc8,#6ab8ff,#c56aff,#ff6ad5);
--webkit-mask:radial-gradient(circle,rgba(0,0,0,.05) 50%,rgba(0,0,0,.5) 66%,#000 71%,transparent 71.5%);mask:radial-gradient(circle,rgba(0,0,0,.05) 50%,rgba(0,0,0,.5) 66%,#000 71%,transparent 71.5%);mix-blend-mode:screen;animation:hue 6s linear infinite}
-@keyframes hue{to{filter:hue-rotate(360deg)}}
-.pop{position:absolute;border-radius:50%;border:2px dotted rgba(255,255,255,.8);animation:pp .35s ease-out forwards;pointer-events:none}@keyframes pp{to{transform:scale(1.5);opacity:0}}
-h1{position:fixed;left:5vw;bottom:6vh;color:#fff;font-weight:800;font-size:clamp(40px,7vw,110px);line-height:.8;letter-spacing:-.02em}h1 span{display:block;font-weight:500;font-size:14px;letter-spacing:.3em;opacity:.7;margin-top:16px}
-.cnt{position:fixed;right:5vw;top:5vh;color:#fff;font-weight:800;font-size:18px;letter-spacing:.1em}</style></head><body>
-<h1>soap<br>film<span>thin-film interference, ~300 nm thick · click to pop</span></h1><div class="cnt" id="n">0 popped</div>
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;user-select:none;-webkit-user-select:none}
+body{background:radial-gradient(ellipse at 30% 20%,#2a3f7a,#151a3a 50%,#0b0d1f);font-family:'Baloo 2',sans-serif}
+canvas{position:fixed;inset:0;width:100%;height:100%;cursor:crosshair;touch-action:none}
+h1{position:fixed;left:5vw;bottom:6vh;color:#fff;font-weight:800;font-size:clamp(40px,7vw,110px);line-height:.8;letter-spacing:-.02em;pointer-events:none;mix-blend-mode:screen}
+h1 span{display:block;font-weight:500;font-size:13px;letter-spacing:.28em;opacity:.7;margin-top:16px;line-height:1.6}
+.cnt{position:fixed;right:5vw;top:5vh;color:#fff;font-weight:800;font-size:18px;letter-spacing:.1em;text-align:right;pointer-events:none}.cnt small{display:block;font-weight:500;font-size:11px;opacity:.6;letter-spacing:.2em}
+</style></head><body>
+<canvas id="c"></canvas>
+<h1>soap<br>film<span>thin-film interference, 100–900 nm<br>drag to blow a bubble · click to pop · move to make wind</span></h1><div class="cnt"><span id="n">0 popped</span><small id="th">film ≈ 340 nm</small></div>
 <script>
-let B=[],pops=0;
-function make(){const s=40+Math.random()*180;const e=document.createElement('div');e.className='b';e.style.width=e.style.height=s+'px';e.style.setProperty('--a',Math.random()*360+'deg');document.body.appendChild(e);
-const b={e,s,x:Math.random()*innerWidth,y:innerHeight+s,vx:(Math.random()-.5)*.6,vy:-(.3+Math.random()*.8),ph:Math.random()*7,t:Math.random()*1000};e.onpointerdown=()=>pop(b);B.push(b);return b}
-function pop(b){const p=document.createElement('div');p.className='pop';p.style.cssText=`left:${b.x-b.s/2}px;top:${b.y-b.s/2}px;width:${b.s}px;height:${b.s}px`;document.body.appendChild(p);setTimeout(()=>p.remove(),400);b.e.remove();B=B.filter(o=>o!==b);document.getElementById('n').textContent=(++pops)+' popped'}
-for(let i=0;i<18;i++){const b=make();b.y=Math.random()*innerHeight}
-setInterval(()=>{if(B.length<26)make()},900);
-function f(t){for(const b of B){b.t++;b.x+=b.vx+Math.sin(b.t*.01+b.ph)*.4;b.y+=b.vy;const w=1+Math.sin(b.t*.03+b.ph)*.03;b.e.style.transform=`translate(${b.x-b.s/2}px,${b.y-b.s/2}px) scale(${w},${2-w})`;if(b.y<-b.s){b.e.remove();B=B.filter(o=>o!==b)}}requestAnimationFrame(f)}requestAnimationFrame(f);
+const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio||1,2);let W,H;
+function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr}size();addEventListener('resize',size);
+// interference colour for a film of thickness d: reflectance ∝ sin²(2π n d / λ + π/2)
+const lam=[650,532,460];function film(d){return lam.map(l=>{const v=Math.sin(2*Math.PI*1.33*d/l+Math.PI/2);return Math.round(255*Math.min(1,v*v*1.15))})}
+// a swirling film texture: thinner at the top where the soap has drained
+const T=document.createElement('canvas');T.width=T.height=256;{const g=T.getContext('2d'),img=g.createImageData(256,256);const P=new Uint8Array(512);for(let i=0;i<256;i++)P[i]=i;for(let i=255;i>0;i--){const j=Math.random()*(i+1)|0;[P[i],P[j]]=[P[j],P[i]]}for(let i=0;i<256;i++)P[i+256]=P[i];
+const fd=t=>t*t*t*(t*(t*6-15)+10),lp=(a,b,t)=>a+t*(b-a),gr=(h,x,y)=>((h&1)?-x:x)+((h&2)?-y:y);const N=(x,y)=>{let X=Math.floor(x)&255,Y=Math.floor(y)&255;x-=Math.floor(x);y-=Math.floor(y);const u=fd(x),v=fd(y),a=P[X]+Y,b=P[X+1]+Y;return lp(lp(gr(P[a],x,y),gr(P[b],x-1,y),u),lp(gr(P[a+1],x,y-1),gr(P[b+1],x-1,y-1),u),v)};
+for(let y=0;y<256;y++)for(let X=0;X<256;X++){const u=X/256,v=y/256;const sw=N(u*3+N(u*2,v*2)*1.5,v*3)*.5+N(u*7,v*7)*.15;const d=90+v*420+sw*300;const [r,g2,b]=film(Math.max(60,d));const k=(y*256+X)*4;img.data[k]=r;img.data[k+1]=g2;img.data[k+2]=b;img.data[k+3]=255}g.putImageData(img,0,0)}
+let B=[],pops=0,drops=[],wind=0,lmx=null;
+function make(px,py,r,vy){r=r??(30+Math.random()*90)*dpr;B.push({x:px??Math.random()*W,y:py??H+r,r,vx:(Math.random()-.5)*.6*dpr,vy:vy??-(.3+Math.random()*.8)*dpr,ph:Math.random()*7,rot:Math.random()*6,vr:(Math.random()-.5)*.004,ox:Math.random(),oy:Math.random(),age:0})}
+for(let i=0;i<14;i++)make(Math.random()*innerWidth*dpr,Math.random()*innerHeight*dpr);
+let blow=null;
+c.addEventListener('pointerdown',e=>{c.setPointerCapture(e.pointerId);const X=e.clientX*dpr,Y=e.clientY*dpr;for(let i=B.length-1;i>=0;i--){const b=B[i];if(Math.hypot(b.x-X,b.y-Y)<b.r){pop(i);return}}blow={x:X,y:Y,r:6*dpr,sx:X,sy:Y}});
+c.addEventListener('pointermove',e=>{const X=e.clientX*dpr,Y=e.clientY*dpr;if(lmx!==null)wind+=(X-lmx)*.002;lmx=X;if(blow){const d=Math.hypot(X-blow.sx,Y-blow.sy);blow.r=Math.min(160*dpr,6*dpr+d*.6);blow.x=blow.sx+(X-blow.sx)*.5;blow.y=blow.sy+(Y-blow.sy)*.5;blow.dx=X-blow.sx;blow.dy=Y-blow.sy}});
+c.addEventListener('pointerup',()=>{if(blow&&blow.r>14*dpr){make(blow.x,blow.y,blow.r,-.4*dpr);const nb=B[B.length-1];nb.vx=(blow.dx||0)*.01;nb.vy=(blow.dy||0)*.01-.3*dpr;woosh()}blow=null});
+addEventListener('keydown',e=>{if(e.key===' '){e.preventDefault();for(let i=0;i<6;i++)make(W*(.3+Math.random()*.4),H+40*dpr,(20+Math.random()*60)*dpr)}});
+let ac;function snd(){if(!ac)try{ac=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}return ac}
+function popS(r){const a=snd();if(!a)return;const b=a.createBuffer(1,a.sampleRate*.05,a.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,6);const s=a.createBufferSource(),f=a.createBiquadFilter(),g=a.createGain();s.buffer=b;f.type='bandpass';f.frequency.value=2600-Math.min(2000,r*8);g.gain.value=.25;s.connect(f).connect(g).connect(a.destination);s.start()}
+function woosh(){const a=snd();if(!a)return;const o=a.createOscillator(),g=a.createGain();o.frequency.setValueAtTime(300,a.currentTime);o.frequency.exponentialRampToValueAtTime(900,a.currentTime+.2);g.gain.setValueAtTime(.03,a.currentTime);g.gain.exponentialRampToValueAtTime(.0001,a.currentTime+.25);o.connect(g).connect(a.destination);o.start();o.stop(a.currentTime+.3)}
+function pop(i){const b=B[i];B.splice(i,1);pops++;document.getElementById('n').textContent=pops+' popped';popS(b.r/dpr);for(let k=0;k<26;k++){const a=Math.random()*6.283,s=(2+Math.random()*4)*dpr;drops.push({x:b.x+Math.cos(a)*b.r,y:b.y+Math.sin(a)*b.r,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:1})}drops.push({ring:1,x:b.x,y:b.y,r:b.r,l:1})}
+setInterval(()=>{if(B.length<22)make()},1100);
+function bubble(b,t){const r=b.r;const w=1+Math.sin(b.age*.05+b.ph)*.03;x.save();x.translate(b.x,b.y);x.scale(w,2-w);
+x.save();x.beginPath();x.arc(0,0,r,0,7);x.clip();x.globalCompositeOperation='screen';x.globalAlpha=.42;x.rotate(b.rot);const sz=r*2.6;x.drawImage(T,b.ox*80,b.oy*80,176,176,-sz/2,-sz/2,sz,sz);x.restore();
+// fresnel: the film is clear in the middle, coloured toward the rim
+const g=x.createRadialGradient(0,0,r*.2,0,0,r);g.addColorStop(0,'rgba(11,13,31,.82)');g.addColorStop(.65,'rgba(11,13,31,.35)');g.addColorStop(1,'rgba(11,13,31,0)');x.globalCompositeOperation='multiply';x.fillStyle=g;x.beginPath();x.arc(0,0,r,0,7);x.fill();
+x.globalCompositeOperation='screen';x.strokeStyle='rgba(255,255,255,.35)';x.lineWidth=1.2*dpr;x.beginPath();x.arc(0,0,r-.6*dpr,0,7);x.stroke();
+x.fillStyle='rgba(255,255,255,.85)';x.beginPath();x.ellipse(-r*.38,-r*.42,r*.16,r*.08,-.7,0,7);x.fill();x.fillStyle='rgba(255,255,255,.35)';x.beginPath();x.ellipse(r*.42,r*.46,r*.08,r*.04,-.7,0,7);x.fill();
+x.strokeStyle='rgba(255,255,255,.18)';x.lineWidth=r*.06;x.beginPath();x.arc(0,0,r*.82,3.6,4.4);x.stroke();x.restore()}
+function f(t){x.clearRect(0,0,W,H);wind*=.98;
+for(let i=0;i<B.length;i++)for(let j=i+1;j<B.length;j++){const A=B[i],C=B[j],dx=C.x-A.x,dy=C.y-A.y,d=Math.hypot(dx,dy)||1,m=A.r+C.r;if(d<m){const p=(m-d)*.02;A.vx-=dx/d*p;A.vy-=dy/d*p;C.vx+=dx/d*p;C.vy+=dy/d*p}}
+for(let i=B.length-1;i>=0;i--){const b=B[i];b.age++;b.vx+=wind*.02*dpr;b.vx*=.99;b.vy+=(-.35*dpr-b.vy)*.01;b.x+=b.vx+Math.sin(b.age*.01+b.ph)*.4*dpr;b.y+=b.vy;b.rot+=b.vr;b.oy=(b.oy+.0008)%1;
+if(b.y<-b.r*1.2||b.x<-b.r*2||b.x>W+b.r*2){B.splice(i,1);continue}if(b.age>1400&&Math.random()<.002){pop(i);continue}bubble(b,t)}
+if(blow){x.globalAlpha=.9;bubble({x:blow.x,y:blow.y,r:blow.r,age:t*.06,ph:0,rot:t*.0003,ox:.3,oy:.2},t);x.globalAlpha=1;x.strokeStyle='rgba(255,255,255,.5)';x.lineWidth=2*dpr;x.beginPath();x.arc(blow.sx,blow.sy,10*dpr,0,7);x.stroke()}
+for(let i=drops.length-1;i>=0;i--){const d=drops[i];d.l-=.04;if(d.l<=0){drops.splice(i,1);continue}if(d.ring){x.strokeStyle=`rgba(255,255,255,${d.l*.6})`;x.lineWidth=dpr;x.setLineDash([2*dpr,5*dpr]);x.beginPath();x.arc(d.x,d.y,d.r*(1.5-d.l*.5),0,7);x.stroke();x.setLineDash([]);continue}d.x+=d.vx;d.y+=d.vy;d.vy+=.15*dpr;x.fillStyle=`rgba(200,230,255,${d.l})`;x.fillRect(d.x,d.y,2*dpr,2*dpr)}
+document.getElementById('th').textContent=`film ≈ ${Math.round(300+Math.sin(t*.0004)*160)} nm`;requestAnimationFrame(f)}requestAnimationFrame(f);
 </script></body></html>
