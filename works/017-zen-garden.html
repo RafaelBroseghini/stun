@@ -1,22 +1,53 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Karesansui Garden</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;700&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#cfc6b4;touch-action:none}canvas{display:block;width:100%;height:100%;cursor:none}
-.l{position:fixed;left:30px;bottom:26px;font:400 14px 'Zen Old Mincho',serif;color:#4a4236;letter-spacing:.12em}.l b{display:block;font-size:26px;font-weight:700;margin-bottom:4px}
-#cur{position:fixed;width:70px;height:6px;border-radius:3px;background:#6b4a2a;pointer-events:none;transform:translate(-50%,-50%);box-shadow:0 2px 4px #0004}</style></head><body>
-<canvas id="c"></canvas><div id="cur"></div><div class="l"><b>枯山水 · Karesansui</b>Drag to rake the gravel. Double-click to smooth it.</div>
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#cfc6b4;touch-action:none;user-select:none;-webkit-user-select:none}canvas{display:block;width:100%;height:100%;cursor:none}
+.shade{position:fixed;inset:-10%;pointer-events:none;mix-blend-mode:multiply;opacity:.32;background:radial-gradient(18% 14% at 20% 20%,#4a5a3a,transparent 70%),radial-gradient(22% 16% at 34% 8%,#3e4e30,transparent 70%),radial-gradient(14% 12% at 10% 36%,#4a5a3a,transparent 70%),radial-gradient(12% 10% at 44% 18%,#55653f,transparent 70%);filter:blur(18px);animation:sway 9s ease-in-out infinite alternate}
+@keyframes sway{to{transform:translate(1.5%,1%) rotate(.6deg)}}
+.l{position:fixed;left:30px;bottom:26px;font:400 14px/1.6 'Zen Old Mincho',serif;color:#4a4236;letter-spacing:.1em;pointer-events:none}.l b{display:block;font-size:28px;font-weight:700;margin-bottom:6px;letter-spacing:.14em}
+.tools{position:fixed;right:28px;bottom:26px;display:flex;gap:8px}
+.tools button{font:400 13px 'Zen Old Mincho',serif;letter-spacing:.12em;color:#4a4236;background:rgba(236,228,210,.7);border:1px solid rgba(74,66,54,.35);padding:9px 14px;border-radius:2px;cursor:pointer;backdrop-filter:blur(4px);transition:background .2s,color .2s}
+.tools button:hover{background:rgba(236,228,210,.95)}.tools button[aria-pressed="true"]{background:#4a4236;color:#efe6d2}
+@media (max-width:640px){.l{bottom:80px}.l b{font-size:22px}}
+</style></head><body>
+<canvas id="c"></canvas><div class="shade"></div>
+<div class="l"><b>枯山水 · Karesansui</b>Drag to rake the gravel. Place stones; double-click to smooth it all.</div>
+<div class="tools"><button data-t="rake" aria-pressed="true">熊手 Rake</button><button data-t="stone" aria-pressed="false">石 Stone</button><button id="sm">均す Smooth</button></div>
 <script>
-const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio,2);let W,H,rocks,grain;
-function mkGrain(){grain=document.createElement('canvas');grain.width=grain.height=256;const g=grain.getContext('2d'),d=g.createImageData(256,256);for(let i=0;i<d.data.length;i+=4){const v=200+Math.random()*40;d.data[i]=v;d.data[i+1]=v-8;d.data[i+2]=v-24;d.data[i+3]=255}g.putImageData(d,0,0)}
-function groove(pts,w){for(let k=-2;k<=2;k++){x.lineWidth=3.4*dpr;x.strokeStyle='rgba(80,64,40,.28)';x.beginPath();pts.forEach(([px,py,nx,ny],i)=>{const X=px+nx*k*w+nx*1.2*dpr,Y=py+ny*k*w+ny*1.2*dpr;i?x.lineTo(X,Y):x.moveTo(X,Y)});x.stroke();x.lineWidth=2*dpr;x.strokeStyle='rgba(255,250,235,.55)';x.beginPath();pts.forEach(([px,py,nx,ny],i)=>{const X=px+nx*k*w-nx*1.2*dpr,Y=py+ny*k*w-ny*1.2*dpr;i?x.lineTo(X,Y):x.moveTo(X,Y)});x.stroke()}}
-function smooth(){x.fillStyle=x.createPattern(grain,'repeat');x.fillRect(0,0,W,H);
+const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio||1,2);let W,H,rocks=[],grain,gv,gx;
+const LX=.45,LY=.89;// light comes from the top-left
+function mkGrain(){grain=document.createElement('canvas');grain.width=grain.height=256;const g=grain.getContext('2d'),d=g.createImageData(256,256);for(let i=0;i<d.data.length;i+=4){const v=196+Math.random()*44;d.data[i]=v;d.data[i+1]=v-9;d.data[i+2]=v-26;d.data[i+3]=255}g.putImageData(d,0,0);for(let i=0;i<500;i++){const s=Math.random()*1.6+.4;g.fillStyle=Math.random()<.5?'rgba(90,80,64,.35)':'rgba(255,252,240,.5)';g.fillRect(Math.random()*256,Math.random()*256,s,s)}}
+function groove(pts,w,ctx=gx){for(let k=-2;k<=2;k++){for(const pass of [0,1]){ctx.lineWidth=(pass?2:3.4)*dpr;ctx.strokeStyle=pass?'rgba(255,250,235,.55)':'rgba(80,64,40,.3)';ctx.beginPath();pts.forEach(([px,py,nx,ny],i)=>{const sgn=Math.sign(nx*LX+ny*LY)||1;const o=(pass?-1.2:1.2)*dpr*sgn;const X=px+nx*k*w+nx*o,Y=py+ny*k*w+ny*o;i?ctx.lineTo(X,Y):ctx.moveTo(X,Y)});ctx.stroke()}}}
+function ringsFor(r){gx.fillStyle=gx.createPattern(grain,'repeat');gx.beginPath();gx.arc(r.x,r.y,r.r*2.9,0,7);gx.fill();for(let k=0;k<4;k++){const R=r.r*1.3+k*r.r*.42,pts=[];for(let a=0;a<=Math.PI*2+.1;a+=.04)pts.push([r.x+Math.cos(a)*R,r.y+Math.sin(a)*R,Math.cos(a),Math.sin(a)]);groove(pts,0)}}
+let sweep=-1;function smooth(){sweep=0}
+function sweepStep(){const band=W/26;const x0=sweep*band;gx.save();gx.beginPath();gx.rect(x0,0,band+2,H);gx.clip();gx.fillStyle=gx.createPattern(grain,'repeat');gx.fillRect(0,0,W,H);
+for(let y=-20*dpr;y<H+40;y+=60*dpr){const pts=[];for(let X=x0-8*dpr;X<=x0+band+8*dpr;X+=8*dpr)pts.push([X,y+Math.sin(X*.004/dpr)*6*dpr,0,1]);groove(pts,11*dpr)}gx.restore();sweep++;if(sweep>26){sweep=-1;rocks.forEach(ringsFor)}}
+function rockShape(r){const pts=[];for(let a=0;a<Math.PI*2;a+=.25){const rr=r.r*(1+Math.sin(a*3+r.s)*.09+Math.cos(a*5+r.s)*.05);pts.push([r.x+Math.cos(a)*rr*1.15,r.y+Math.sin(a)*rr*.85])}return pts}
+function addRock(px,py,rad){const r={x:px,y:py,r:rad,s:Math.random()*9,moss:Array.from({length:26},()=>[Math.random()*7,Math.random(),Math.random()*4+1])};r.pts=rockShape(r);rocks.push(r);ringsFor(r);if(rocks.length>8){rocks.shift()}}
+function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr;gv=document.createElement('canvas');gv.width=W;gv.height=H;gx=gv.getContext('2d');gx.fillStyle=gx.createPattern(grain,'repeat');gx.fillRect(0,0,W,H);
 for(let y=-20*dpr;y<H+40;y+=60*dpr){const pts=[];for(let X=0;X<=W;X+=8*dpr)pts.push([X,y+Math.sin(X*.004/dpr)*6*dpr,0,1]);groove(pts,11*dpr)}
-rocks.forEach(r=>{x.fillStyle=x.createPattern(grain,'repeat');x.beginPath();x.arc(r.x,r.y,r.r*2.9,0,7);x.fill();for(let k=0;k<4;k++){const R=r.r*1.25+k*r.r*.42,pts=[];for(let a=0;a<=Math.PI*2+.1;a+=.05)pts.push([r.x+Math.cos(a)*R,r.y+Math.sin(a)*R,Math.cos(a),Math.sin(a)]);groove(pts,0)}});
-rocks.forEach(r=>{x.save();x.shadowColor='rgba(40,30,20,.45)';x.shadowBlur=30*dpr;x.shadowOffsetY=12*dpr;const g=x.createRadialGradient(r.x-r.r*.4,r.y-r.r*.5,r.r*.1,r.x,r.y,r.r*1.2);g.addColorStop(0,'#8d877c');g.addColorStop(.6,'#4b4741');g.addColorStop(1,'#26241f');x.fillStyle=g;x.beginPath();for(let a=0;a<Math.PI*2;a+=.3){const rr=r.r*(1+Math.sin(a*3+r.s)*.08+Math.cos(a*5+r.s)*.05);x.lineTo(r.x+Math.cos(a)*rr*1.15,r.y+Math.sin(a)*rr*.85)}x.fill();x.restore();
-x.fillStyle='rgba(90,120,60,.55)';for(let i=0;i<30;i++){const a=Math.random()*7,d=Math.random()*r.r*.7;x.beginPath();x.arc(r.x+Math.cos(a)*d,r.y+r.r*.4+Math.sin(a)*d*.3,Math.random()*4*dpr+1,0,7);x.fill()}})}
-function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr;const m=Math.min(W,H);rocks=[{x:W*.28,y:H*.38,r:m*.09,s:1},{x:W*.66,y:H*.58,r:m*.065,s:3},{x:W*.74,y:H*.27,r:m*.04,s:5}];smooth()}
-mkGrain();size();addEventListener('resize',size);c.addEventListener('dblclick',smooth);
-let last=null,acc=[];const cur=document.getElementById('cur');
-c.addEventListener('pointermove',e=>{cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';if(!last||!e.buttons){return}const X=e.clientX*dpr,Y=e.clientY*dpr,dx=X-last[0],dy=Y-last[1],d=Math.hypot(dx,dy);if(d<4*dpr)return;const nx=-dy/d,ny=dx/d;cur.style.transform=`translate(-50%,-50%) rotate(${Math.atan2(ny,nx)}rad)`;
-x.fillStyle=x.createPattern(grain,'repeat');x.beginPath();x.arc(X,Y,36*dpr,0,7);x.fill();groove([[last[0],last[1],nx,ny],[X,Y,nx,ny]],11*dpr);last=[X,Y]});
-c.addEventListener('pointerdown',e=>{c.setPointerCapture(e.pointerId);last=[e.clientX*dpr,e.clientY*dpr]});c.addEventListener('pointerup',()=>last=null);
+const m=Math.min(W,H);rocks=[];addRock(W*.28,H*.38,m*.09);addRock(W*.66,H*.58,m*.065);addRock(W*.74,H*.27,m*.04)}
+mkGrain();size();addEventListener('resize',size);
+let tool='rake';document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{tool=b.dataset.t;document.querySelectorAll('[data-t]').forEach(o=>o.setAttribute('aria-pressed',o===b))});document.getElementById('sm').onclick=smooth;c.addEventListener('dblclick',smooth);
+addEventListener('keydown',e=>{if(e.key==='s'||e.key==='S')document.querySelector('[data-t=stone]').click();if(e.key==='r'||e.key==='R')document.querySelector('[data-t=rake]').click();if(e.key==='Enter')smooth()});
+// leaves
+const leaves=[];function leaf(){leaves.push({x:Math.random()*W*.6,y:-30*dpr,vx:(.3+Math.random()*.6)*dpr,vy:(.5+Math.random()*.5)*dpr,a:Math.random()*6,va:(Math.random()-.5)*.06,s:(7+Math.random()*6)*dpr,h:Math.random()<.7?8+Math.random()*16:36,land:false});if(leaves.length>24)leaves.shift()}
+setTimeout(leaf,1200);setInterval(()=>{if(Math.random()<.7)leaf()},4200);
+function drawLeaf(L){x.save();x.translate(L.x,L.y);x.rotate(L.a);if(!L.land){x.shadowColor='rgba(40,30,20,.25)';x.shadowBlur=4*dpr;x.shadowOffsetY=10*dpr}x.fillStyle=`hsl(${L.h},70%,${L.land?40:46}%)`;x.beginPath();for(let i=0;i<10;i++){const r=i%2?L.s*.42:L.s,a=i/10*Math.PI*2-Math.PI/2;x.lineTo(Math.cos(a)*r,Math.sin(a)*r)}x.closePath();x.fill();x.strokeStyle='rgba(80,20,10,.5)';x.lineWidth=dpr;x.beginPath();x.moveTo(0,0);x.lineTo(0,L.s*1.4);x.stroke();x.restore()}
+// raking sound
+let ac,ng,nf;function sound(){if(ac)return;try{ac=new (window.AudioContext||window.webkitAudioContext)();const b=ac.createBuffer(1,ac.sampleRate*2,ac.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;const s=ac.createBufferSource();s.buffer=b;s.loop=true;nf=ac.createBiquadFilter();nf.type='bandpass';nf.frequency.value=2200;nf.Q.value=.8;ng=ac.createGain();ng.gain.value=0;s.connect(nf).connect(ng).connect(ac.destination);s.start()}catch(e){}}
+let last=null,mx=-999,my=-999,ang=0,spd=0;
+c.addEventListener('pointerdown',e=>{c.setPointerCapture(e.pointerId);sound();const X=e.clientX*dpr,Y=e.clientY*dpr;if(tool==='stone'){addRock(X,Y,Math.min(W,H)*(.03+Math.random()*.05));return}last=[X,Y]});
+c.addEventListener('pointerup',()=>{last=null});
+c.addEventListener('pointermove',e=>{mx=e.clientX*dpr;my=e.clientY*dpr;if(!last||!e.buttons)return;const X=mx,Y=my,dx=X-last[0],dy=Y-last[1],d=Math.hypot(dx,dy);if(d<4*dpr)return;const nx=-dy/d,ny=dx/d;ang=Math.atan2(dy,dx);spd=Math.min(1,d/(30*dpr));
+gx.save();gx.fillStyle=gx.createPattern(grain,'repeat');gx.beginPath();gx.arc(X,Y,34*dpr,0,7);gx.fill();gx.restore();groove([[last[0],last[1],nx,ny],[X,Y,nx,ny]],11*dpr);
+for(const L of leaves){if(L.land&&Math.hypot(L.x-X,L.y-Y)<40*dpr){L.x+=dx*.9;L.y+=dy*.9;L.a+=.1}}last=[X,Y]});
+(function f(){if(sweep>=0)sweepStep();x.drawImage(gv,0,0);
+rocks.forEach(r=>{x.save();x.shadowColor='rgba(40,30,20,.45)';x.shadowBlur=30*dpr;x.shadowOffsetX=8*dpr;x.shadowOffsetY=14*dpr;const g=x.createRadialGradient(r.x-r.r*.4,r.y-r.r*.5,r.r*.1,r.x,r.y,r.r*1.25);g.addColorStop(0,'#928c80');g.addColorStop(.6,'#4b4741');g.addColorStop(1,'#26241f');x.fillStyle=g;x.beginPath();r.pts.forEach(([a,b],i)=>i?x.lineTo(a,b):x.moveTo(a,b));x.closePath();x.fill();x.restore();
+x.fillStyle='rgba(98,128,64,.6)';for(const [a,d,s] of r.moss){x.beginPath();x.arc(r.x+Math.cos(a)*d*r.r*.7,r.y+r.r*.35+Math.sin(a)*d*r.r*.22,s*dpr,0,7);x.fill()}
+x.strokeStyle='rgba(255,255,255,.12)';x.lineWidth=2*dpr;x.beginPath();x.arc(r.x-r.r*.2,r.y-r.r*.2,r.r*.7,3.6,4.6);x.stroke()});
+for(const L of leaves){if(!L.land){L.x+=L.vx+Math.sin(L.y*.01)*dpr;L.y+=L.vy;L.a+=L.va;if(L.y>H*(.3+((L.s*13)%0.6)))L.land=true}drawLeaf(L)}
+if(ng){ng.gain.setTargetAtTime(last?spd*.05:0,ac.currentTime,.05);spd*=.85}
+if(mx>-900){x.save();x.translate(mx,my);if(tool==='rake'){x.rotate(ang+Math.PI/2);x.fillStyle='#6b4a2a';x.shadowColor='rgba(0,0,0,.3)';x.shadowBlur=6*dpr;x.shadowOffsetY=4*dpr;x.fillRect(-30*dpr,-3*dpr,60*dpr,6*dpr);x.shadowBlur=0;for(let k=-2;k<=2;k++)x.fillRect(k*11*dpr-1.5*dpr,2*dpr,3*dpr,6*dpr);x.fillStyle='#8a6a3a';x.fillRect(-2*dpr,-40*dpr,4*dpr,37*dpr)}else{x.strokeStyle='rgba(74,66,54,.7)';x.setLineDash([4*dpr,4*dpr]);x.lineWidth=1.5*dpr;x.beginPath();x.arc(0,0,Math.min(W,H)*.05,0,7);x.stroke()}x.restore()}
+requestAnimationFrame(f)})();
 </script></body></html>

@@ -1,22 +1,52 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Flora Imaginaria</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#3b4a3f;display:grid;place-items:center;font-family:'IM Fell English',Georgia,serif}
-.plate{position:relative;height:min(94vh,135vw);aspect-ratio:.72;background:#dfe3d2;box-shadow:0 30px 60px rgba(0,0,0,.45);padding:5%;display:flex;flex-direction:column}
-.plate::before{content:"";position:absolute;inset:3%;border:1px solid #6b6a52;pointer-events:none}.plate::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse,transparent 60%,rgba(120,100,50,.25));pointer-events:none}
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}
+body{background:radial-gradient(80% 70% at 50% 40%,#46574a,#2a352d);display:grid;place-items:center;font-family:'IM Fell English',Georgia,serif;perspective:1600px}
+.plate{position:relative;height:min(89vh,135vw);aspect-ratio:.72;margin-bottom:3vh;background:#e3e4d2;box-shadow:0 40px 70px rgba(0,0,0,.5),0 2px 4px rgba(0,0,0,.2);padding:5%;display:flex;flex-direction:column;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.2,.8,.2,1);animation:in 1.2s cubic-bezier(.2,.8,.2,1) both}
+@keyframes in{from{opacity:0;transform:translateY(30px) rotateX(10deg)}}
+.plate::before{content:"";position:absolute;inset:3%;border:1px solid #6b6a52;box-shadow:inset 0 0 0 3px #e3e4d2,inset 0 0 0 4px rgba(107,106,82,.6);pointer-events:none}
+.age{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse,transparent 55%,rgba(120,100,50,.3)),radial-gradient(3% 2% at 18% 76%,rgba(150,110,50,.22),transparent),radial-gradient(2% 1.6% at 82% 14%,rgba(150,110,50,.2),transparent),radial-gradient(4% 3% at 70% 88%,rgba(150,110,50,.12),transparent);mix-blend-mode:multiply}
+.age::after{content:"";position:absolute;inset:0;opacity:.35;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.6' numOctaves='4'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .4 0 0 0 0 .3 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 .top{display:flex;justify-content:space-between;font-family:'IM Fell English SC',serif;color:#4b4a36;font-size:min(1.8vh,2.6vw);letter-spacing:.15em;padding:0 2%}
-canvas{flex:1;width:100%;min-height:0}.cap{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;color:#3a3a2a;font-size:min(1.7vh,2.4vw);font-style:italic;gap:2%}
-.cap b{display:block;font-style:normal;font-family:'IM Fell English SC',serif;font-weight:400;font-size:1.2em}h1{text-align:center;font-family:'IM Fell English SC',serif;font-weight:400;font-size:min(3.4vh,5vw);color:#2f3324;letter-spacing:.1em;margin:1% 0}</style></head><body>
-<div class="plate"><div class="top"><span>Tab. XLII</span><span>Flora Imaginaria</span><span>Vol. III</span></div><h1>Herbæ Recursivæ</h1><canvas id="c"></canvas>
-<div class="cap"><div><b>1.</b>Filix lindenmayeri</div><div><b>2.</b>Arbor fractalis</div><div><b>3.</b>Herba ramosa</div></div></div>
+canvas{flex:1;width:100%;min-height:0;cursor:pointer}
+.cap{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;color:#3a3a2a;font-size:min(1.7vh,2.4vw);font-style:italic;gap:2%}
+.cap div{transition:color .3s,transform .3s}.cap div.on{color:#7a2e1a;transform:translateY(-2px)}
+.cap b{display:block;font-style:normal;font-family:'IM Fell English SC',serif;font-weight:400;font-size:1.2em}
+h1{text-align:center;font-family:'IM Fell English SC',serif;font-weight:400;font-size:min(3.4vh,5vw);color:#2f3324;letter-spacing:.1em;margin:1% 0 0}
+.sub{text-align:center;font-style:italic;color:#5a5a42;font-size:min(1.6vh,2.3vw);margin-bottom:1%}
+.foot{position:fixed;left:0;right:0;bottom:1.6vh;text-align:center;color:#c9cdb4;font:italic 14px 'IM Fell English';opacity:.75;pointer-events:none}
+@media (max-height:600px){.foot{display:none}}
+</style></head><body>
+<div class="plate" id="plate"><div class="top"><span>Tab. XLII</span><span>Flora Imaginaria</span><span>Vol. III</span></div><h1>Herbæ Recursivæ</h1><div class="sub">delineavit et sculpsit ex natura algorithmica</div><canvas id="c"></canvas>
+<div class="cap" id="cap"><div><b>1.</b><span>Filix lindenmayeri</span></div><div><b>2.</b><span>Arbor fractalis</span></div><div><b>3.</b><span>Herba ramosa</span></div></div><div class="age"></div></div>
+<div class="foot">Move to stir the breeze · click a specimen to raise a new variety</div>
 <script>
-const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio,2);
-const sys=[{ax:'X',r:{X:'F+[[X]-X]-F[-FX]+X',F:'FF'},a:25,n:5,col:'#3f5a2e',leaf:'#6b8a3a'},{ax:'F',r:{F:'FF-[-F+F+F]+[+F-F-F]'},a:22,n:4,col:'#5a3e24',leaf:'#7a9a4a'},{ax:'X',r:{X:'F[+X]F[-X]+X',F:'FF'},a:20,n:6,col:'#46552c',leaf:'#a3452e'}];
-function expand(s){let str=s.ax;for(let i=0;i<s.n;i++)str=[...str].map(ch=>s.r[ch]||ch).join('');return str}
-const strs=sys.map(expand);let prog=0;
-function draw(){const W=c.width=c.clientWidth*dpr,H=c.height=c.clientHeight*dpr;x.clearRect(0,0,W,H);
-sys.forEach((s,k)=>{const str=strs[k];const len=H/(k===1?60:k===0?95:110);let px=W*(k*.33+.17),py=H*.98,ang=-90+(k-1)*4;const st=[];let drawn=0;const lim=str.length*Math.min(1,prog);
-x.lineCap='round';for(let i=0;i<lim;i++){const ch=str[i];if(ch==='F'){const nx=px+Math.cos(ang*Math.PI/180)*len,ny=py+Math.sin(ang*Math.PI/180)*len;x.strokeStyle=s.col;x.lineWidth=Math.max(.6,(3.2-st.length*.55))*dpr;x.beginPath();x.moveTo(px,py);x.lineTo(nx,ny);x.stroke();px=nx;py=ny}
-else if(ch==='+')ang+=s.a+Math.sin(i)*3;else if(ch==='-')ang-=s.a+Math.cos(i)*3;else if(ch==='[')st.push([px,py,ang]);else if(ch===']'){if(st.length>2){x.fillStyle=s.leaf;x.globalAlpha=.75;x.beginPath();x.ellipse(px,py,len*1.4,len*.6,ang*Math.PI/180,0,7);x.fill();x.globalAlpha=1}[px,py,ang]=st.pop()}}
-x.font=`italic ${14*dpr}px "IM Fell English",serif`;x.fillStyle='#4b4a36';x.textAlign='center';x.fillText(k+1+'.',W*(k*.33+.17),H*.06)})}
-function f(){prog+=.004;draw();if(prog<1.05)requestAnimationFrame(f)}f();addEventListener('resize',draw);c.addEventListener('click',()=>{prog=0;f()});
+const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio||1,2);
+const base=[{ax:'X',r:{X:'F+[[X]-X]-F[-FX]+X',F:'FF'},a:25,n:5,col:'#33452a',leaf:'#7d9a48',fl:'#c86b4a',L:128},{ax:'F',r:{F:'FF-[-F+F+F]+[+F-F-F]'},a:22,n:4,col:'#4a3420',leaf:'#8aa556',fl:'#d9b24a',L:70},{ax:'X',r:{X:'F[+X]F[-X]+X',F:'FF'},a:20,n:6,col:'#3a4826',leaf:'#a3452e',fl:'#e8d6c0',L:112}];
+const sys=base.map(s=>({...s,str:'',prog:0,a0:s.a}));
+function expand(s){let str=s.ax;for(let i=0;i<s.n;i++){let o='';for(const ch of str)o+=s.r[ch]||ch;str=o}return str}
+sys.forEach(s=>s.str=expand(s));
+const g1=['Filix','Arbor','Herba','Rosula','Spina','Myrtus','Ilex','Salvia','Fronda'],g2=['lindenmayeri','fractalis','ramosa','recursiva','iterata','borealis','spiralis','umbellata','algorithmica','turingii'];
+let wind=0,tw=0,mx=.5,hov=-1,t=0;
+addEventListener('pointermove',e=>{const nm=e.clientX/innerWidth;tw=(nm-mx)*40;mx=nm;const pl=document.getElementById('plate');pl.style.transform=`rotateY(${(nm-.5)*6}deg) rotateX(${(.5-e.clientY/innerHeight)*4}deg)`});
+c.addEventListener('pointermove',e=>{const r=c.getBoundingClientRect();hov=Math.min(2,Math.floor((e.clientX-r.left)/r.width*3));[...document.getElementById('cap').children].forEach((d,i)=>d.classList.toggle('on',i===hov))});
+c.addEventListener('pointerleave',()=>{hov=-1;[...document.getElementById('cap').children].forEach(d=>d.classList.remove('on'))});
+c.addEventListener('click',e=>{const r=c.getBoundingClientRect();const k=Math.min(2,Math.floor((e.clientX-r.left)/r.width*3));const s=sys[k];s.a=s.a0+(Math.random()*10-5);s.prog=0;s.seed=Math.random()*100;document.querySelectorAll('#cap span')[k].textContent=g1[Math.random()*g1.length|0]+' '+g2[Math.random()*g2.length|0]});
+function draw(){const W=Math.round(c.clientWidth*dpr),H=Math.round(c.clientHeight*dpr);if(c.width!==W||c.height!==H){c.width=W;c.height=H}x.clearRect(0,0,W,H);t+=.016;wind+=(tw-wind)*.05;tw*=.95;const gust=Math.sin(t*.9)*.6+wind;
+sys.forEach((s,k)=>{s.prog=Math.min(1.02,s.prog+.0045);const str=s.str,len=H/s.L;let px=W*(k===0?.13:k*.33+.17),py=H*.97,ang=-90+(k-1)*4;const st=[];const lim=Math.floor(str.length*Math.min(1,s.prog));const seed=s.seed||0;
+const B=[[],[],[],[],[],[],[],[]],leaves=[],flowers=[];
+for(let i=0;i<lim;i++){const ch=str[i];if(ch==='F'){const d=st.length;ang+=gust*.06*(1+d*.5)*Math.sin(t*1.7+d*.6+k);const nx=px+Math.cos(ang*Math.PI/180)*len,ny=py+Math.sin(ang*Math.PI/180)*len;B[Math.min(7,d)].push(px,py,nx,ny);px=nx;py=ny}
+else if(ch==='+')ang+=s.a+Math.sin(i+seed)*3;else if(ch==='-')ang-=s.a+Math.cos(i+seed)*3;else if(ch==='[')st.push([px,py,ang]);else if(ch===']'){if(st.length>2){leaves.push(px,py,ang);if(((i*7919+seed*13)|0)%23===0)flowers.push(px,py)}[px,py,ang]=st.pop()}}
+x.lineCap='round';
+// watercolour wash under the leaves
+x.fillStyle=s.leaf;x.globalAlpha=.42;for(let i=0;i<leaves.length;i+=3){x.beginPath();x.ellipse(leaves[i],leaves[i+1],len*1.5,len*.62,leaves[i+2]*Math.PI/180,0,6.283);x.fill()}x.globalAlpha=1;
+// engraved line work
+x.strokeStyle='#2c2f20';x.lineWidth=.7*dpr;x.globalAlpha=.65;x.beginPath();for(let i=0;i<leaves.length;i+=3){const a=leaves[i+2]*Math.PI/180,cx=leaves[i],cy=leaves[i+1];x.moveTo(cx-Math.cos(a)*len*1.4,cy-Math.sin(a)*len*1.4);x.lineTo(cx+Math.cos(a)*len*1.4,cy+Math.sin(a)*len*1.4)}x.stroke();x.globalAlpha=1;
+B.forEach((seg,d)=>{if(!seg.length)return;x.strokeStyle=s.col;x.lineWidth=Math.max(.6,3.4-d*.55)*dpr;x.beginPath();for(let i=0;i<seg.length;i+=4){x.moveTo(seg[i],seg[i+1]);x.lineTo(seg[i+2],seg[i+3])}x.stroke()});
+for(let i=0;i<flowers.length;i+=2){const fx=flowers[i],fy=flowers[i+1],r=len*1.6;x.fillStyle=s.fl;x.globalAlpha=.85;for(let p=0;p<5;p++){const a=p/5*6.283+t*.2;x.beginPath();x.ellipse(fx+Math.cos(a)*r*.6,fy+Math.sin(a)*r*.6,r*.6,r*.32,a,0,6.283);x.fill()}x.globalAlpha=1;x.fillStyle='#5a3a1a';x.beginPath();x.arc(fx,fy,r*.28,0,6.283);x.fill()}
+x.font=`italic ${14*dpr}px "IM Fell English",serif`;x.fillStyle=hov===k?'#7a2e1a':'#4b4a36';x.textAlign='center';x.fillText(k+1+'.',W*(k*.33+.17),H*.06)});
+// ground line, engraved hatching
+x.strokeStyle='rgba(60,58,40,.5)';x.lineWidth=dpr;x.beginPath();for(let gx=W*.04;gx<W*.96;gx+=5*dpr){const gy=H*.975+Math.sin(gx*.05)*dpr;x.moveTo(gx,gy);x.lineTo(gx-4*dpr,gy+6*dpr)}x.stroke();
+requestAnimationFrame(draw)}draw();
 </script></body></html>

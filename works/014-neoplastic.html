@@ -1,18 +1,64 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Neoplastic Composer</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#d9d4c7;display:flex;align-items:center;justify-content:center;gap:4vw;font-family:'Work Sans',sans-serif;color:#111}
-.cv{position:relative;height:min(86vh,80vw);aspect-ratio:1;background:#111;box-shadow:0 2px 0 #fff8,0 40px 60px -20px rgba(0,0,0,.45);cursor:pointer;outline:14px solid #f6f3ea}
-.cv div{position:absolute;transition:all .7s cubic-bezier(.6,0,.2,1)}
-.lab{width:220px;font-size:13px;line-height:1.5}.lab h1{font-size:28px;line-height:1;margin-bottom:14px}.lab .n{font-weight:700;font-size:14px;border-top:2px solid #111;padding-top:10px;margin-top:18px}
-@media(max-width:800px){body{flex-direction:column}.lab{width:80vw}.lab p{display:none}}</style></head><body>
-<div class="cv" id="cv" title="click to compose again"></div><div class="lab"><h1 id="t">Composition No. 1</h1><p>Oil on canvas (simulated). Recursive division of the plane by horizontal and vertical lines, with primary colours placed in roughly one cell in five.</p><div class="n" id="n"></div><p style="margin-top:10px;opacity:.6">Click the canvas to compose again.</p></div>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;600;700&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}
+body{--lx:40%;--ly:30%;background:radial-gradient(55% 60% at var(--lx) var(--ly),#ebe6da,#cfc9bb 60%,#b9b3a4);display:flex;align-items:center;justify-content:center;gap:4.5vw;font-family:'Work Sans',sans-serif;color:#111;user-select:none;-webkit-user-select:none}
+.fr{position:relative;padding:14px;background:#f6f3ea;box-shadow:0 1px 0 #fff,0 50px 70px -30px rgba(0,0,0,.55),0 10px 20px -10px rgba(0,0,0,.3);animation:hang 1.2s cubic-bezier(.2,.8,.2,1) both}
+@keyframes hang{from{transform:translateY(-24px) rotate(-1.2deg);opacity:0}}
+.cv{position:relative;height:min(84vh,78vw);aspect-ratio:1;background:#111;overflow:hidden;transition:background .6s}
+.cv.boogie{background:#f2c71b}
+.cv .p{position:absolute;transition:left .75s cubic-bezier(.6,0,.2,1),top .75s cubic-bezier(.6,0,.2,1),width .75s cubic-bezier(.6,0,.2,1),height .75s cubic-bezier(.6,0,.2,1),background .35s;cursor:pointer}
+.cv.drag .p{transition:background .35s}
+.cv .p:hover{filter:brightness(1.06)}
+.cv .ln{position:absolute;z-index:3}.cv .ln.v{cursor:col-resize}.cv .ln.h{cursor:row-resize}.cv .ln:hover{background:rgba(255,255,255,.15)}
+.cv canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
+.tex{position:absolute;inset:0;pointer-events:none;z-index:4;opacity:.22;mix-blend-mode:multiply;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.55 .9' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 .4 0 0 0 0 .35 0 0 0 0 .3 0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.lab{width:240px;font-size:13px;line-height:1.55;animation:hang 1.2s .2s cubic-bezier(.2,.8,.2,1) both}.lab h1{font-size:26px;line-height:1.05;margin-bottom:4px;font-weight:700;letter-spacing:-.01em}
+.lab .yr{font-weight:300;font-size:14px;margin-bottom:14px}.lab .n{font-weight:600;font-size:13px;border-top:2px solid #111;padding-top:10px;margin-top:16px;font-variant-numeric:tabular-nums}
+.sw{display:flex;gap:6px;margin-top:14px}.sw button{width:28px;height:28px;border:2px solid #111;cursor:pointer;transition:transform .2s}.sw button:hover{transform:translateY(-2px)}.sw button.on{outline:2px solid #111;outline-offset:2px}
+.acts{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}.acts button{font:600 11px 'Work Sans';letter-spacing:.12em;text-transform:uppercase;padding:9px 12px;border:2px solid #111;background:transparent;cursor:pointer;transition:background .2s,color .2s}.acts button:hover,.acts button[aria-pressed="true"]{background:#111;color:#f6f3ea}
+.hint{opacity:.6;margin-top:12px;font-size:12px}
+@media(max-width:820px){body{flex-direction:column;gap:14px}.cv{height:min(64vh,86vw)}.lab{width:86vw}.lab p,.hint{display:none}.lab h1{font-size:20px}}
+</style></head><body>
+<div class="fr"><div class="cv" id="cv"><canvas id="bw"></canvas><div class="tex"></div></div></div>
+<div class="lab"><h1 id="t">Composition No. 1</h1><div class="yr">with Red, Blue and Yellow · oil on canvas (simulated)</div>
+<p>Recursive division of the plane by horizontal and vertical lines. Drag any black line to move it, click a plane to repaint it with the colour you have chosen.</p>
+<div class="sw" id="sw"></div>
+<div class="acts"><button id="nw">Compose anew</button><button id="bg" aria-pressed="false">Boogie-Woogie</button></div>
+<div class="n" id="n"></div><div class="hint">Space · compose &nbsp; B · boogie &nbsp; 1–5 · colour</div></div>
 <script>
-const cv=document.getElementById('cv');let k=0;const L=1.1;
-function split(r,d,out){if(d>4||(d>1&&Math.random()<.28)||r.w<14||r.h<14){out.push(r);return}const v=r.w>r.h?Math.random()<.8:Math.random()<.2;const f=.3+Math.random()*.4;
-if(v){const a=r.w*f;split({x:r.x,y:r.y,w:a-L/2,h:r.h},d+1,out);split({x:r.x+a+L/2,y:r.y,w:r.w-a-L/2,h:r.h},d+1,out)}else{const a=r.h*f;split({x:r.x,y:r.y,w:r.w,h:a-L/2},d+1,out);split({x:r.x,y:r.y+a+L/2,w:r.w,h:r.h-a-L/2},d+1,out)}}
-function compose(){const out=[];split({x:L,y:L,w:100-2*L,h:100-2*L},0,out);const els=[...cv.children];const cols={r:0,b:0,y:0};
-out.forEach((r,i)=>{let e=els[i];if(!e){e=document.createElement('div');e.style.cssText='left:50%;top:50%;width:0;height:0';cv.appendChild(e)}const q=Math.random();const c=q<.1?'#d6261d':q<.17?'#1d3f9a':q<.23?'#f2c71b':q<.26?'#111':'#f6f3ea';if(c==='#d6261d')cols.r++;if(c==='#1d3f9a')cols.b++;if(c==='#f2c71b')cols.y++;
-requestAnimationFrame(()=>Object.assign(e.style,{left:r.x+'%',top:r.y+'%',width:r.w+'%',height:r.h+'%',background:c,opacity:1}))});
-els.slice(out.length).forEach(e=>Object.assign(e.style,{width:0,height:0,opacity:0}));k++;document.getElementById('t').textContent='Composition No. '+k;document.getElementById('n').textContent=`${out.length} planes · ${cols.r} red · ${cols.b} blue · ${cols.y} yellow`}
-cv.onclick=compose;compose();
+const cv=document.getElementById('cv'),bw=document.getElementById('bw'),bx=bw.getContext('2d');let k=0,tree,brush='#d6261d',boogie=false;const L=1.15;
+const COL=['#d6261d','#1d3f9a','#f2c71b','#111','#f6f3ea'];
+const sw=document.getElementById('sw');COL.forEach((c,i)=>{const b=document.createElement('button');b.style.background=c;b.setAttribute('aria-label','Paint colour '+(i+1));b.onclick=()=>setBrush(c);sw.appendChild(b)});
+function setBrush(c){brush=c;[...sw.children].forEach((b,i)=>b.classList.toggle('on',COL[i]===c))}setBrush(brush);
+function pick(){const q=Math.random();return q<.1?COL[0]:q<.17?COL[1]:q<.23?COL[2]:q<.26?COL[3]:COL[4]}
+function grow(w,h,d){if(d>4||(d>1&&Math.random()<.28)||w<14||h<14)return{c:pick()};const v=w>h?Math.random()<.8:Math.random()<.2;const f=.3+Math.random()*.4;
+return v?{v:1,f,a:grow(w*f,h,d+1),b:grow(w*(1-f),h,d+1)}:{v:0,f,a:grow(w,h*f,d+1),b:grow(w,h*(1-f),d+1)}}
+let leaves=[],lines=[];
+function layout(n,r){if(n.c){leaves.push({n,r});return}if(n.v){const a=r.w*n.f;layout(n.a,{x:r.x,y:r.y,w:a-L/2,h:r.h});layout(n.b,{x:r.x+a+L/2,y:r.y,w:r.w-a-L/2,h:r.h});lines.push({n,r,box:{x:r.x+a-L/2-.8,y:r.y,w:L+1.6,h:r.h}})}
+else{const a=r.h*n.f;layout(n.a,{x:r.x,y:r.y,w:r.w,h:a-L/2});layout(n.b,{x:r.x,y:r.y+a+L/2,w:r.w,h:r.h-a-L/2});lines.push({n,r,box:{x:r.x,y:r.y+a-L/2-.8,w:r.w,h:L+1.6}})}}
+const pEls=[],lEls=[];
+function render(){leaves=[];lines=[];layout(tree,{x:L,y:L,w:100-2*L,h:100-2*L});
+leaves.forEach((lf,i)=>{let e=pEls[i];if(!e){e=document.createElement('div');e.className='p';e.style.cssText='left:50%;top:50%;width:0;height:0';cv.appendChild(e);pEls.push(e);e.addEventListener('click',()=>{const L2=e._leaf;if(!L2)return;L2.n.c=L2.n.c===brush?COL[4]:brush;render();stats()})}
+e._leaf=lf;e.style.display='';const r=lf.r;requestAnimationFrame(()=>Object.assign(e.style,{left:r.x+'%',top:r.y+'%',width:Math.max(0,r.w)+'%',height:Math.max(0,r.h)+'%',background:lf.n.c}))});
+pEls.slice(leaves.length).forEach(e=>{e._leaf=null;Object.assign(e.style,{width:0,height:0})});
+lines.forEach((ln,i)=>{let e=lEls[i];if(!e){e=document.createElement('div');cv.appendChild(e);lEls.push(e);e.addEventListener('pointerdown',ev=>startDrag(ev,e._ln))}e._ln=ln;e.className='ln '+(ln.n.v?'v':'h');e.style.display='';Object.assign(e.style,{left:ln.box.x+'%',top:ln.box.y+'%',width:ln.box.w+'%',height:ln.box.h+'%'})});
+lEls.slice(lines.length).forEach(e=>e.style.display='none')}
+function startDrag(ev,ln){ev.preventDefault();const el=ev.currentTarget;el.setPointerCapture(ev.pointerId);cv.classList.add('drag');const R=cv.getBoundingClientRect();
+const mv=e=>{const px=(e.clientX-R.left)/R.width*100,py=(e.clientY-R.top)/R.height*100;ln.n.f=Math.max(.06,Math.min(.94,ln.n.v?(px-ln.r.x)/ln.r.w:(py-ln.r.y)/ln.r.h));render()};
+el.addEventListener('pointermove',mv);el.addEventListener('pointerup',()=>{el.removeEventListener('pointermove',mv);cv.classList.remove('drag');stats()},{once:true})}
+function stats(){const c={r:0,b:0,y:0};leaves.forEach(l=>{if(l.n.c===COL[0])c.r++;if(l.n.c===COL[1])c.b++;if(l.n.c===COL[2])c.y++});document.getElementById('n').textContent=`${leaves.length} planes · ${c.r} red · ${c.b} blue · ${c.y} yellow`}
+function compose(){tree=grow(100,100,0);k++;render();stats();document.getElementById('t').textContent='Composition No. '+k;document.querySelector('.yr').textContent=`${1921+k%24} · with Red, Blue and Yellow · oil on canvas`}
+document.getElementById('nw').onclick=compose;
+function toggleBoogie(){boogie=!boogie;cv.classList.toggle('boogie',boogie);document.getElementById('bg').setAttribute('aria-pressed',boogie)}
+document.getElementById('bg').onclick=toggleBoogie;
+addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();compose()}if(e.key==='b'||e.key==='B')toggleBoogie();const n=+e.key;if(n>=1&&n<=5)setBrush(COL[n-1])});
+addEventListener('pointermove',e=>{document.body.style.setProperty('--lx',e.clientX/innerWidth*100+'%');document.body.style.setProperty('--ly',e.clientY/innerHeight*100+'%')});
+compose();
+// boogie-woogie traffic along the lines
+(function loop(t){const r=cv.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2);if(bw.width!==Math.round(r.width*d)){bw.width=r.width*d;bw.height=r.height*d}bx.clearRect(0,0,bw.width,bw.height);
+if(boogie){const S=bw.width/100;const cs=['#d6261d','#1d3f9a','#b8b6ae','#d6261d','#f6f3ea'];
+const all=[...lines.map(l=>({v:l.n.v,x:l.box.x+.8,y:l.box.y+.8,w:l.box.w-1.6,h:l.box.h-1.6})),{v:0,x:0,y:0,w:100,h:L},{v:0,x:0,y:100-L,w:100,h:L},{v:1,x:0,y:0,w:L,h:100},{v:1,x:100-L,y:0,w:L,h:100}];
+all.forEach((l,li)=>{const len=l.v?l.h:l.w,n=Math.floor(len/2.6);for(let i=0;i<n;i++){const seed=(i*7+li*13)%5;if(seed===4)continue;const u=((i*2.6+(t*.004*(li%2?1:-1)*(1+li%3)))%len+len)%len;const sz=L;bx.fillStyle=cs[seed];if(l.v)bx.fillRect(l.x*S,(l.y+u)*S,sz*S,sz*S);else bx.fillRect((l.x+u)*S,l.y*S,sz*S,sz*S)}})}
+requestAnimationFrame(loop)})(0);
 </script></body></html>
