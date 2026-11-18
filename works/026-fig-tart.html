@@ -1,32 +1,86 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Burnt Honey Fig Tart</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,800&family=Newsreader:ital,wght@0,400;1,400&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{min-height:100%}body{background:#3a1430;color:#f8e3c4;font-family:Newsreader,Georgia,serif;overflow-x:hidden}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Newsreader:ital,wght@0,400;1,400&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{min-height:100%}
+body{background:#3a1430;color:#f8e3c4;font-family:Newsreader,Georgia,serif;overflow-x:hidden}
 .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);min-height:100vh}
-.art{position:relative;display:grid;place-items:center;background:#e8a33d;overflow:hidden}
-.plate{width:min(40vw,74vh);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#f4efe6 62%,#e2dccf 63%,#f4efe6 70%,#d9d2c3 71%);box-shadow:30px 40px 60px rgba(80,30,0,.35);display:grid;place-items:center;animation:turn 80s linear infinite}@keyframes turn{to{transform:rotate(360deg)}}
-.tart{width:78%;aspect-ratio:1;border-radius:50%;background:repeating-conic-gradient(#c07a2c 0 4deg,#a35f1c 4deg 8deg);padding:5%;box-shadow:inset 0 0 0 3px #7a3f0f}
-.fill{position:relative;width:100%;height:100%;border-radius:50%;background:radial-gradient(circle at 40% 35%,#f3cf8a,#d9953e 70%,#b46a22)}
-.fig{position:absolute;width:24%;aspect-ratio:1;border-radius:50% 50% 50% 50%/55% 55% 45% 45%;background:radial-gradient(ellipse at 50% 55%,#f6d7b5 0 18%,#d24a5d 19% 45%,#7c1d3f 46% 62%,#4b1236 63%);box-shadow:0 2px 4px rgba(60,10,20,.5)}
-.fig::after{content:"";position:absolute;inset:30%;background:radial-gradient(circle,#f8e3c4 1.5px,transparent 2px) 0 0/6px 6px;border-radius:50%;opacity:.7}
-.leaf{position:absolute;left:8%;top:10%;font:800 13px 'Bricolage Grotesque',sans-serif;letter-spacing:.3em;color:#3a1430;text-transform:uppercase}
-.txt{padding:7vh 5vw;display:flex;flex-direction:column;gap:3.5vh}
+.art{position:sticky;top:0;height:100vh;display:grid;place-items:center;background:radial-gradient(80% 70% at 40% 35%,#f2b955,#e8a33d 50%,#c9802a);overflow:hidden}
+.art::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.25;mix-blend-mode:multiply;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .3 0 0 0 0 .1 0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.leaf{position:absolute;left:8%;top:8%;font:800 13px 'Bricolage Grotesque',sans-serif;letter-spacing:.3em;color:#3a1430;text-transform:uppercase;z-index:2}
+.hint{position:absolute;left:8%;bottom:6%;font:italic 16px Newsreader;color:#3a1430;opacity:.75;z-index:2}
+#tart{width:min(44vw,80vh);height:min(44vw,80vh);cursor:grab;touch-action:none;filter:drop-shadow(30px 40px 40px rgba(80,30,0,.38));animation:land 1.4s cubic-bezier(.2,.8,.2,1) both;overflow:visible}
+#tart:active{cursor:grabbing}
+@keyframes land{from{transform:translateY(-30px) scale(.94);opacity:0}}
+.steam{position:absolute;left:50%;top:22%;width:30%;height:30%;transform:translateX(-50%);pointer-events:none;z-index:2}
+.steam i{position:absolute;bottom:0;width:14%;height:100%;border-radius:50%;background:radial-gradient(closest-side,rgba(255,255,255,.35),transparent);filter:blur(8px);animation:rise 4s ease-in infinite;opacity:0}
+.steam i:nth-child(1){left:20%}.steam i:nth-child(2){left:44%;animation-delay:1.3s}.steam i:nth-child(3){left:68%;animation-delay:2.6s}
+@keyframes rise{0%{transform:translateY(40%) scaleX(.6);opacity:0}30%{opacity:.8}100%{transform:translateY(-60%) scaleX(1.4);opacity:0}}
+.txt{padding:7vh 5vw 10vh;display:flex;flex-direction:column;gap:3.5vh}
 .kick{font:800 12px 'Bricolage Grotesque',sans-serif;letter-spacing:.3em;text-transform:uppercase;color:#e8a33d}
 h1{font:800 clamp(44px,6.5vw,104px)/.85 'Bricolage Grotesque',sans-serif;letter-spacing:-.04em}h1 em{font:italic 400 .7em Newsreader,serif;letter-spacing:0;color:#e8a33d;display:block}
 .lede{font-size:clamp(17px,1.4vw,21px);line-height:1.5;max-width:44ch;color:#f0d2ad}
-.cols{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:4vw}
-h2{font:800 13px 'Bricolage Grotesque',sans-serif;letter-spacing:.25em;text-transform:uppercase;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
-.srv{display:flex;align-items:center;gap:8px}.srv button{width:24px;height:24px;border-radius:50%;border:1px solid #e8a33d;background:none;color:#e8a33d;cursor:pointer;font:16px/1 sans-serif}
-ul{list-style:none;font-size:16px;line-height:1.4}li{padding:7px 0;border-bottom:1px solid rgba(248,227,196,.15);display:flex;gap:10px;cursor:pointer}li b{font-family:'Bricolage Grotesque',sans-serif;min-width:5.5em;color:#e8a33d;font-variant-numeric:tabular-nums}li.d{opacity:.4;text-decoration:line-through}
-ol{font-size:16px;line-height:1.5;padding-left:1.2em;display:grid;gap:10px}ol li::marker{font:800 14px 'Bricolage Grotesque',sans-serif;color:#e8a33d}ol li{display:list-item;border:0;padding:0;cursor:auto}
-@media(max-width:860px){.wrap{grid-template-columns:1fr}.art{min-height:60vh}.plate{width:70vw}.cols{grid-template-columns:1fr}}</style></head><body>
-<div class="wrap"><div class="art"><span class="leaf">Late Summer · No. 31</span><div class="plate"><div class="tart"><div class="fill" id="fill"></div></div></div></div>
+.rv{opacity:0;transform:translateY(24px);transition:opacity .8s,transform .8s cubic-bezier(.2,.8,.2,1)}.rv.on{opacity:1;transform:none}
+.cols{display:grid;grid-template-columns:1fr;gap:5vh}@media(min-width:1500px){.cols{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:4vw}}button{user-select:none;-webkit-user-select:none}
+h2{font:800 13px 'Bricolage Grotesque',sans-serif;letter-spacing:.25em;text-transform:uppercase;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.srv{display:flex;align-items:center;gap:8px;font-variant-numeric:tabular-nums}.srv button,.un{width:26px;height:26px;border-radius:50%;border:1px solid #e8a33d;background:none;color:#e8a33d;cursor:pointer;font:16px/1 sans-serif;transition:background .2s,color .2s}.srv button:hover{background:#e8a33d;color:#3a1430}
+.un{width:auto;padding:0 10px;border-radius:99px;font:600 10px 'Bricolage Grotesque';letter-spacing:.14em}
+ul{list-style:none;font-size:16px;line-height:1.4}ul li{padding:8px 0;border-bottom:1px solid rgba(248,227,196,.15);display:flex;gap:10px;cursor:pointer;transition:opacity .3s}ul li b{font-family:'Bricolage Grotesque',sans-serif;min-width:5.5em;color:#e8a33d;font-variant-numeric:tabular-nums;font-weight:600}
+ul li::before{content:"";width:14px;height:14px;border:1px solid #e8a33d;border-radius:3px;flex:none;margin-top:3px;transition:background .2s}ul li.d{opacity:.45}ul li.d::before{background:#e8a33d}ul li.d span{text-decoration:line-through}
+ol{list-style:none;display:grid;gap:10px;counter-reset:s}ol li{counter-increment:s;position:relative;padding:12px 14px 12px 46px;border:1px solid rgba(248,227,196,.15);border-radius:12px;font-size:16px;line-height:1.5;cursor:pointer;transition:background .3s,border-color .3s}
+ol li::before{content:counter(s);position:absolute;left:14px;top:12px;font:800 15px 'Bricolage Grotesque';color:#e8a33d}
+ol li:hover{border-color:rgba(232,163,61,.6)}ol li.on{background:rgba(232,163,61,.12);border-color:#e8a33d}ol li.done{opacity:.5}
+ol li .tm{display:none;margin-top:8px;font:600 12px 'Bricolage Grotesque';letter-spacing:.12em;color:#e8a33d;align-items:center;gap:10px}ol li.on .tm{display:flex}
+.tm i{flex:1;height:3px;background:rgba(232,163,61,.2);border-radius:2px;overflow:hidden}.tm i u{display:block;height:100%;background:#e8a33d;transform-origin:left;transform:scaleX(0)}
+.note{font:italic 15px Newsreader;color:#c9a37e;border-left:2px solid #e8a33d;padding-left:14px}
+@media(max-width:860px){.wrap{grid-template-columns:1fr}.art{position:relative;height:64vh}#tart{width:76vw;height:76vw}.cols{grid-template-columns:1fr}}
+</style></head><body>
+<div class="wrap"><div class="art"><span class="leaf">Late Summer · No. 31</span><div class="steam"><i></i><i></i><i></i></div>
+<svg id="tart" viewBox="-220 -220 440 440"><defs>
+<radialGradient id="pl" cx=".45" cy=".4"><stop offset="0" stop-color="#fbf7f0"/><stop offset=".85" stop-color="#ece5d7"/><stop offset="1" stop-color="#d6cdbb"/></radialGradient>
+<radialGradient id="cr" cx=".5" cy=".5"><stop offset=".78" stop-color="#d48a38"/><stop offset=".9" stop-color="#b56a22"/><stop offset="1" stop-color="#7a3f0f"/></radialGradient>
+<radialGradient id="cu" cx=".38" cy=".32"><stop offset="0" stop-color="#f7dd9c"/><stop offset=".55" stop-color="#dc9b45"/><stop offset="1" stop-color="#a65f1e"/></radialGradient>
+<radialGradient id="fig" cx=".5" cy=".55"><stop offset="0" stop-color="#f6d7b5"/><stop offset=".3" stop-color="#e57a7a"/><stop offset=".62" stop-color="#b8264a"/><stop offset=".78" stop-color="#6e1638"/><stop offset="1" stop-color="#3a0c28"/></radialGradient>
+<pattern id="seed" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3.5" cy="3.5" r="1" fill="#f8e3c4" opacity=".75"/></pattern>
+<radialGradient id="gloss" cx=".3" cy=".25" r=".5"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+</defs><g id="spin"><circle r="210" fill="url(#pl)"/><circle r="182" fill="none" stroke="#d6cdbb" stroke-width="1.5"/><circle r="200" fill="none" stroke="#c9a23a" stroke-width="1" opacity=".6"/>
+<g id="whole"><circle r="168" fill="url(#cr)"/><g id="crimp"></g><circle r="146" fill="url(#cu)"/><g id="figs"></g><g id="thyme"></g><circle r="146" fill="url(#gloss)"/><g id="drip"></g></g></g></svg>
+<span class="hint">Drag to spin the plate · click to cut a slice</span></div>
 <div class="txt"><span class="kick">Dessert · 1 h 40 min · Serves <span id="sv2">8</span></span><h1>Burnt honey<em>&amp; black fig tart</em></h1>
 <p class="lede">Honey taken almost too far, until it smells of toasted bread and smoke, then whisked into a brown-butter custard and crowded with halved figs. Bitter, floral, barely sweet.</p>
-<div class="cols"><div><h2>Ingredients <span class="srv"><button id="m" aria-label="fewer servings">−</button><span id="sv">8</span><button id="p" aria-label="more servings">+</button></span></h2><ul id="ing"></ul></div>
-<div><h2>Method</h2><ol><li>Blind-bake the pastry case at 190 °C for 18 minutes, then 6 more without weights.</li><li>Cook the honey in a wide pan until it darkens to mahogany and just begins to smoke. Off the heat, whisk in the butter.</li><li>Whisk eggs, cream and salt; stream in the warm honey butter.</li><li>Pour into the case, press in the figs cut-side up, and bake at 160 °C for 35–40 minutes, until barely set.</li><li>Cool for an hour. Finish with flaky salt and a little thyme.</li></ol></div></div></div></div>
+<div class="cols rv"><div><h2>Ingredients <span class="srv"><button class="un" id="un">METRIC</button><button id="m" aria-label="Fewer servings">−</button><span id="sv">8</span><button id="p" aria-label="More servings">+</button></span></h2><ul id="ing"></ul></div>
+<div><h2>Method <span style="font-weight:600;letter-spacing:.14em;color:#c9a37e">tap a step to start its timer</span></h2><ol id="steps">
+<li data-m="18">Blind-bake the pastry case at 190 °C for 18 minutes, then 6 more without weights.<div class="tm"><span>18:00</span><i><u></u></i></div></li>
+<li data-m="6">Cook the honey in a wide pan until it darkens to mahogany and just begins to smoke. Off the heat, whisk in the butter.<div class="tm"><span>6:00</span><i><u></u></i></div></li>
+<li data-m="0">Whisk eggs, cream and salt; stream in the warm honey butter.<div class="tm"><span>—</span><i><u></u></i></div></li>
+<li data-m="38">Pour into the case, press in the figs cut-side up, and bake at 160 °C for 35–40 minutes, until barely set.<div class="tm"><span>38:00</span><i><u></u></i></div></li>
+<li data-m="60">Cool for an hour. Finish with flaky salt and a little thyme.<div class="tm"><span>60:00</span><i><u></u></i></div></li></ol></div></div>
+<p class="note rv">The honey is ready when a wisp of smoke rises and it smells like the crust of a dark loaf. Ten seconds more and it turns acrid — have the butter cubed and waiting.</p></div></div>
 <script>
-const I=[[200,'g','shortcrust pastry'],[160,'g','wildflower honey'],[90,'g','unsalted butter'],[3,'','large eggs'],[240,'ml','double cream'],[10,'','ripe black figs'],[1,'tsp','flaky sea salt'],[4,'','sprigs of thyme']];let sv=8;
-function draw(){const ul=document.getElementById('ing');ul.innerHTML='';I.forEach(([q,u,n])=>{const v=q*sv/8;const li=document.createElement('li');li.innerHTML=`<b>${(Math.round(v*10)/10)} ${u}</b>${n}`;li.onclick=()=>li.classList.toggle('d');ul.appendChild(li)});document.getElementById('sv').textContent=sv;document.getElementById('sv2').textContent=sv}
-document.getElementById('m').onclick=()=>{sv=Math.max(2,sv-2);draw()};document.getElementById('p').onclick=()=>{sv=Math.min(24,sv+2);draw()};draw();
-const f=document.getElementById('fill');const pos=[[50,50],[50,18],[78,33],[78,67],[50,82],[22,67],[22,33],[35,50],[65,50]];pos.forEach(([a,b],i)=>{const d=document.createElement('i');d.className='fig';d.style.left=`calc(${a}% - 12%)`;d.style.top=`calc(${b}% - 12%)`;d.style.transform=`rotate(${i*47}deg)`;f.appendChild(d)});
+const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg',el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);p.appendChild(e);return e};
+for(let i=0;i<48;i++){const a=i/48*Math.PI*2;el('ellipse',{cx:Math.cos(a)*157,cy:Math.sin(a)*157,rx:11,ry:6,fill:i%2?'#c27a2e':'#a8611f',transform:`rotate(${a*180/Math.PI+90} ${Math.cos(a)*157} ${Math.sin(a)*157})`},$('crimp'))}
+const pos=[[0,0,0],[0,-96,20],[84,-48,70],[84,48,130],[0,96,200],[-84,48,250],[-84,-48,300],[-44,-2,40],[44,4,160],[2,-50,90],[-2,52,280],[46,-88,10]];
+pos.forEach(([px,py,r],i)=>{const g=el('g',{transform:`translate(${px},${py}) rotate(${r})`},$('figs'));const s=i>8?.56:.72;el('path',{d:`M0 ${-36*s}C${24*s} ${-34*s} ${36*s} ${-6*s} ${32*s} ${14*s}C${28*s} ${34*s} ${12*s} ${42*s} 0 ${42*s}C${-12*s} ${42*s} ${-28*s} ${34*s} ${-32*s} ${14*s}C${-36*s} ${-6*s} ${-24*s} ${-34*s} 0 ${-36*s}Z`,fill:'url(#fig)',stroke:'#3a0c28','stroke-width':1.2},g);el('ellipse',{cx:0,cy:6*s,rx:16*s,ry:20*s,fill:'url(#seed)'},g);el('ellipse',{cx:-10*s,cy:-14*s,rx:8*s,ry:4*s,fill:'#fff',opacity:.3,transform:'rotate(-30)'},g)});
+for(let i=0;i<14;i++){const a=Math.random()*6.28,r=40+Math.random()*90;el('circle',{cx:Math.cos(a)*r,cy:Math.sin(a)*r,r:1.8,fill:'#5a7a3a'},$('thyme'));el('circle',{cx:Math.cos(a)*r+3,cy:Math.sin(a)*r+2,r:1.4,fill:'#6e8f45'},$('thyme'))}
+for(let i=0;i<5;i++){const a=i*1.3,r=60+i*14;const p=el('path',{d:`M${Math.cos(a)*r} ${Math.sin(a)*r} q 30 -20 60 6 t 50 -8`,fill:'none',stroke:'#7a3510','stroke-width':3,'stroke-linecap':'round',opacity:.55,'stroke-dasharray':'200','stroke-dashoffset':'200'},$('drip'));p.style.transition='stroke-dashoffset 1.6s '+(i*.25)+'s ease';setTimeout(()=>p.setAttribute('stroke-dashoffset','0'),900)}
+// spin with inertia
+let rot=0,vr=.04,drag=null,moved=0,cut=0;const tart=$('tart'),spin=$('spin');
+const ang=e=>{const r=tart.getBoundingClientRect();return Math.atan2(e.clientY-r.top-r.height/2,e.clientX-r.left-r.width/2)*180/Math.PI};
+tart.addEventListener('pointerdown',e=>{tart.setPointerCapture(e.pointerId);drag={a:ang(e),r:rot};moved=0;vr=0});
+tart.addEventListener('pointermove',e=>{if(!drag)return;const a=ang(e);let d=a-drag.a;if(d>180)d-=360;if(d<-180)d+=360;moved+=Math.abs(d);const nr=drag.r+d;vr=nr-rot;rot=nr;drag.a=a;drag.r=rot});
+tart.addEventListener('pointerup',e=>{if(drag&&moved<3)slice();drag=null});
+function slice(){if(cut>=8)return reset();const a0=cut*45-90,a1=a0+45,R=170,rad=d=>d*Math.PI/180;const d=`M0 0L${Math.cos(rad(a0))*R} ${Math.sin(rad(a0))*R}A${R} ${R} 0 0 1 ${Math.cos(rad(a1))*R} ${Math.sin(rad(a1))*R}Z`;
+const mask=$('cutmask')||(()=>{const m=el('mask',{id:'cutmask'},tart.querySelector('defs'));el('rect',{x:-220,y:-220,width:440,height:440,fill:'#fff'},m);$('whole').setAttribute('mask','url(#cutmask)');return m})();el('path',{d,fill:'#000'},mask);
+const piece=$('whole').cloneNode(true);piece.removeAttribute('mask');piece.removeAttribute('id');const cp=el('clipPath',{id:'cp'+cut},tart.querySelector('defs'));el('path',{d},cp);piece.setAttribute('clip-path',`url(#cp${cut})`);spin.appendChild(piece);
+const mid=rad(a0+22.5);piece.style.transition='transform 1.1s cubic-bezier(.2,.8,.2,1),opacity 1.1s .5s';requestAnimationFrame(()=>{piece.style.transform=`translate(${Math.cos(mid)*260}px,${Math.sin(mid)*260}px) rotate(12deg)`;piece.style.opacity=0});setTimeout(()=>piece.remove(),1800);cut++}
+function reset(){cut=0;const m=$('cutmask');if(m){m.remove();$('whole').removeAttribute('mask')}tart.querySelectorAll('clipPath').forEach(c=>c.remove())}
+(function loop(){if(!drag){rot+=vr;vr+=(.04-vr)*.01}spin.setAttribute('transform',`rotate(${rot})`);requestAnimationFrame(loop)})();
+// ingredients with scaling and units
+const I=[[200,'g','shortcrust pastry',7.05,'oz'],[160,'g','wildflower honey',.47,'cup'],[90,'g','unsalted butter',6.3,'tbsp'],[3,'','large eggs'],[240,'ml','double cream',1,'cup'],[10,'','ripe black figs'],[1,'tsp','flaky sea salt'],[4,'','sprigs of thyme']];let sv=8,imp=false;const done=new Set();
+function draw(){const ul=$('ing');ul.innerHTML='';I.forEach(([q,u,n,iq,iu],k)=>{const f=sv/8;let v=q*f,uu=u;if(imp&&iq){v=iq*f;uu=iu}const li=document.createElement('li');if(done.has(k))li.className='d';li.innerHTML=`<b>${Math.round(v*10)/10} ${uu}</b><span>${n}</span>`;li.onclick=()=>{done.has(k)?done.delete(k):done.add(k);li.classList.toggle('d')};ul.appendChild(li)});$('sv').textContent=sv;$('sv2').textContent=sv;
+const nf=Math.round(10*sv/8);const ch=$('figs').children;[...ch].forEach((g,i)=>g.style.opacity=i<nf+2?1:0)}
+$('m').onclick=()=>{sv=Math.max(2,sv-2);draw()};$('p').onclick=()=>{sv=Math.min(24,sv+2);draw()};$('un').onclick=()=>{imp=!imp;$('un').textContent=imp?'IMPERIAL':'METRIC';draw()};draw();
+// step timers (one real second stands in for one minute)
+let timer=null;document.querySelectorAll('#steps li').forEach((li,i,all)=>li.onclick=()=>{all.forEach(o=>o.classList.remove('on'));clearInterval(timer);li.classList.add('on');const m=+li.dataset.m;if(!m)return;let left=m*60;const u=li.querySelector('u'),sp=li.querySelector('.tm span');timer=setInterval(()=>{left-=60;const p=1-left/(m*60);u.style.transform=`scaleX(${p})`;sp.textContent=Math.floor(left/60)+':'+String(left%60).padStart(2,'0');if(left<=0){clearInterval(timer);li.classList.add('done');li.classList.remove('on');ding()}},1000)});
+let ac;function ding(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();[880,1320].forEach((f,i)=>{const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=f;const t=ac.currentTime+i*.18;g.gain.setValueAtTime(.08,t);g.gain.exponentialRampToValueAtTime(.0001,t+1);o.connect(g).connect(ac.destination);o.start(t);o.stop(t+1)})}catch(e){}}
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on')}),{threshold:.1});document.querySelectorAll('.rv').forEach(r=>io.observe(r));
 </script></body></html>
