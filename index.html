@@ -16,6 +16,7 @@
 :root[data-theme="dark"]{--bg:#101014;--fg:#ecebf2;--mute:#8e8c98;--line:#2a2930;--card:#1a1a20;--accent:#9488ff;--onaccent:#0c0b12;color-scheme:dark}
 
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--fg);font:400 15px/1.5 var(--display);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
@@ -25,14 +26,12 @@ button{font:inherit;color:inherit}
 .wrap{max-width:1480px;margin:0 auto}
 
 /* Masthead */
-.mast{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:24px;padding-block:28px 20px;border-bottom:1px solid var(--fg)}
+.mast{display:grid;grid-template-columns:minmax(0,1fr);align-items:end;gap:24px;padding-block:28px 20px;border-bottom:1px solid var(--fg)}
 .mark{font:700 clamp(84px,19vw,270px)/.78 var(--display);letter-spacing:-.065em;margin:0;display:flex;align-items:flex-end}
 .mark span{display:inline-block;transition:transform .5s cubic-bezier(.2,.9,.2,1.3)}
 .mark .dot{width:.16em;height:.16em;background:var(--accent);border-radius:50%;margin-left:.04em;margin-bottom:.06em;animation:pulse 2.4s ease-in-out infinite}
 @keyframes pulse{50%{transform:scale(.6)}}
 .mark:hover span:nth-child(1){transform:translateY(-6%) rotate(-4deg)}.mark:hover span:nth-child(2){transform:translateY(4%)}.mark:hover span:nth-child(3){transform:translateY(-3%) rotate(3deg)}.mark:hover span:nth-child(4){transform:translateY(5%)}
-.facts{display:grid;grid-template-columns:auto auto;gap:4px 18px;font:400 11px/1.6 var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--mute);padding-bottom:10px}
-.facts b{color:var(--fg);font-weight:500;text-align:right;font-variant-numeric:tabular-nums}
 .lede{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;padding-block:16px;font-size:17px;max-width:none}
 .lede p{margin:0;max-width:60ch;text-wrap:pretty}
 .lede .mono{font:400 11px/1.7 var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--mute)}
@@ -105,7 +104,7 @@ footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);display
 .spin{position:absolute;inset:0;display:grid;place-items:center;font:400 11px var(--mono);letter-spacing:.1em;color:#77757f;text-transform:uppercase;pointer-events:none}
 
 @media (max-width:900px){.ttl .d,.try{display:none}.row{grid-template-columns:3.5em minmax(0,1fr) 7em}.row span,.row .t{display:none}}
-@media (max-width:620px){.chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;flex-basis:100%;padding-bottom:2px}.chips::-webkit-scrollbar{display:none}.chip{flex:none}.lede .mono{display:none}.mast{grid-template-columns:1fr}.facts{grid-template-columns:auto 1fr;padding-bottom:0}.facts b{text-align:left}.search input{width:140px}.acts .lbl{display:none}.bar{gap:6px}.ttl{flex-direction:column;gap:0}}
+@media (max-width:620px){.chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;flex-basis:100%;padding-bottom:2px}.chips::-webkit-scrollbar{display:none}.chip{flex:none}.lede .mono{display:none}.search input{width:140px}.acts .lbl{display:none}.bar{gap:6px}.ttl{flex-direction:column;gap:0}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -113,12 +112,6 @@ footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);display
 <div class="wrap">
   <header class="mast">
     <h1 class="mark" aria-label="Stun"><span>S</span><span>t</span><span>u</span><span>n</span><i class="dot"></i></h1>
-    <dl class="facts">
-      <dt>Studies</dt><b>100</b>
-      <dt>Disciplines</dt><b id="nCats">8</b>
-      <dt>Files per study</dt><b>1</b>
-      <dt>Bitmaps per study</dt><b>0</b>
-    </dl>
   </header>
   <div class="lede">
     <p>One hundred single-file HTML pieces: generative drawings, physics toys, invented posters, objects you can wind and click, and interfaces for things that don’t exist. Every one is drawn in code. Hover a plate to wake it, open it to step inside.</p>
@@ -167,7 +160,6 @@ footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);display
   const cats = ['All', ...Array.from(new Set(W.map(w => w.cat)))];
   const order = ['All','Generative','Simulation','Scene','Interface','Object','Type & Print','Sound','Play'];
   cats.sort((a,b) => order.indexOf(a) - order.indexOf(b));
-  $('nCats').textContent = cats.length - 1;
 
   let cat = 'All', q = '', view = 'grid';
   try { const s = JSON.parse(localStorage.getItem('stun-prefs') || '{}'); if (s.view) view = s.view; if (s.cat && cats.includes(s.cat)) cat = s.cat; } catch(e) {}
