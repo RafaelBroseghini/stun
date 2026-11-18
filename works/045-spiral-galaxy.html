@@ -1,17 +1,45 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NGC Imaginary</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Michroma&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#010104}canvas{display:block;width:100%;height:100%}
-.t{position:fixed;right:4vw;bottom:5vh;text-align:right;color:#cfd8ff;font:11px/1.9 Michroma,sans-serif;letter-spacing:.25em}.t b{display:block;font-size:clamp(18px,2.2vw,28px);letter-spacing:.15em;color:#fff;font-weight:400}</style></head><body>
-<canvas id="c"></canvas><div class="t"><b>NGC 9001</b>BARRED SPIRAL · SBc<br>DISTANCE 31 MLY · 140,000 STARS<br>MOVE TO TILT</div>
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#010104;user-select:none;-webkit-user-select:none}canvas{display:block;width:100%;height:100%;cursor:grab;touch-action:none}canvas:active{cursor:grabbing}
+.t{position:fixed;right:4vw;bottom:5vh;text-align:right;color:#cfd8ff;font:10px/1.9 Michroma,sans-serif;letter-spacing:.25em;pointer-events:none}.t b{display:block;font-size:clamp(18px,2.2vw,28px);letter-spacing:.15em;color:#fff;font-weight:400;margin-bottom:6px}
+.k{position:fixed;left:4vw;bottom:5vh;color:rgba(207,216,255,.6);font:9px/2 Michroma;letter-spacing:.24em;pointer-events:none}
+.ret{position:fixed;left:4vw;top:5vh;color:#cfd8ff;font:9px/1.8 Michroma;letter-spacing:.24em;pointer-events:none}.ret i{display:block;width:120px;height:1px;background:rgba(207,216,255,.4);margin:6px 0;position:relative}.ret i::before,.ret i::after{content:"";position:absolute;top:-3px;width:1px;height:7px;background:rgba(207,216,255,.6)}.ret i::after{right:0}
+.flash{position:fixed;pointer-events:none;width:8px;height:8px;margin:-4px;border-radius:50%;background:#fff;box-shadow:0 0 40px 20px rgba(200,220,255,.8);animation:sn 2.4s ease-out forwards}@keyframes sn{0%{transform:scale(.2);opacity:1}20%{transform:scale(2.4)}100%{transform:scale(.6);opacity:0}}
+</style></head><body>
+<canvas id="c"></canvas>
+<div class="ret">SCALE<i></i><span id="sc">20,000 LY</span></div>
+<div class="t"><b>NGC 9001</b>BARRED SPIRAL · SBc<br>DISTANCE 31 MLY · 140,000 STARS<br><span id="yr">EPOCH +0 MYR</span></div>
+<div class="k">DRAG · ORBIT &nbsp; WHEEL · ZOOM &nbsp; CLICK · SUPERNOVA &nbsp; SPACE · TIME ×50</div>
 <script>
-const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio,2);let W,H,tilt=.55,tt=.55,rot=0;const N=16000;const S=new Float32Array(N*5);
-for(let i=0;i<N;i++){const arm=i%2,r=Math.pow(Math.random(),1.6);const core=Math.random()<.18;const a=core?Math.random()*Math.PI*2:arm*Math.PI+r*6.2+(Math.random()-.5)*(1.3-r*.5);const rr=core?Math.pow(Math.random(),.7)*.2:r+.05+(Math.random()-.5)*.1;
-S[i*5]=rr;S[i*5+1]=a;S[i*5+2]=(Math.random()-.5)*.05*(1-rr);S[i*5+3]=core?40+Math.random()*20:Math.random()<.3?210+Math.random()*30:Math.random()<.5?30:300+Math.random()*40;S[i*5+4]=Math.random()}
-function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr}size();addEventListener('resize',size);addEventListener('pointermove',e=>tt=.2+e.clientY/innerHeight*.75);
-const bg=Array.from({length:300},()=>[Math.random(),Math.random(),Math.random()]);
-function f(){tilt+=(tt-tilt)*.04;rot+=.0012;x.fillStyle='rgba(1,1,4,.5)';x.fillRect(0,0,W,H);x.fillStyle='#fff';for(const b of bg){x.globalAlpha=b[2]*.6;x.fillRect(b[0]*W,b[1]*H,dpr,dpr)}
-const R=Math.min(W,H)*.48,cx=W/2,cy=H/2;x.globalCompositeOperation='lighter';
-const g=x.createRadialGradient(cx,cy,0,cx,cy,R*.35);g.addColorStop(0,'rgba(255,225,170,.55)');g.addColorStop(.4,'rgba(255,170,110,.12)');g.addColorStop(1,'rgba(0,0,0,0)');x.globalAlpha=1;x.fillStyle=g;x.save();x.translate(cx,cy);x.scale(1,tilt);x.beginPath();x.arc(0,0,R*.35,0,7);x.fill();x.restore();
-for(let i=0;i<N;i++){const r=S[i*5],a=S[i*5+1]+rot/(r*1.5+.25);const px=Math.cos(a)*r*R,pz=Math.sin(a)*r*R,py=S[i*5+2]*R;const X=cx+px,Y=cy+pz*tilt+py*(1-tilt);const b=S[i*5+4];
-x.globalAlpha=.4+b*.6;x.fillStyle=`hsl(${S[i*5+3]},${r<.2?60:85}%,${60+b*30}%)`;const sz=(b>.95?2.4:1.3)*dpr;x.fillRect(X,Y,sz,sz)}x.globalCompositeOperation='source-over';x.globalAlpha=1;requestAnimationFrame(f)}f();
+const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio||1,1.5);let W,H,tilt=.55,tt=.55,yaw=0,ty=0,rot=0,zoom=1,tz=1,warp=1;const N=18000;
+const COLS=['#ffe0b0','#ffd0a0','#fff2e0','#bcd2ff','#9fb8ff','#ffb0d8','#ffcf90','#e0e8ff'];
+const S=[];for(let i=0;i<N;i++){const arm=i%2,r=Math.pow(Math.random(),1.5);const core=Math.random()<.2;let a,rr,z;
+if(core){a=Math.random()*Math.PI*2;rr=Math.pow(Math.random(),.8)*.2;const bar=Math.random()<.5;if(bar){rr=(Math.random()-.5)*.36;a=0;z=(Math.random()-.5)*.06}else z=(Math.random()-.5)*.08}
+else{a=arm*Math.PI+r*6.2+(Math.random()-.5)*(1.3-r*.6);rr=r+.08+(Math.random()-.5)*.1;z=(Math.random()-.5)*.04*(1-rr)}
+const ci=core?Math.random()*3|0:Math.random()<.45?3+(Math.random()*2|0):Math.random()<.08?5:Math.random()<.5?7:6;S.push({r:rr,a,z,c:ci,b:Math.random(),bar:core&&a===0})}
+const NEB=[];for(let i=0;i<70;i++){const arm=i%2,r=.2+Math.random()*.75;NEB.push({r,a:arm*Math.PI+(r-.08)*6.2+(Math.random()-.5)*.4,s:.02+Math.random()*.05,h:Math.random()<.7?330:210})}
+const DUST=[];for(let i=0;i<120;i++){const arm=i%2,r=.12+Math.random()*.8;DUST.push({r,a:arm*Math.PI+(r-.08)*6.2-.18+(Math.random()-.5)*.2,s:.02+Math.random()*.04})}
+const sprite=(h,a)=>{const s=document.createElement('canvas');s.width=s.height=64;const g=s.getContext('2d'),rg=g.createRadialGradient(32,32,0,32,32,32);rg.addColorStop(0,`hsla(${h},90%,70%,${a})`);rg.addColorStop(1,'hsla(0,0%,0%,0)');g.fillStyle=rg;g.fillRect(0,0,64,64);return s};
+const SPR={pink:sprite(330,.5),blue:sprite(210,.4),core:sprite(38,.8),dust:(()=>{const s=document.createElement('canvas');s.width=s.height=64;const g=s.getContext('2d'),rg=g.createRadialGradient(32,32,0,32,32,32);rg.addColorStop(0,'rgba(10,6,4,.55)');rg.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=rg;g.fillRect(0,0,64,64);return s})()};
+function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr}size();addEventListener('resize',size);
+const bg=Array.from({length:380},()=>[Math.random(),Math.random(),Math.random()]);
+let drag=null,moved=0;c.addEventListener('pointerdown',e=>{c.setPointerCapture(e.pointerId);drag={x:e.clientX,y:e.clientY,yaw:ty,tilt:tt};moved=0});
+c.addEventListener('pointermove',e=>{if(!drag)return;moved+=Math.abs(e.movementX||0)+Math.abs(e.movementY||0);ty=drag.yaw+(e.clientX-drag.x)*.006;tt=Math.max(.05,Math.min(1,drag.tilt+(e.clientY-drag.y)*.003))});
+c.addEventListener('pointerup',e=>{if(drag&&moved<5)nova(e.clientX,e.clientY);drag=null});
+c.addEventListener('wheel',e=>{e.preventDefault();tz=Math.max(.6,Math.min(4,tz*(e.deltaY>0?.9:1.1)))},{passive:false});
+addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();warp=50}});addEventListener('keyup',e=>{if(e.code==='Space')warp=1});
+function nova(X,Y){const d=document.createElement('div');d.className='flash';d.style.left=X+'px';d.style.top=Y+'px';document.body.appendChild(d);setTimeout(()=>d.remove(),2500);try{const ac=window._ac||(window._ac=new (window.AudioContext||window.webkitAudioContext)());const o=ac.createOscillator(),g=ac.createGain();o.type='sine';o.frequency.setValueAtTime(90,ac.currentTime);o.frequency.exponentialRampToValueAtTime(30,ac.currentTime+2);g.gain.setValueAtTime(.2,ac.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+2.2);o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+2.3)}catch(er){}}
+let myr=0;const buckets=COLS.map(()=>[]);
+function f(){tilt+=(tt-tilt)*.06;yaw+=(ty-yaw)*.06;zoom+=(tz-zoom)*.08;rot+=.0012*warp;myr+=.04*warp;
+x.globalCompositeOperation='source-over';x.fillStyle='rgba(1,1,4,.55)';x.fillRect(0,0,W,H);x.fillStyle='#fff';for(const b of bg){x.globalAlpha=b[2]*.6;x.fillRect(b[0]*W,b[1]*H,dpr,dpr)}x.globalAlpha=1;
+const R=Math.min(W,H)*.46*zoom,cx=W/2,cy=H/2,cy2=Math.cos(yaw),sy2=Math.sin(yaw);
+const proj=(r,a,z)=>{const px=Math.cos(a)*r,pz=Math.sin(a)*r;const qx=px*cy2-pz*sy2,qz=px*sy2+pz*cy2;return[cx+qx*R,cy+qz*R*tilt+z*R*(1-tilt*.6)]};
+x.globalCompositeOperation='lighter';const [ccx,ccy]=proj(0,0,0);const cs=R*.7;x.save();x.translate(ccx,ccy);x.scale(1,Math.max(.35,tilt));x.drawImage(SPR.core,-cs/2,-cs/2,cs,cs);x.restore();
+for(const n of NEB){const [X,Y]=proj(n.r,n.a+rot/(n.r*1.5+.25),0);const s=n.s*R;x.drawImage(n.h===330?SPR.pink:SPR.blue,X-s,Y-s*tilt,s*2,s*2*tilt)}
+buckets.forEach(b=>b.length=0);for(const s of S){const a=s.bar?yaw*0+rot*.6:s.a+rot/(Math.abs(s.r)*1.5+.25);const [X,Y]=s.bar?proj(s.r,rot*.6,s.z):proj(s.r,a,s.z);if(X<0||X>W||Y<0||Y>H)continue;buckets[s.c].push(X,Y,s.b)}
+buckets.forEach((b,ci)=>{x.fillStyle=COLS[ci];for(let i=0;i<b.length;i+=3){const br=b[i+2];x.globalAlpha=.35+br*.6;const sz=(br>.97?2.6:1.2)*dpr*Math.sqrt(zoom);x.fillRect(b[i],b[i+1],sz,sz)}});
+x.globalCompositeOperation='source-over';x.globalAlpha=1;for(const d of DUST){const [X,Y]=proj(d.r,d.a+rot/(d.r*1.5+.25),0);const s=d.s*R;x.drawImage(SPR.dust,X-s,Y-s*tilt,s*2,s*2*tilt)}
+document.getElementById('yr').textContent=`EPOCH +${myr.toFixed(0)} MYR`;document.getElementById('sc').textContent=Math.round(20000/zoom/1000)*1000>0?(Math.round(20000/zoom/500)*500).toLocaleString('en')+' LY':'—';
+requestAnimationFrame(f)}f();
 </script></body></html>
