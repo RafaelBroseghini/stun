@@ -1,19 +1,33 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Turing Patterns</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fragment+Mono&family=Gasoek+One&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#fdf0e6}canvas{display:block;width:100%;height:100%;image-rendering:auto;cursor:crosshair}
-.p{position:fixed;left:20px;top:20px;display:flex;flex-direction:column;gap:10px;align-items:flex-start;background:#fdf0e6;padding:16px 18px;border-radius:18px;box-shadow:0 10px 30px rgba(27,42,107,.25)}.p h1{font:400 clamp(28px,4vw,56px)/1 'Gasoek One',sans-serif;color:#1b2a6b}
-.p div{display:flex;gap:6px;flex-wrap:wrap}.p button{font:12px 'Fragment Mono',monospace;padding:8px 12px;border-radius:30px;border:1.5px solid #1b2a6b;background:#fdf0e6;color:#1b2a6b;cursor:pointer}.p button.on{background:#1b2a6b;color:#fdf0e6}.p small{font:11px 'Fragment Mono',monospace;color:#1b2a6b;opacity:.75}</style></head><body>
-<canvas id="c"></canvas><div class="p"><h1>Turing<br>Patterns</h1><div id="b"></div><small id="k">Gray–Scott model · drag to seed</small></div>
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#fdf0e6;user-select:none;-webkit-user-select:none}canvas{display:block;width:100%;height:100%;cursor:crosshair;touch-action:none}
+.p{position:fixed;left:20px;top:20px;display:flex;flex-direction:column;gap:10px;align-items:flex-start;background:#fdf0e6;padding:16px 18px;border-radius:18px;box-shadow:0 10px 30px rgba(27,42,107,.25);max-width:calc(100vw - 40px);animation:in .8s cubic-bezier(.2,.9,.3,1.3) both}@keyframes in{from{opacity:0;transform:translateY(-10px) scale(.96)}}
+.p h1{font:400 clamp(28px,4vw,56px)/1 'Gasoek One',sans-serif;color:#1b2a6b}
+.p div{display:flex;gap:6px;flex-wrap:wrap}.p button{font:12px 'Fragment Mono',monospace;padding:7px 11px;border-radius:30px;border:1.5px solid #1b2a6b;background:#fdf0e6;color:#1b2a6b;cursor:pointer;transition:transform .15s}.p button:hover{transform:translateY(-1px)}.p button.on{background:#1b2a6b;color:#fdf0e6}
+.p small{font:11px 'Fragment Mono',monospace;color:#1b2a6b;opacity:.75}
+.sw{display:flex;gap:6px}.sw i{width:22px;height:22px;border-radius:50%;cursor:pointer;box-shadow:0 0 0 1.5px #1b2a6b}.sw i.on{box-shadow:0 0 0 3px #1b2a6b}
+.ro{position:fixed;right:20px;bottom:20px;font:11px 'Fragment Mono';color:#1b2a6b;background:#fdf0e6;padding:8px 12px;border-radius:99px;box-shadow:0 6px 18px rgba(27,42,107,.2);pointer-events:none;opacity:0;transition:opacity .3s}
+</style></head><body>
+<canvas id="c"></canvas><div class="p"><h1>Turing<br>Patterns</h1><div id="b"></div><div class="sw" id="sw"></div><small id="k">Gray–Scott model · drag to seed · right-drag to erase</small></div><div class="ro" id="ro"></div>
 <script>
-const c=document.getElementById('c'),x=c.getContext('2d');let W,H,U,V,U2,V2,img;let F=.0545,K=.062;
-const P={coral:[.0545,.062],mitosis:[.0367,.0649],worms:[.078,.061],spots:[.035,.065],waves:[.014,.045]};
-const bx=document.getElementById('b');Object.keys(P).forEach((n,i)=>{const e=document.createElement('button');e.textContent=n;e.className=i?'':'on';e.onclick=()=>{[F,K]=P[n];[...bx.children].forEach(o=>o.classList.toggle('on',o===e));document.getElementById('k').textContent=`F ${F} · k ${K} · drag to seed`;init()};bx.appendChild(e)});
-function seed(X,Y,r){for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){const xx=X+dx,yy=Y+dy;if(xx>0&&yy>0&&xx<W-1&&yy<H-1&&dx*dx+dy*dy<=r*r){V[yy*W+xx]=.5+Math.random()*.25;U[yy*W+xx]=.25}}}
+const c=document.getElementById('c'),x=c.getContext('2d');let W,H,U,V,U2,V2,img,FM,KM;let F=.0545,K=.062,map=false;
+const P={coral:[.0545,.062],mitosis:[.0367,.0649],worms:[.078,.061],spots:[.035,.065],waves:[.014,.045],leopard:[.03,.063],'map ✦':null};
+const PAL=[[[253,240,230],[255,107,107],[27,42,107]],[[247,233,206],[214,138,52],[40,24,16]],[[232,250,242],[60,200,170],[8,40,60]],[[255,245,250],[180,80,200],[30,10,50]]];let pi=0;
+const bx=document.getElementById('b');Object.keys(P).forEach((n,i)=>{const e=document.createElement('button');e.textContent=n;e.className=i?'':'on';e.onclick=()=>{map=P[n]===null;if(!map)[F,K]=P[n];[...bx.children].forEach(o=>o.classList.toggle('on',o===e));document.getElementById('k').textContent=map?'F sweeps left→right, k top→bottom · hover to read':`F ${F} · k ${K} · drag to seed`;init()};bx.appendChild(e)});
+const sw=document.getElementById('sw');PAL.forEach((p,i)=>{const e=document.createElement('i');e.style.background=`linear-gradient(135deg,rgb(${p[0]}) 0 33%,rgb(${p[1]}) 33% 66%,rgb(${p[2]}) 66%)`;e.className=i?'':'on';e.onclick=()=>{pi=i;[...sw.children].forEach(o=>o.classList.toggle('on',o===e));document.body.style.background=`rgb(${p[0]})`};sw.appendChild(e)});
+function seed(X,Y,r,erase){for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){const xx=X+dx,yy=Y+dy;if(xx>0&&yy>0&&xx<W-1&&yy<H-1&&dx*dx+dy*dy<=r*r){if(erase){V[yy*W+xx]=0;U[yy*W+xx]=1}else{V[yy*W+xx]=.5+Math.random()*.25;U[yy*W+xx]=.25}}}}
 function init(){const s=.33;W=c.width=Math.floor(innerWidth*s);H=c.height=Math.floor(innerHeight*s);U=new Float32Array(W*H).fill(1);V=new Float32Array(W*H);U2=new Float32Array(W*H);V2=new Float32Array(W*H);img=x.createImageData(W,H);
-for(let i=0;i<24;i++)seed(Math.random()*W|0,Math.random()*H|0,3+Math.random()*4|0)}init();addEventListener('resize',init);
-let dn=false;c.addEventListener('pointerdown',e=>{dn=true;seed(e.clientX/innerWidth*W|0,e.clientY/innerHeight*H|0,4)});addEventListener('pointerup',()=>dn=false);c.addEventListener('pointermove',e=>{if(dn)seed(e.clientX/innerWidth*W|0,e.clientY/innerHeight*H|0,3)});
-function step(){for(let y=1;y<H-1;y++)for(let X=1;X<W-1;X++){const i=y*W+X,u=U[i],v=V[i];const lu=(U[i-1]+U[i+1]+U[i-W]+U[i+W])*.2+(U[i-W-1]+U[i-W+1]+U[i+W-1]+U[i+W+1])*.05-u,lv=(V[i-1]+V[i+1]+V[i-W]+V[i+W])*.2+(V[i-W-1]+V[i-W+1]+V[i+W-1]+V[i+W+1])*.05-v;const uvv=u*v*v;U2[i]=u+lu-uvv+F*(1-u);V2[i]=v+.5*lv+uvv-(F+K)*v}[U,U2]=[U2,U];[V,V2]=[V2,V]}
-const C1=[253,240,230],C2=[255,107,107],C3=[27,42,107];
-function draw(){const d=img.data;for(let i=0;i<W*H;i++){const t=Math.min(1,Math.max(0,(U[i]-V[i]-.2)*1.6));const o=i*4;let r,g,b;if(t>.5){const k=(t-.5)*2;r=C2[0]+(C1[0]-C2[0])*k;g=C2[1]+(C1[1]-C2[1])*k;b=C2[2]+(C1[2]-C2[2])*k}else{const k=t*2;r=C3[0]+(C2[0]-C3[0])*k;g=C3[1]+(C2[1]-C3[1])*k;b=C3[2]+(C2[2]-C3[2])*k}d[o]=r;d[o+1]=g;d[o+2]=b;d[o+3]=255}x.putImageData(img,0,0)}
+FM=new Float32Array(W*H);KM=new Float32Array(W*H);for(let y=0;y<H;y++)for(let X=0;X<W;X++){const i=y*W+X;if(map){FM[i]=.01+X/W*.08;KM[i]=.045+y/H*.025}else{FM[i]=F;KM[i]=K}}
+const n=map?160:24;for(let i=0;i<n;i++)seed(Math.random()*W|0,Math.random()*H|0,3+Math.random()*4|0)}init();addEventListener('resize',init);
+let dn=false,er=false;c.addEventListener('contextmenu',e=>e.preventDefault());
+const at=e=>[e.clientX/innerWidth*W|0,e.clientY/innerHeight*H|0];
+c.addEventListener('pointerdown',e=>{c.setPointerCapture(e.pointerId);dn=true;er=e.button===2||e.shiftKey;const [X,Y]=at(e);seed(X,Y,er?7:4,er)});addEventListener('pointerup',()=>dn=false);
+c.addEventListener('pointermove',e=>{const [X,Y]=at(e);if(dn)seed(X,Y,er?7:3,er);const ro=document.getElementById('ro');if(map){const i=Y*W+X;ro.style.opacity=1;ro.textContent=`F ${FM[i]?.toFixed(4)} · k ${KM[i]?.toFixed(4)}`}else ro.style.opacity=0});
+addEventListener('keydown',e=>{if(e.key===' '){e.preventDefault();init()}const n=+e.key;if(n>=1&&n<=7)bx.children[n-1].click()});
+function step(){for(let y=1;y<H-1;y++)for(let X=1;X<W-1;X++){const i=y*W+X,u=U[i],v=V[i];const lu=(U[i-1]+U[i+1]+U[i-W]+U[i+W])*.2+(U[i-W-1]+U[i-W+1]+U[i+W-1]+U[i+W+1])*.05-u,lv=(V[i-1]+V[i+1]+V[i-W]+V[i+W])*.2+(V[i-W-1]+V[i-W+1]+V[i+W-1]+V[i+W+1])*.05-v;const uvv=u*v*v,Fi=FM[i];U2[i]=u+lu-uvv+Fi*(1-u);V2[i]=v+.5*lv+uvv-(Fi+KM[i])*v}[U,U2]=[U2,U];[V,V2]=[V2,V]}
+function draw(){const d=img.data;const [C1,C2,C3]=PAL[pi];for(let y=0;y<H;y++)for(let X=0;X<W;X++){const i=y*W+X;const t=Math.min(1,Math.max(0,(U[i]-V[i]-.2)*1.6));const o=i*4;let r,g,b;if(t>.5){const k=(t-.5)*2;r=C2[0]+(C1[0]-C2[0])*k;g=C2[1]+(C1[1]-C2[1])*k;b=C2[2]+(C1[2]-C2[2])*k}else{const k=t*2;r=C3[0]+(C2[0]-C3[0])*k;g=C3[1]+(C2[1]-C3[1])*k;b=C3[2]+(C2[2]-C3[2])*k}
+// emboss: light from the top-left using the gradient of V
+const gx=X>0&&X<W-1?V[i+1]-V[i-1]:0,gy=y>0&&y<H-1?V[i+W]-V[i-W]:0;const l=(-gx-gy)*260;d[o]=r+l;d[o+1]=g+l;d[o+2]=b+l;d[o+3]=255}x.putImageData(img,0,0)}
 for(let i=0;i<700;i++)step();function f(){for(let i=0;i<10;i++)step();draw();requestAnimationFrame(f)}f();
 </script></body></html>
