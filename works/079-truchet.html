@@ -1,13 +1,38 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Truchet Rivers</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bowlby+One&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#ff6a3d;display:grid;grid-template-columns:repeat(var(--c),1fr);grid-auto-rows:var(--s)}
-.t{position:relative;cursor:pointer;transition:transform .5s cubic-bezier(.6,0,.3,1.4)}.t::before,.t::after{content:"";position:absolute;width:100%;height:100%;border-radius:50%;border:calc(var(--s)*.14) solid #1b1240;box-sizing:border-box}
-.t::before{left:-50%;top:-50%}.t::after{left:50%;top:50%}
-h1{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);font:400 clamp(30px,7vw,110px)/1 'Bowlby One',sans-serif;color:#fff4e0;background:#1b1240;padding:.15em .4em;pointer-events:none;letter-spacing:.02em;box-shadow:10px 10px 0 #fff4e0}</style></head><body>
-<h1>TRUCHET</h1>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Space+Mono&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#ff6a3d;user-select:none;-webkit-user-select:none}canvas{display:block;width:100%;height:100%;cursor:pointer;touch-action:none}
+h1{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);font:400 clamp(30px,7vw,110px)/1 'Bowlby One',sans-serif;color:#fff4e0;background:#1b1240;padding:.15em .4em;pointer-events:none;letter-spacing:.02em;box-shadow:10px 10px 0 #fff4e0;transition:opacity .4s}
+.ui{position:fixed;left:18px;bottom:16px;display:flex;gap:6px;flex-wrap:wrap}.ui button{font:400 11px 'Space Mono';letter-spacing:.08em;color:#1b1240;background:#fff4e0;border:2px solid #1b1240;padding:6px 10px;cursor:pointer;box-shadow:3px 3px 0 #1b1240}.ui button[aria-pressed="true"]{background:#1b1240;color:#fff4e0}
+.ct{position:fixed;right:18px;bottom:16px;font:400 11px 'Space Mono';color:#1b1240;background:#fff4e0;border:2px solid #1b1240;padding:6px 10px;box-shadow:3px 3px 0 #1b1240;pointer-events:none}
+</style></head><body>
+<canvas id="c"></canvas><h1 id="h1">TRUCHET</h1>
+<div class="ui"><button id="rv" aria-pressed="true">Rivers</button><button id="mono" aria-pressed="false">Mono</button><button id="sh">Shuffle</button><button id="ti">Hide title</button></div><div class="ct" id="ct">— rivers</div>
 <script>
-const s=Math.max(46,Math.min(innerWidth,innerHeight)/9);const cols=Math.ceil(innerWidth/s),rows=Math.ceil(innerHeight/s)+1;document.body.style.setProperty('--c',cols);document.body.style.setProperty('--s',(innerWidth/cols)+'px');
-const T=[];for(let i=0;i<cols*rows;i++){const t=document.createElement('div');t.className='t';t.style.overflow='hidden';t.r=Math.random()<.5?0:90;t.style.transform=`rotate(${t.r}deg)`;t.onmouseenter=t.onclick=()=>{t.r+=90;t.style.transform=`rotate(${t.r}deg)`};document.body.appendChild(t);T.push(t)}
-setInterval(()=>{for(let k=0;k<4;k++){const t=T[Math.random()*T.length|0];t.r+=90;t.style.transform=`rotate(${t.r}deg)`}},300);
-addEventListener('resize',()=>location.reload());
+const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio||1,2);let W,H,S,cols,rows,G=[],ang=[],comp=[],colors={};let rivers=true,mono=false;
+const PAL=['#1b1240','#3ec1d3','#ffd23f','#7d5fff','#26de81','#fff4e0','#ff2e88','#2a6fdb'];
+function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr;S=Math.max(46,Math.min(innerWidth,innerHeight)/9)*dpr;cols=Math.ceil(W/S)+1;rows=Math.ceil(H/S)+1;G=[];ang=[];for(let i=0;i<cols*rows;i++){G.push(Math.random()<.5?0:1);ang.push(G[i]*90)}solve()}
+// each tile joins its edge midpoints in two arcs; union the edges to find whole rivers
+let parent;const find=a=>{while(parent[a]!==a){parent[a]=parent[parent[a]];a=parent[a]}return a};const uni=(a,b)=>{a=find(a);b=find(b);if(a!==b)parent[a]=b};
+const hEdge=(i,j)=>j*cols+i,vEdge=(i,j)=>cols*(rows+1)+j*(cols+1)+i;// h: top edge of tile (i,j); v: left edge
+function solve(){parent=Array.from({length:cols*(rows+1)+(cols+1)*rows},(_,k)=>k);for(let j=0;j<rows;j++)for(let i=0;i<cols;i++){const N=hEdge(i,j),Sd=hEdge(i,j+1),Wd=vEdge(i,j),E=vEdge(i+1,j);if(G[j*cols+i]===0){uni(N,Wd);uni(Sd,E)}else{uni(N,E);uni(Sd,Wd)}}
+comp=[];const sizes={};for(let j=0;j<rows;j++)for(let i=0;i<cols;i++){const N=find(hEdge(i,j)),Sd=find(hEdge(i,j+1));comp.push([N,Sd]);sizes[N]=(sizes[N]||0)+1;sizes[Sd]=(sizes[Sd]||0)+1}
+colors={};let k=0;Object.entries(sizes).sort((a,b)=>b[1]-a[1]).forEach(([r])=>{colors[r]=PAL[(k++)%PAL.length]});const big=Object.values(sizes).sort((a,b)=>b-a)[0]||0;document.getElementById('ct').textContent=`${Object.keys(sizes).length} rivers · longest ${big} bends`}
+size();addEventListener('resize',size);
+let ac;function tick(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type='triangle';o.frequency.value=440+Math.random()*440;g.gain.setValueAtTime(.04,ac.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+.12);o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+.13)}catch(e){}}
+function flip(i,j,snd){if(i<0||j<0||i>=cols||j>=rows)return;const k=j*cols+i;G[k]^=1;solve();if(snd)tick()}
+let last=-1;c.addEventListener('pointermove',e=>{const i=Math.floor(e.clientX*dpr/S),j=Math.floor(e.clientY*dpr/S),k=j*cols+i;if(k!==last){last=k;flip(i,j,false)}});
+c.addEventListener('click',e=>{const i=Math.floor(e.clientX*dpr/S),j=Math.floor(e.clientY*dpr/S);flip(i,j,true)});
+document.getElementById('rv').onclick=e=>{rivers=!rivers;e.target.setAttribute('aria-pressed',rivers)};document.getElementById('mono').onclick=e=>{mono=!mono;e.target.setAttribute('aria-pressed',mono)};
+document.getElementById('sh').onclick=()=>{for(let k=0;k<G.length;k++)if(Math.random()<.5)G[k]^=1;solve();tick()};document.getElementById('ti').onclick=e=>{const h=document.getElementById('h1');h.style.opacity=h.style.opacity==='0'?1:0};
+setInterval(()=>{for(let k=0;k<3;k++){const i=Math.random()*cols|0,j=Math.random()*rows|0;flip(i,j,false)}},500);
+let t0=performance.now();
+function f(now){const t=(now-t0)/1000;x.fillStyle=mono?'#fff4e0':'#ff6a3d';x.fillRect(0,0,W,H);const lw=S*.2;x.lineCap='butt';
+for(let j=0;j<rows;j++)for(let i=0;i<cols;i++){const k=j*cols+i;const target=G[k]*90;let d=target-ang[k]%180;ang[k]+=(target-ang[k])*.2;const cx=i*S+S/2,cy=j*S+S/2;
+x.save();x.translate(cx,cy);x.rotate(ang[k]*Math.PI/180);
+const [c1,c2]=comp[k];const col1=mono?'#1b1240':rivers?colors[c1]:'#1b1240',col2=mono?'#1b1240':rivers?colors[c2]:'#1b1240';
+for(const [ox,oy,cl,a0] of [[-S/2,-S/2,col1,0],[S/2,S/2,col2,Math.PI]]){x.strokeStyle='#1b1240';x.lineWidth=lw+5*dpr;x.beginPath();x.arc(ox,oy,S/2,a0,a0+Math.PI/2);x.stroke();x.strokeStyle=cl;x.lineWidth=lw;x.beginPath();x.arc(ox,oy,S/2,a0,a0+Math.PI/2);x.stroke();
+if(rivers&&!mono){x.strokeStyle='rgba(255,255,255,.35)';x.lineWidth=lw*.18;x.setLineDash([S*.12,S*.18]);x.lineDashOffset=-t*S*.3;x.beginPath();x.arc(ox,oy,S/2,a0,a0+Math.PI/2);x.stroke();x.setLineDash([])}}
+x.restore()}
+requestAnimationFrame(f)}requestAnimationFrame(f);
 </script></body></html>
