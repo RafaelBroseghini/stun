@@ -1,19 +1,47 @@
 <!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Calacatta Oro</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;800&family=Jost:wght@300&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#eee}canvas{position:fixed;inset:0;width:100%;height:100%;cursor:pointer}
-.sheen{position:fixed;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.35) 45%,transparent 55%);background-size:300% 100%;animation:s 9s ease-in-out infinite;pointer-events:none;mix-blend-mode:soft-light}@keyframes s{0%{background-position:120% 0}100%{background-position:-60% 0}}
-.l{position:fixed;left:5vw;bottom:7vh;color:#2a2622}.l h1{font:800 clamp(36px,6vw,96px)/.9 'Bodoni Moda',serif;letter-spacing:-.02em}.l p{font:300 13px Jost,sans-serif;letter-spacing:.35em;text-transform:uppercase;margin-top:14px}</style></head><body>
-<canvas id="c"></canvas><div class="sheen"></div><div class="l"><h1>Calacatta<br>Oro</h1><p>Slab 0417 · Apuan Alps · click for a new cut</p></div>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;0,800;1,400&family=Jost:wght@300;400&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;user-select:none;-webkit-user-select:none}
+body{background:radial-gradient(70% 70% at 50% 40%,#3a3632,#1a1816);perspective:1600px;display:grid;place-items:center;font-family:Jost,sans-serif}
+.slab{position:relative;width:min(60vw,96vh);margin-left:4vw;aspect-ratio:1.6;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.2,.8,.2,1);cursor:pointer;animation:in 1.4s cubic-bezier(.2,.8,.2,1) both}
+@keyframes in{from{opacity:0;transform:rotateX(30deg) translateY(40px)}}
+.slab canvas{position:absolute;inset:0;width:100%;height:100%;display:block;box-shadow:0 50px 90px rgba(0,0,0,.6)}
+.edge{position:absolute;left:0;right:0;bottom:-14px;height:14px;transform-origin:top;transform:rotateX(-90deg);background:linear-gradient(90deg,#d8d2c8,#efe9e0,#cfc8bc)}
+.edge.r{left:auto;right:-14px;top:0;bottom:0;width:14px;height:auto;transform-origin:left;transform:rotateY(90deg)}
+.gloss{position:absolute;inset:0;pointer-events:none;background:radial-gradient(35% 45% at var(--gx,30%) var(--gy,30%),rgba(255,255,255,.35),transparent 70%),linear-gradient(115deg,transparent 30%,rgba(255,255,255,.18) 45%,transparent 55%);mix-blend-mode:soft-light}
+.prog{position:absolute;left:0;bottom:0;height:2px;background:#c9a35a;transform-origin:left;transition:opacity .4s}
+.l{position:fixed;left:5vw;bottom:6vh;color:#efe9e0;pointer-events:none;z-index:2;text-shadow:0 2px 30px rgba(0,0,0,.6)}.l h1{font:800 clamp(36px,5.6vw,92px)/.9 'Bodoni Moda',serif;letter-spacing:-.02em}.l h1 em{font-weight:400}
+.l p{font:300 12px Jost,sans-serif;letter-spacing:.35em;text-transform:uppercase;margin-top:14px;opacity:.75}
+.st{position:fixed;right:5vw;top:5vh;z-index:2;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.st button{display:flex;align-items:center;gap:10px;font:400 11px Jost;letter-spacing:.2em;text-transform:uppercase;color:#efe9e0;background:none;border:0;cursor:pointer;padding:4px 0;opacity:.7;transition:opacity .2s}
+.st button i{width:28px;height:28px;border-radius:50%;box-shadow:0 0 0 1px rgba(239,233,224,.3)}.st button:hover,.st button[aria-pressed="true"]{opacity:1}.st button[aria-pressed="true"] i{box-shadow:0 0 0 2px #c9a35a}
+.st .bm{margin-top:8px;border:1px solid rgba(239,233,224,.3);padding:8px 12px;border-radius:99px}
+@media (max-width:700px){.st{top:2vh}.l{bottom:3vh}.slab{width:90vw;margin:0}}
+</style></head><body>
+<div class="slab" id="slab"><canvas id="c"></canvas><div class="edge"></div><div class="edge r"></div><div class="gloss"></div><div class="prog" id="pg"></div></div>
+<div class="l"><h1 id="nm">Calacatta<br><em>Oro</em></h1><p id="sl">Slab 0417 · Apuan Alps · click for a new cut</p></div>
+<div class="st" id="st"></div>
 <script>
 const c=document.getElementById('c'),x=c.getContext('2d');let P;
 const fd=t=>t*t*t*(t*(t*6-15)+10),lp=(a,b,t)=>a+t*(b-a),gr=(h,x,y)=>{h&=7;const u=h<4?x:y,v=h<4?y:x;return((h&1)?-u:u)+((h&2)?-2*v:2*v)};
 function N(x,y){let X=Math.floor(x)&255,Y=Math.floor(y)&255;x-=Math.floor(x);y-=Math.floor(y);const u=fd(x),v=fd(y),a=P[X]+Y,b=P[X+1]+Y;return lp(lp(gr(P[a],x,y),gr(P[b],x-1,y),u),lp(gr(P[a+1],x,y-1),gr(P[b+1],x-1,y-1),u),v)}
 const fbm=(x,y)=>{let s=0,a=.5;for(let i=0;i<5;i++){s+=a*N(x,y);x*=2.03;y*=2.03;a*=.5}return s};
-function cut(){P=new Uint8Array(512);for(let i=0;i<256;i++)P[i]=i;for(let i=255;i>0;i--){const j=Math.random()*(i+1)|0;[P[i],P[j]]=[P[j],P[i]]}for(let i=0;i<256;i++)P[i+256]=P[i];
-const s=Math.min(devicePixelRatio,2)*.55;const W=c.width=Math.floor(innerWidth*s),H=c.height=Math.floor(innerHeight*s);const img=x.createImageData(W,H),d=img.data;const sc=1.3/Math.max(W,H),ang=Math.random()*Math.PI;const ca=Math.cos(ang),sa=Math.sin(ang);
-for(let y=0;y<H;y++)for(let X=0;X<W;X++){const u=(X*ca-y*sa)*sc,v=(X*sa+y*ca)*sc;const q1=fbm(u,v),q2=fbm(u+5.2,v+1.3);const r=fbm(u+3*q1+1.7,v+3*q2+9.2);
-const vein=Math.pow(1-Math.abs(Math.sin((u*1.4+r*5)*Math.PI*.7)),7);const fine=Math.pow(1-Math.abs(Math.sin((v*3+r*9)*Math.PI)),16);const cloud=fbm(u*3,v*3)*.5+.5;
-const o=(y*W+X)*4;let R=244-cloud*14,G=241-cloud*15,B=236-cloud*18;const gold=vein*(.8+q1);R=lp(R,196,Math.min(1,gold));G=lp(G,148,Math.min(1,gold));B=lp(B,62,Math.min(1,gold));const grey=fine*.7+vein*.35*(1-q1);R-=grey*110;G-=grey*108;B-=grey*100;
-d[o]=R;d[o+1]=G;d[o+2]=B;d[o+3]=255}x.putImageData(img,0,0)}
-cut();c.onclick=cut;let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(cut,300)});
+// stones: base, cloud, vein colour, fine vein colour, vein sharpness
+const STONES=[['Calacatta','Oro','Apuan Alps',[244,241,236],[196,148,62],[120,112,104],7,'#efe9e0'],['Nero','Marquina','Basque Country',[26,25,27],[236,232,226],[200,196,190],10,'#1b1a1c'],['Verde','Alpi','Valle d’Aosta',[30,62,48],[210,226,210],[90,140,110],6,'#1e3e30'],['Rosa','Portogallo','Estremoz',[232,200,188],[178,110,96],[200,150,140],5,'#e8c8bc'],['Statuario','Venato','Carrara',[248,248,246],[120,124,130],[150,154,160],9,'#f8f8f6']];let si=0,book=false,job=0,slabNo=417;
+const st=document.getElementById('st');STONES.forEach((s,i)=>{const b=document.createElement('button');b.innerHTML=`${s[0]} ${s[1]}<i style="background:radial-gradient(circle at 30% 30%,rgb(${s[3]}),rgb(${s[4]}) 140%)"></i>`;b.setAttribute('aria-pressed',i===0);b.onclick=e=>{e.stopPropagation();si=i;[...st.querySelectorAll('button:not(.bm)')].forEach((o,k)=>o.setAttribute('aria-pressed',k===i));cut(false)};st.appendChild(b)});
+const bm=document.createElement('button');bm.className='bm';bm.textContent='Bookmatch';bm.setAttribute('aria-pressed','false');bm.onclick=e=>{e.stopPropagation();book=!book;bm.setAttribute('aria-pressed',book);cut(false)};st.appendChild(bm);
+let ang=0,seedP;
+function perm(){P=new Uint8Array(512);for(let i=0;i<256;i++)P[i]=i;for(let i=255;i>0;i--){const j=Math.random()*(i+1)|0;[P[i],P[j]]=[P[j],P[i]]}for(let i=0;i<256;i++)P[i+256]=P[i];seedP=P.slice();ang=Math.random()*Math.PI}
+function cut(fresh=true){if(fresh||!seedP){perm();slabNo=100+Math.random()*900|0}else P=seedP.slice();const my=++job;const S=STONES[si];document.getElementById('nm').innerHTML=`${S[0]}<br><em>${S[1]}</em>`;document.getElementById('sl').textContent=`Slab 0${slabNo} · ${S[2]}${book?' · bookmatched':''} · click for a new cut`;
+const r=c.getBoundingClientRect(),s=Math.min(devicePixelRatio||1,2)*.6;const W=c.width=Math.floor(r.width*s),H=c.height=Math.floor(r.height*s);const img=x.createImageData(W,H),d=img.data;const sc=.8/Math.max(W,H),ca=Math.cos(ang),sa=Math.sin(ang);const [base,vc,fc,sharp]=[S[3],S[4],S[5],S[6]];
+const pg=document.getElementById('pg');pg.style.opacity=1;let y=0;
+function rows(){if(my!==job)return;const t0=performance.now();while(y<H&&performance.now()-t0<20){for(let X=0;X<W;X++){const XX=book&&X>W/2?W-X:X;const u=(XX*ca-y*sa)*sc,v=(XX*sa+y*ca)*sc;const q1=fbm(u,v),q2=fbm(u+5.2,v+1.3);const rr=fbm(u+3*q1+1.7,v+3*q2+9.2);
+const vein=Math.pow(1-Math.abs(Math.sin((u*1.4+rr*5)*Math.PI*.7)),sharp);const fine=Math.pow(1-Math.abs(Math.sin((v*2.2+rr*7)*Math.PI)),24)*.6;const cloud=fbm(u*3,v*3)*.5+.5;
+const o=(y*W+X)*4;const dark=base[0]<100;let R=base[0]+(dark?cloud*14:-cloud*14),G=base[1]+(dark?cloud*14:-cloud*15),B=base[2]+(dark?cloud*16:-cloud*18);const gold=Math.min(1,vein*(.6+q1*1.4));R=lp(R,vc[0],gold);G=lp(G,vc[1],gold);B=lp(B,vc[2],gold);const fk=Math.min(1,fine*.7+vein*.35*(1-q1));R=lp(R,fc[0],fk*.8);G=lp(G,fc[1],fk*.8);B=lp(B,fc[2],fk*.8);
+d[o]=R;d[o+1]=G;d[o+2]=B;d[o+3]=255}y++}x.putImageData(img,0,0,0,0,W,y);pg.style.width=(y/H*100)+'%';if(y<H)requestAnimationFrame(rows);else{pg.style.opacity=0;if(book){x.fillStyle='rgba(0,0,0,.15)';x.fillRect(W/2-.5,0,1,H)}}}rows();
+document.querySelectorAll('.edge').forEach(e=>e.style.background=`linear-gradient(90deg,${S[7]},rgb(${base.map(v=>Math.min(255,v+12))}),${S[7]})`)}
+const slab=document.getElementById('slab');slab.onclick=()=>cut(true);
+addEventListener('pointermove',e=>{const nx=e.clientX/innerWidth-.5,ny=e.clientY/innerHeight-.5;slab.style.transform=`rotateY(${nx*12}deg) rotateX(${-ny*10}deg)`;const r=slab.getBoundingClientRect();slab.style.setProperty('--gx',((e.clientX-r.left)/r.width*100)+'%');slab.style.setProperty('--gy',((e.clientY-r.top)/r.height*100)+'%')});
+addEventListener('keydown',e=>{if(e.key===' '){e.preventDefault();cut(true)}if(e.key==='b')bm.click();const k=+e.key;if(k>=1&&k<=5)st.children[k-1].click()});
+cut(true);let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>cut(false),300)});
 </script></body></html>

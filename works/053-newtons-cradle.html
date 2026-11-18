@@ -1,24 +1,49 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Executive Cradle</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Italiana&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:linear-gradient(#e8e4dc,#bdb6aa);touch-action:none}canvas{display:block;width:100%;height:100%;cursor:grab}
-.t{position:fixed;left:5vw;top:6vh;font:400 clamp(28px,4.5vw,64px)/1 Italiana,serif;color:#2b2a28}.t small{display:block;font-size:13px;letter-spacing:.35em;margin-top:12px;text-transform:uppercase;font-family:system-ui,sans-serif;color:#6a645a}</style></head><body>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Italiana&family=Inter:wght@400;500&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:radial-gradient(80% 70% at 50% 30%,#efebe3,#b9b2a6);touch-action:none;user-select:none;-webkit-user-select:none}
+canvas{display:block;width:100%;height:100%;cursor:grab}canvas:active{cursor:grabbing}
+.t{position:fixed;left:5vw;top:6vh;font:400 clamp(28px,4.5vw,64px)/1 Italiana,serif;color:#2b2a28;pointer-events:none}.t small{display:block;font:500 11px Inter,system-ui,sans-serif;letter-spacing:.35em;margin-top:12px;text-transform:uppercase;color:#6a645a}
+.ctl{position:fixed;right:5vw;top:6vh;display:flex;flex-direction:column;gap:10px;align-items:flex-end;font:500 10px Inter;letter-spacing:.2em;text-transform:uppercase;color:#6a645a}
+.ctl .row{display:flex;gap:4px;align-items:center}.ctl button{font:500 11px Inter;width:30px;height:30px;border-radius:50%;border:1px solid rgba(43,42,40,.3);background:rgba(255,255,255,.4);color:#2b2a28;cursor:pointer}.ctl button[aria-pressed="true"]{background:#2b2a28;color:#efebe3}
+.ctl .wide{width:auto;padding:0 12px;border-radius:99px}
+.meter{position:fixed;left:5vw;bottom:6vh;font:500 10px Inter;letter-spacing:.2em;color:#6a645a;text-transform:uppercase;pointer-events:none}
+.meter i{display:block;width:160px;height:3px;background:rgba(43,42,40,.12);margin:6px 0 12px}.meter i u{display:block;height:100%;background:#2b2a28;transform-origin:left}
+</style></head><body>
 <canvas id="c"></canvas><div class="t">Conservation<small>momentum · energy · patience — drag a ball</small></div>
+<div class="ctl"><div class="row" id="nb">Balls&nbsp;</div><div class="row"><button class="wide" id="slow" aria-pressed="false">Slow-mo</button><button class="wide" id="air" aria-pressed="false">Vacuum</button></div></div>
+<div class="meter">Kinetic energy<i><u id="ke"></u></i>Collisions <b id="cc">0</b></div>
 <script>
-const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio,2);let W,H;const n=5;const a=new Float64Array(n),v=new Float64Array(n);let drag=-1;
-a[0]=-.9;function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr}size();addEventListener('resize',size);
-function geo(){const r=Math.min(W*.045,H*.06),L=Math.min(H*.42,W*.35),top=H*.24;const cx=W/2;return{r,L,top,px:i=>cx+(i-(n-1)/2)*r*2}}
-function phys(){const g=geo(),dt=1/240;for(let s=0;s<4;s++){for(let i=0;i<n;i++){if(i===drag)continue;v[i]+=-9.8/(.6)*Math.sin(a[i])*dt;v[i]*=.99985;a[i]+=v[i]*dt}
-for(let k=0;k<3;k++)for(let i=0;i<n-1;i++){const xi=g.px(i)+Math.sin(a[i])*g.L,xj=g.px(i+1)+Math.sin(a[i+1])*g.L;if(xj-xi<g.r*2-.01&&v[i]>v[i+1]){if(i===drag||i+1===drag)continue;const t=v[i];v[i]=v[i+1];v[i+1]=t;}
-if(xj-xi<g.r*2){const o=(g.r*2-(xj-xi))/g.L/2;if(i!==drag)a[i]-=o;if(i+1!==drag)a[i+1]+=o}}}}
+const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio||1,2);let W,H,n=5,a,v,drag=-1,dragSet=[],slow=false,vac=false,hits=0;
+function reset(k){n=k;a=new Float64Array(n);v=new Float64Array(n);a[0]=-.9;document.querySelectorAll('#nb button').forEach(b=>b.setAttribute('aria-pressed',+b.textContent===n))}
+[3,4,5,6,7].forEach(k=>{const b=document.createElement('button');b.textContent=k;b.onclick=()=>reset(k);document.getElementById('nb').appendChild(b)});reset(5);
+document.getElementById('slow').onclick=e=>{slow=!slow;e.target.setAttribute('aria-pressed',slow)};document.getElementById('air').onclick=e=>{vac=!vac;e.target.setAttribute('aria-pressed',vac)};
+function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr}size();addEventListener('resize',size);
+function geo(){const r=Math.min(W*.042,H*.058)*(5/Math.max(5,n))**.4,L=Math.min(H*.42,W*.35),top=H*.24;const cx=W/2;return{r,L,top,px:i=>cx+(i-(n-1)/2)*r*2}}
+let ac;function clack(s){if(!ac||s<.03)return;const t=ac.currentTime,o=ac.createOscillator(),g=ac.createGain(),o2=ac.createOscillator();o.type='sine';o.frequency.value=3200+Math.random()*300;o2.type='square';o2.frequency.value=5200;g.gain.setValueAtTime(Math.min(.25,s*.4),t);g.gain.exponentialRampToValueAtTime(.0001,t+.06);o.connect(g);const g2=ac.createGain();g2.gain.value=.15;o2.connect(g2).connect(g);g.connect(ac.destination);o.start(t);o2.start(t);o.stop(t+.07);o2.stop(t+.07)}
+function phys(){const g=geo(),dt=1/240*(slow?.25:1);for(let s=0;s<4;s++){for(let i=0;i<n;i++){if(dragSet.includes(i))continue;v[i]+=-9.8/(.6)*Math.sin(a[i])*dt;v[i]*=vac?.99999:.99985;a[i]+=v[i]*dt}
+for(let k=0;k<3;k++)for(let i=0;i<n-1;i++){const xi=g.px(i)+Math.sin(a[i])*g.L,xj=g.px(i+1)+Math.sin(a[i+1])*g.L;if(xj-xi<g.r*2-.01&&v[i]>v[i+1]){if(dragSet.includes(i)||dragSet.includes(i+1))continue;const rel=v[i]-v[i+1];const t=v[i];v[i]=v[i+1];v[i+1]=t;if(k===0){hits++;clack(rel)}}
+if(xj-xi<g.r*2){const o=(g.r*2-(xj-xi))/g.L/2;if(!dragSet.includes(i))a[i]-=o;if(!dragSet.includes(i+1))a[i+1]+=o}}}}
 function f(){phys();const g=geo();x.clearRect(0,0,W,H);
-const bw=(n+1.6)*g.r*2;x.fillStyle='#1d1c1b';x.beginPath();x.roundRect(W/2-bw/2,g.top+g.L+g.r*2.2,bw,g.r*.7,g.r*.2);x.fill();
-x.strokeStyle='#8a857c';x.lineWidth=g.r*.18;x.lineCap='round';x.beginPath();x.moveTo(W/2-bw/2+g.r*.4,g.top+g.L+g.r*2.3);x.lineTo(W/2-bw/2+g.r*.4,g.top);x.lineTo(W/2+bw/2-g.r*.4,g.top);x.lineTo(W/2+bw/2-g.r*.4,g.top+g.L+g.r*2.3);x.stroke();
-for(let i=0;i<n;i++){const bx=g.px(i)+Math.sin(a[i])*g.L,by=g.top+Math.cos(a[i])*g.L;x.fillStyle='rgba(0,0,0,.18)';x.beginPath();x.ellipse(bx,g.top+g.L+g.r*2.15,g.r*(.9-Math.abs(a[i])*.4),g.r*.15,0,0,7);x.fill()}
+// desk lamp light
+const lg=x.createRadialGradient(W*.3,0,0,W*.3,0,H*1.1);lg.addColorStop(0,'rgba(255,245,220,.35)');lg.addColorStop(1,'rgba(255,245,220,0)');x.fillStyle=lg;x.fillRect(0,0,W,H);
+const bw=(n+1.6)*g.r*2,by0=g.top+g.L+g.r*2.2;
+// base: walnut with a brass plate
+const wg=x.createLinearGradient(0,by0,0,by0+g.r*.9);wg.addColorStop(0,'#5a3418');wg.addColorStop(1,'#2a160a');x.fillStyle=wg;x.beginPath();x.roundRect(W/2-bw/2,by0,bw,g.r*.9,g.r*.2);x.fill();x.fillStyle='rgba(255,255,255,.12)';x.fillRect(W/2-bw/2+g.r*.2,by0+1*dpr,bw-g.r*.4,1.5*dpr);
+x.fillStyle='#c9a35a';x.fillRect(W/2-g.r*1.6,by0+g.r*.25,g.r*3.2,g.r*.4);x.fillStyle='#5a4320';x.font=`${g.r*.22}px Italiana`;x.textAlign='center';x.fillText('CONSERVATION',W/2,by0+g.r*.53);
+// chrome frame
+const fg=x.createLinearGradient(W/2-bw/2,0,W/2+bw/2,0);fg.addColorStop(0,'#6a6a6a');fg.addColorStop(.3,'#f2f2f2');fg.addColorStop(.6,'#8a8a8a');fg.addColorStop(1,'#d8d8d8');x.strokeStyle=fg;x.lineWidth=g.r*.18;x.lineCap='round';x.beginPath();x.moveTo(W/2-bw/2+g.r*.4,by0+g.r*.1);x.lineTo(W/2-bw/2+g.r*.4,g.top);x.lineTo(W/2+bw/2-g.r*.4,g.top);x.lineTo(W/2+bw/2-g.r*.4,by0+g.r*.1);x.stroke();
+for(let i=0;i<n;i++){const bx=g.px(i)+Math.sin(a[i])*g.L;x.fillStyle='rgba(0,0,0,.16)';x.beginPath();x.ellipse(bx,by0-g.r*.05,g.r*(.9-Math.abs(a[i])*.4),g.r*.15,0,0,7);x.fill()}
 for(let i=0;i<n;i++){const bx=g.px(i)+Math.sin(a[i])*g.L,by=g.top+Math.cos(a[i])*g.L;x.strokeStyle='rgba(40,40,40,.6)';x.lineWidth=dpr;x.beginPath();x.moveTo(g.px(i)-g.r*.6,g.top);x.lineTo(bx,by);x.lineTo(g.px(i)+g.r*.6,g.top);x.stroke();
 const gr=x.createRadialGradient(bx-g.r*.35,by-g.r*.4,g.r*.05,bx,by,g.r);gr.addColorStop(0,'#ffffff');gr.addColorStop(.25,'#dcdcdc');gr.addColorStop(.6,'#6d6d6d');gr.addColorStop(.85,'#2a2a2a');gr.addColorStop(1,'#9a9a9a');x.fillStyle=gr;x.beginPath();x.arc(bx,by,g.r,0,7);x.fill();
-x.fillStyle='rgba(232,228,220,.55)';x.beginPath();x.ellipse(bx+g.r*.2,by+g.r*.55,g.r*.5,g.r*.18,0,0,7);x.fill()}requestAnimationFrame(f)}f();
-c.addEventListener('pointerdown',e=>{const g=geo(),X=e.clientX*dpr,Y=e.clientY*dpr;for(let i=0;i<n;i++){const bx=g.px(i)+Math.sin(a[i])*g.L,by=g.top+Math.cos(a[i])*g.L;if(Math.hypot(X-bx,Y-by)<g.r*1.2){drag=i;c.setPointerCapture(e.pointerId)}}});
+// reflections of neighbours and the room
+x.fillStyle='rgba(232,228,220,.55)';x.beginPath();x.ellipse(bx+g.r*.2,by+g.r*.55,g.r*.5,g.r*.18,0,0,7);x.fill();x.fillStyle='rgba(40,40,40,.25)';x.beginPath();x.ellipse(bx-g.r*.82,by,g.r*.12,g.r*.5,0,0,7);x.fill();x.beginPath();x.ellipse(bx+g.r*.82,by,g.r*.12,g.r*.5,0,0,7);x.fill();
+x.fillStyle='rgba(255,250,230,.9)';x.beginPath();x.arc(bx-g.r*.38,by-g.r*.42,g.r*.1,0,7);x.fill()}
+let ke=0;for(let i=0;i<n;i++)ke+=v[i]*v[i];document.getElementById('ke').style.transform=`scaleX(${Math.min(1,ke/20)})`;document.getElementById('cc').textContent=hits;
+requestAnimationFrame(f)}f();
+c.addEventListener('pointerdown',e=>{if(!ac)try{ac=new (window.AudioContext||window.webkitAudioContext)()}catch(er){}const g=geo(),X=e.clientX*dpr,Y=e.clientY*dpr;for(let i=0;i<n;i++){const bx=g.px(i)+Math.sin(a[i])*g.L,by=g.top+Math.cos(a[i])*g.L;if(Math.hypot(X-bx,Y-by)<g.r*1.2){drag=i;c.setPointerCapture(e.pointerId)}}});
 c.addEventListener('pointermove',e=>{if(drag<0)return;const g=geo(),X=e.clientX*dpr,Y=e.clientY*dpr;let ang=Math.atan2(X-g.px(drag),Y-g.top);ang=Math.max(-1.2,Math.min(1.2,ang));
-if(drag<(n-1)/2)ang=Math.min(ang,0);else if(drag>(n-1)/2)ang=Math.max(ang,0);const lo=ang<0?0:drag,hi=ang<0?drag:n-1;for(let i=lo;i<=hi;i++){a[i]=ang;v[i]=0}});
-addEventListener('pointerup',()=>drag=-1);
+if(drag<(n-1)/2)ang=Math.min(ang,0);else if(drag>(n-1)/2)ang=Math.max(ang,0);const lo=ang<0?0:drag,hi=ang<0?drag:n-1;dragSet=[];for(let i=lo;i<=hi;i++){a[i]=ang;v[i]=0;dragSet.push(i)}});
+addEventListener('pointerup',()=>{drag=-1;dragSet=[]});
+addEventListener('keydown',e=>{if(e.key===' '){e.preventDefault();slow=!slow;document.getElementById('slow').setAttribute('aria-pressed',slow)}const k=+e.key;if(k>=3&&k<=7)reset(k)});
 </script></body></html>
