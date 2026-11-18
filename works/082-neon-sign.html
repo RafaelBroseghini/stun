@@ -1,15 +1,47 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Open Late Neon</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Neonderthaw&family=Tilt+Neon&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background-color:#2a1a1a;background-image:linear-gradient(90deg,transparent 48%,rgba(0,0,0,.45) 48% 50%,transparent 50%),linear-gradient(rgba(0,0,0,.45) 6%,transparent 6%);background-size:120px 60px,60px 30px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4vh;font-family:'Tilt Neon',sans-serif}
-body::before{content:"";position:fixed;inset:0;background:repeating-linear-gradient(90deg,#6b3a2e 0 58px,transparent 58px 60px),repeating-linear-gradient(#6b3a2e 0 28px,transparent 28px 30px);opacity:.0;pointer-events:none}
-.wall{position:fixed;inset:0;background:radial-gradient(ellipse at 50% 45%,rgba(255,60,140,.28),transparent 60%),radial-gradient(ellipse at 50% 80%,rgba(60,200,255,.18),transparent 50%);pointer-events:none;transition:opacity .3s}
-.br{position:fixed;inset:0;z-index:-1;background-color:#5b2f26;background-image:linear-gradient(#2a1a1a 3px,transparent 3px),linear-gradient(90deg,#2a1a1a 3px,transparent 3px),linear-gradient(90deg,#2a1a1a 3px,transparent 3px);background-size:100% 34px,90px 68px,90px 68px;background-position:0 0,0 0,45px 34px;filter:brightness(.55)}
-.s1{font:400 clamp(70px,16vw,230px)/1 Neonderthaw,cursive;color:#ffd6ec;text-shadow:0 0 4px #fff,0 0 10px #ff3c8c,0 0 22px #ff3c8c,0 0 44px #ff3c8c,0 0 80px #ff3c8c;animation:fl 6s infinite}
-.s2{font-size:clamp(22px,4vw,54px);letter-spacing:.35em;color:#d6f6ff;padding:.3em .8em;border:4px solid #d6f6ff;border-radius:16px;text-shadow:0 0 6px #3cc8ff,0 0 20px #3cc8ff,0 0 40px #3cc8ff;box-shadow:0 0 10px #3cc8ff,0 0 30px #3cc8ff,inset 0 0 20px #3cc8ff}
-.s2 i{font-style:normal;animation:fl2 3.3s infinite}
-@keyframes fl{0%,18%,22%,25%,53%,57%,100%{opacity:1}20%,24%,55%{opacity:.35;text-shadow:none}}@keyframes fl2{0%,40%,44%,100%{opacity:1}42%{opacity:.1}}
-.off .s1,.off .s2,.off .s2 i{animation:none;text-shadow:none;box-shadow:none;color:#6b5a60;border-color:#6b5a60}.off .wall{opacity:0}
-.sw{position:fixed;right:5vw;bottom:5vh;width:46px;height:80px;background:#ddd;border-radius:6px;box-shadow:0 6px 12px #0008;cursor:pointer;display:grid;place-items:center}.sw i{width:16px;height:34px;background:#999;border-radius:4px;transform:translateY(-12px);transition:.2s}.off .sw i{transform:translateY(12px)}</style></head><body>
-<div class="br"></div><div class="wall"></div><div class="s1">open late</div><div class="s2">NOODLES · <i>BAR</i> · 24H</div><div class="sw" id="sw" title="power"><i></i></div>
-<script>document.getElementById('sw').onclick=()=>document.body.classList.toggle('off')</script>
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;user-select:none;-webkit-user-select:none}
+body{--a:#ff3c8c;--b:#3cc8ff;background:#1a0f0f;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3vh;font-family:'Tilt Neon',sans-serif;padding-bottom:16vh}
+.br{position:fixed;inset:0 0 22vh 0;z-index:-2;background-color:#5b2f26;background-image:linear-gradient(#2a1a1a 3px,transparent 3px),linear-gradient(90deg,#2a1a1a 3px,transparent 3px),linear-gradient(90deg,#2a1a1a 3px,transparent 3px);background-size:100% 34px,90px 68px,90px 68px;background-position:0 0,0 0,45px 34px;filter:brightness(.5)}
+.wall{position:fixed;inset:0 0 22vh 0;z-index:-1;background:radial-gradient(ellipse at 50% 40%,color-mix(in srgb,var(--a) 34%,transparent),transparent 60%),radial-gradient(ellipse at 50% 70%,color-mix(in srgb,var(--b) 22%,transparent),transparent 50%);pointer-events:none;transition:opacity .25s}
+.street{position:fixed;left:0;right:0;bottom:0;height:22vh;background:linear-gradient(#141018,#0a080c);overflow:hidden;z-index:-1}
+.street::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 120px,rgba(255,255,255,.03) 120px 122px)}
+.ref{position:absolute;left:0;right:0;top:0;height:100%;display:flex;flex-direction:column;align-items:center;transform:scaleY(-1);filter:blur(6px);opacity:.45;mask:linear-gradient(transparent,#000 90%);-webkit-mask:linear-gradient(transparent,#000 90%);animation:rip 3s ease-in-out infinite alternate}@keyframes rip{to{transform:scaleY(-1.04) skewX(1deg)}}
+.s1{font:400 clamp(70px,15vw,220px)/1 Neonderthaw,cursive;color:#ffd6ec;cursor:pointer}
+.s1 span{display:inline-block;text-shadow:0 0 4px #fff,0 0 10px var(--a),0 0 22px var(--a),0 0 44px var(--a),0 0 80px var(--a);transition:color .1s,text-shadow .1s}
+.s1 span.off{color:#5a3a48;text-shadow:none}
+.s2{font-size:clamp(20px,3.6vw,50px);letter-spacing:.35em;color:#d6f6ff;padding:.3em .8em;border:4px solid #d6f6ff;border-radius:16px;text-shadow:0 0 6px var(--b),0 0 20px var(--b),0 0 40px var(--b);box-shadow:0 0 10px var(--b),0 0 30px var(--b),inset 0 0 20px var(--b);cursor:pointer;transition:all .1s}
+.s2.off{color:#3a5a66;border-color:#3a5a66;text-shadow:none;box-shadow:none}.s2 i{font-style:normal}.s2 i.off{color:#3a5a66;text-shadow:none}
+.bowl{width:clamp(80px,10vw,140px);height:auto;filter:drop-shadow(0 0 6px var(--b)) drop-shadow(0 0 18px var(--b))}.bowl path{fill:none;stroke:#d6f6ff;stroke-width:3;stroke-linecap:round}.bowl .st{stroke:#ffd6ec;filter:drop-shadow(0 0 6px var(--a));animation:steam 3s ease-in-out infinite}.bowl .st:nth-child(2){animation-delay:-1s}.bowl .st:nth-child(3){animation-delay:-2s}@keyframes steam{50%{transform:translateY(-6px);opacity:.4}}
+.dark .s1 span,.dark .s2,.dark .s2 i{color:#4a3038;text-shadow:none;box-shadow:none;border-color:#4a3038}.dark .wall{opacity:0}.dark .bowl{filter:none;opacity:.35}
+.ctl{position:fixed;right:5vw;bottom:5vh;display:flex;gap:16px;align-items:flex-end;z-index:3}
+.sw{width:46px;height:80px;background:linear-gradient(#eee,#bbb);border-radius:6px;box-shadow:0 6px 12px #0008;cursor:pointer;display:grid;place-items:center}.sw i{width:16px;height:34px;background:#888;border-radius:4px;transform:translateY(-12px);transition:.2s}.dark .sw i{transform:translateY(12px)}
+.knob{width:54px;height:54px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#444,#111);box-shadow:0 6px 12px #0008;cursor:pointer;position:relative;transition:transform .3s cubic-bezier(.2,.9,.3,1.4)}.knob::after{content:"";position:absolute;left:50%;top:6px;width:4px;height:14px;margin-left:-2px;background:var(--a);border-radius:2px;box-shadow:0 0 8px var(--a)}
+.ctl small{display:block;font:11px 'Tilt Neon';color:#a88;letter-spacing:.2em;text-align:center;margin-top:6px}
+.hint{position:fixed;left:5vw;bottom:5vh;font:12px 'Tilt Neon';letter-spacing:.24em;color:#a88;z-index:3}
+</style></head><body>
+<div class="br"></div><div class="wall"></div>
+<svg class="bowl" viewBox="0 0 120 90" id="bowl"><path class="st" d="M44 30c-6-8 6-12 0-22"/><path class="st" d="M60 30c-6-8 6-12 0-22"/><path class="st" d="M76 30c-6-8 6-12 0-22"/><path d="M14 40h92c-2 26-20 40-46 40S16 66 14 40z"/><path d="M40 82h40"/><path d="M84 18l26-10M88 26l26-6"/></svg>
+<div class="s1" id="s1"></div><div class="s2" id="s2">NOODLES · <i id="bar">BAR</i> · 24H</div>
+<div class="street"><div class="ref" id="ref"></div></div>
+<div class="ctl"><div><div class="knob" id="kn" title="Gas colour"></div><small>GAS</small></div><div><div class="sw" id="sw" title="Power"><i></i></div><small>POWER</small></div></div>
+<div class="hint">Tap a letter to knock its tube · flip the switch</div>
+<script>
+const s1=document.getElementById('s1');[...'open late'].forEach((ch,i)=>{const s=document.createElement('span');s.textContent=ch===' '?' ':ch;s.dataset.i=i;s.health=1;s1.appendChild(s)});
+const L=[...s1.children];const bar=document.getElementById('bar'),s2=document.getElementById('s2');
+const GAS=[['#ff3c8c','#3cc8ff'],['#ff5a1f','#7dff6a'],['#b44cff','#ffd34a'],['#ff2b2b','#ffffff']];let gi=0;
+let ac,hum,hg;function audio(){if(ac)return;try{ac=new (window.AudioContext||window.webkitAudioContext)();hum=ac.createOscillator();hum.type='sawtooth';hum.frequency.value=120;const f=ac.createBiquadFilter();f.type='lowpass';f.frequency.value=400;hg=ac.createGain();hg.gain.value=.012;hum.connect(f).connect(hg).connect(ac.destination);hum.start()}catch(e){}}
+function zap(){if(!ac)return;const n=ac.createBufferSource(),b=ac.createBuffer(1,ac.sampleRate*.05,ac.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);n.buffer=b;const g=ac.createGain();g.gain.value=.06;n.connect(g).connect(ac.destination);n.start()}
+function plink(i){if(!ac)return;const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=600+i*60;g.gain.setValueAtTime(.03,ac.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+.12);o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+.13)}
+addEventListener('pointerdown',audio,{once:true});
+s1.addEventListener('click',e=>{const s=e.target.closest('span');if(!s)return;s.health=s.health>.5?.15:1;zap()});s2.addEventListener('click',()=>{bar.health=bar.health>.5?.1:1;zap()});bar.health=.6;
+let power=true;document.getElementById('sw').onclick=()=>{audio();power=!power;if(power){document.body.classList.remove('dark');L.forEach((s,i)=>{s.classList.add('off');setTimeout(()=>{s.classList.remove('off');plink(i)},120+i*110)})}else document.body.classList.add('dark');if(hg)hg.gain.setTargetAtTime(power?.012:0,ac.currentTime,.05);zap()};
+let rot=0;document.getElementById('kn').onclick=()=>{gi=(gi+1)%GAS.length;rot+=90;document.getElementById('kn').style.transform=`rotate(${rot}deg)`;document.body.style.setProperty('--a',GAS[gi][0]);document.body.style.setProperty('--b',GAS[gi][1]);zap()};
+addEventListener('keydown',e=>{if(e.key===' '){e.preventDefault();document.getElementById('sw').click()}if(e.key==='g')document.getElementById('kn').click()});
+// flicker: unhealthy tubes stutter, healthy ones occasionally sputter
+setInterval(()=>{if(!power)return;let lit=0;L.forEach(s=>{const fl=Math.random()>s.health*.98+.01&&Math.random()<.5;s.classList.toggle('off',fl);if(!fl)lit++;if(s.health<1&&Math.random()<.01)s.health=Math.min(1,s.health+.3)});bar.classList.toggle('off',Math.random()>bar.health);if(hg)hg.gain.setTargetAtTime(.004+lit*.0015,ac.currentTime,.02)},70);
+// reflection on the wet street mirrors the sign
+const ref=document.getElementById('ref');function mirror(){ref.innerHTML='';const c1=s1.cloneNode(true),c2=s2.cloneNode(true);c1.removeAttribute('id');c2.removeAttribute('id');ref.appendChild(c2);ref.appendChild(c1)}setInterval(mirror,140);mirror();
+</script>
 </body></html>
