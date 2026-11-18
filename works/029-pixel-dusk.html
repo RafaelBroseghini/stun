@@ -2,7 +2,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap">
 <style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#1a1c2c}canvas{display:block;width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges}
 .t{position:fixed;left:0;right:0;top:8vh;text-align:center;font:clamp(12px,2.2vw,26px) 'Press Start 2P',monospace;color:#ffcd75;text-shadow:3px 3px 0 #5d275d;letter-spacing:.1em}</style></head><body>
-<canvas id="c"></canvas><div class="t">THE LONG WALK HOME</div>
+<canvas id="c"></canvas><div class="t">THE LONG WALK HOME<br><span style="font-size:.45em;opacity:.75">POINT LEFT OR RIGHT TO WALK</span></div>
 <script>
 const c=document.getElementById('c'),x=c.getContext('2d');let W,H;const PAL={sky:['#1a1c2c','#29366f','#3b5dc9','#5d275d','#b13e53','#ef7d57','#ffcd75']};
 function size(){H=150;W=Math.round(H*innerWidth/innerHeight);c.width=W;c.height=H;x.imageSmoothingEnabled=false}size();addEventListener('resize',size);
@@ -12,14 +12,14 @@ const trees=Array.from({length:2048},()=>rnd());const stars=Array.from({length:9
 function band(y0,y1,c1,c2){for(let y=y0;y<y1;y++){const t=(y-y0)/(y1-y0);for(let X=0;X<W;X++){const th=((X*7+y*13)%16)/16;x.fillStyle=t>th?c2:c1;x.fillRect(X,y,1,1)}}}
 let skyC;function sky(){skyC=document.createElement('canvas');skyC.width=W;skyC.height=H;const old=x;const g=skyC.getContext('2d');const s=PAL.sky;const seg=H*.62/(s.length-1);
 for(let i=0;i<s.length-1;i++){for(let y=Math.floor(i*seg);y<(i+1)*seg;y++){const t=(y-i*seg)/seg;for(let X=0;X<W;X++){const th=(((X%4)*4+(y%4))*7%16)/16;g.fillStyle=t>th?s[i+1]:s[i];g.fillRect(X,y,1,1)}}}}
-sky();addEventListener('resize',sky);let off=0;
-function f(){off+=.12;x.drawImage(skyC,0,0);const t=performance.now()/1000;
+sky();addEventListener('resize',sky);let off=0,spd=.12,tsp=.12;addEventListener('pointermove',e=>tsp=(e.clientX/innerWidth-.5)*1.4);
+function f(){spd+=(tsp-spd)*.05;off+=spd;x.drawImage(skyC,0,0);const t=performance.now()/1000;
 for(const [sx,sy,ph] of stars){if(Math.sin(t*2+ph*9)>-.3){x.fillStyle=ph>.8?'#ffcd75':'#f4f4f4';x.fillRect(Math.floor(sx*W),Math.floor(sy*H*.55),1,1)}}
 x.fillStyle='#ffcd75';const sx=Math.floor(W*.7),sy=Math.floor(H*.36);for(let dy=-10;dy<=10;dy++){const w=Math.floor(Math.sqrt(100-dy*dy));x.fillRect(sx-w,sy+dy,w*2,1)}
 const HC=[['#5d275d',.45,.08],['#3b2a5a',.55,.2],['#29366f',.66,.45],['#1a1c2c',.8,1]];
-HC.forEach(([col,base,sp],k)=>{x.fillStyle=col;for(let X=0;X<W;X++){const i=Math.floor(X+off*sp*8)%2048;const y=Math.floor(H*base+hills[k][i]*(2+k));x.fillRect(X,y,1,H-y);if(k>=2&&trees[(i*3+k)%2048]>.86){const th=3+Math.floor(trees[i]*(k===3?10:5));for(let r=0;r<th;r++){const w=Math.floor((r/th)*(k===3?3:2));x.fillRect(X-w,y-th+r,w*2+1,1)}}}});
+HC.forEach(([col,base,sp],k)=>{x.fillStyle=col;for(let X=0;X<W;X++){const i=((Math.floor(X+off*sp*8)%2048)+2048)%2048;const y=Math.floor(H*base+hills[k][i]*(2+k));x.fillRect(X,y,1,H-y);if(k>=2&&trees[(i*3+k)%2048]>.86){const th=3+Math.floor(trees[i]*(k===3?10:5));for(let r=0;r<th;r++){const w=Math.floor((r/th)*(k===3?3:2));x.fillRect(X-w,y-th+r,w*2+1,1)}}}});
 const wy=Math.floor(H*.86);x.fillStyle='#1a1c2c';x.fillRect(0,wy,W,H-wy);for(let y=wy;y<H;y++){if(y%2)continue;for(let X=0;X<W;X+=1){const v=Math.sin(X*.3+y*.7+t*3);if(v>.85){x.fillStyle=Math.abs(X-sx)<14?'#ffcd75':'#3b5dc9';x.fillRect(X,y,2,1)}}}
-const px=Math.floor(W*.32),py=wy-1,step=Math.floor(t*6)%2;x.fillStyle='#f4f4f4';x.fillRect(px,py-7,2,2);x.fillStyle='#b13e53';x.fillRect(px-1,py-5,4,3);x.fillStyle='#29366f';x.fillRect(px+(step?-1:0),py-2,1,2);x.fillRect(px+(step?2:1),py-2,1,2);
+const px=Math.floor(W*.32),py=wy-1,step=Math.abs(spd)>.03?Math.floor(t*6*Math.min(3,.6+Math.abs(spd)*4))%2:0;x.fillStyle='#f4f4f4';x.fillRect(px,py-7,2,2);x.fillStyle='#b13e53';x.fillRect(px-1,py-5,4,3);x.fillStyle='#29366f';x.fillRect(px+(step?-1:0),py-2,1,2);x.fillRect(px+(step?2:1),py-2,1,2);
 for(let b=0;b<4;b++){const bx=Math.floor((t*8+b*37)%(W+20))-10,by=Math.floor(H*.25+b*4+Math.sin(t*2+b)*2),w=Math.floor(t*5+b)%2;x.fillStyle='#1a1c2c';x.fillRect(bx-1,by-w,1,1);x.fillRect(bx,by,1,1);x.fillRect(bx+1,by-w,1,1)}
 requestAnimationFrame(f)}f();
 </script></body></html>

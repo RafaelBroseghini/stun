@@ -1,0 +1,14 @@
+{
+  "name": "stun",
+  "version": "1.0.0",
+  "private": true,
+  "description": "One hundred single-file HTML studies and a catalog to browse them.",
+  "scripts": {
+    "test": "node scripts/smoke.cjs",
+    "thumbs": "node scripts/thumbs.cjs",
+    "serve": "python3 -m http.server 8000"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0"
+  }
+}

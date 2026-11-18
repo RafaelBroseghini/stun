@@ -13,15 +13,17 @@
 .zod{position:absolute;inset:0;animation:spin 400s linear infinite reverse}.zod span{position:absolute;left:50%;top:50%;font-size:min(1.6vmin,13px);letter-spacing:.3em;transform-origin:0 0}
 .cap{position:fixed;left:4vw;top:5vh}.cap h1{font-weight:700;font-size:clamp(18px,2.4vw,30px);letter-spacing:.25em}.cap p{font:italic 18px 'Cormorant Garamond',serif;color:#b9a27a;margin-top:6px}
 @media(max-width:700px){.cap{top:2vh}.cap p{font-size:14px}}</style></head><body>
-<div class="cap"><h1>Orrery</h1><p>after the workshop of J. Rowley, c. 1713 — one year passes every 12 seconds</p></div>
+<div class="cap"><h1>Orrery</h1><p>after the workshop of J. Rowley, c. 1713 — <span id="sp">drag sideways to wind the clockwork · ×1.0</span></p></div>
 <div class="o" id="o"><div class="tick2"></div><div class="tick"></div><div class="zod" id="z"></div><div class="sun"></div></div>
 <script>
-const o=document.getElementById('o');const P=[['Mercurius',.11,10,'#a8a8a8',.24],['Venus',.16,14,'#e8c27a',.62],['Terra',.22,15,'#3d7cc9',1],['Mars',.28,12,'#c1502e',1.88],['Iuppiter',.35,26,'#d1a36b',11.86],['Saturnus',.42,22,'#e3cf8f',29.4]];
+const o=document.getElementById('o');const arms=[];const P=[['Mercurius',.11,10,'#a8a8a8',.24],['Venus',.16,14,'#e8c27a',.62],['Terra',.22,15,'#3d7cc9',1],['Mars',.28,12,'#c1502e',1.88],['Iuppiter',.35,26,'#d1a36b',11.86],['Saturnus',.42,22,'#e3cf8f',29.4]];
 P.forEach(([n,r,s,c,y],i)=>{const R=r*100+'%';const ring=document.createElement('div');ring.className='ring';ring.style.width=ring.style.height=(r*200)+'%';o.appendChild(ring);
-const a=document.createElement('div');a.className='arm';a.style.setProperty('--r',`calc(${r} * min(92vmin,900px))`);a.style.animationDuration=(12*Math.pow(y,.55))+'s';a.style.animationDelay=-(Math.random()*40)+'s';
+const a=document.createElement('div');a.className='arm';a.style.setProperty('--r',`calc(${r} * min(92vmin,900px))`);a.style.animation='none';a.dur=12*Math.pow(y,.55);a.ph=Math.random();arms.push(a);
 const p=document.createElement('div');p.className='pl';p.style.setProperty('--s',s+'px');p.style.background=`radial-gradient(circle at 35% 35%,#fff8,${c} 45%,#000 120%)`;p.innerHTML='<b>'+n+'</b>';
 if(n==='Saturnus'){p.style.boxShadow+=`,0 0 0 0 transparent`;const ring2=document.createElement('i');ring2.style.cssText='position:absolute;left:-60%;top:35%;width:220%;height:30%;border:2px solid #e3cf8f;border-radius:50%;transform:rotate(-20deg)';p.appendChild(ring2)}
 if(n==='Terra'){const m=document.createElement('i');m.style.cssText='position:absolute;left:50%;top:50%;width:0;height:0;animation:spin 1.6s linear infinite';m.innerHTML='<i style="position:absolute;left:16px;top:-3px;width:6px;height:6px;border-radius:50%;background:#ddd"></i>';p.appendChild(m)}
 a.appendChild(p);o.appendChild(a)});
+let rate=1,T=0,lt=performance.now();(function tick(now){T+=(now-lt)/1000*rate;lt=now;for(const a of arms)a.style.transform=`rotate(${(T/a.dur+a.ph)*360}deg)`;requestAnimationFrame(tick)})(lt);const sp=document.getElementById('sp');const setR=v=>{rate=Math.max(-6,Math.min(16,v));document.getAnimations().forEach(a=>a.updatePlaybackRate?a.updatePlaybackRate(rate):a.playbackRate=rate);sp.textContent=`drag sideways to wind the clockwork · ×${rate.toFixed(1)}`};
+addEventListener('pointerdown',e=>{const x0=e.clientX,r0=rate;const mv=ev=>setR(r0+(ev.clientX-x0)/30);addEventListener('pointermove',mv);addEventListener('pointerup',()=>removeEventListener('pointermove',mv),{once:true})});addEventListener('wheel',e=>setR(rate-e.deltaY/200),{passive:true});document.body.style.cursor='ew-resize';
 const zz=document.getElementById('z');['ARIES','TAURUS','GEMINI','CANCER','LEO','VIRGO','LIBRA','SCORPIO','SAGITTARIUS','CAPRICORNUS','AQUARIUS','PISCES'].forEach((n,i)=>{const s=document.createElement('span');s.textContent=n;s.style.transform=`rotate(${i*30+5}deg) translate(0,calc(min(92vmin,900px) * -.475))`;zz.appendChild(s)});
 </script></body></html>

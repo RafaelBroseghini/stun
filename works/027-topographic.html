@@ -2,15 +2,16 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600&display=swap">
 <style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#0f2a2a}canvas{display:block;width:100%;height:100%}
 .leg{position:fixed;left:24px;bottom:24px;background:#0f2a2acc;border:1px solid #2e5a55;padding:14px 16px;color:#cfe8d8;font:400 12px Barlow,sans-serif;letter-spacing:.06em}.leg b{display:block;font-weight:600;font-size:14px;letter-spacing:.2em;margin-bottom:8px}.bar{height:8px;width:180px;background:linear-gradient(90deg,#2f6f6a,#7fb78f,#e9d58c,#f09a5c,#f7f1e3);margin:8px 0 4px}.sc{display:flex;justify-content:space-between}</style></head><body>
-<canvas id="c"></canvas><div class="leg"><b>SHEET 47-C · KAIROA RANGE</b>Contour interval 40 m · moving survey<div class="bar"></div><div class="sc"><span>0 m</span><span>1,000</span><span>2,000 m</span></div></div>
+<canvas id="c"></canvas><div class="leg"><b>SHEET 47-C · KAIROA RANGE</b>Contour interval 40 m · hover to raise a summit, press to dig a crater<div class="bar"></div><div class="sc"><span>0 m</span><span>1,000</span><span>2,000 m</span></div></div>
 <script>
 const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio,2);let W,H,gw,gh,F;const S=7;
 const P=new Uint8Array(512);for(let i=0;i<256;i++)P[i]=i;for(let i=255;i>0;i--){const j=Math.random()*(i+1)|0;[P[i],P[j]]=[P[j],P[i]]}for(let i=0;i<256;i++)P[i+256]=P[i];
 const fd=t=>t*t*t*(t*(t*6-15)+10),lp=(a,b,t)=>a+t*(b-a),gr=(h,x,y)=>{h&=7;const u=h<4?x:y,v=h<4?y:x;return((h&1)?-u:u)+((h&2)?-2*v:2*v)};
 function N(x,y){let X=Math.floor(x)&255,Y=Math.floor(y)&255;x-=Math.floor(x);y-=Math.floor(y);const u=fd(x),v=fd(y),a=P[X]+Y,b=P[X+1]+Y;return lp(lp(gr(P[a],x,y),gr(P[b],x-1,y),u),lp(gr(P[a+1],x,y-1),gr(P[b+1],x-1,y-1),u),v)}
 function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr;gw=Math.ceil(W/(S*dpr))+1;gh=Math.ceil(H/(S*dpr))+1;F=new Float32Array(gw*gh)}size();addEventListener('resize',size);
+let mgx=-99,mgy=-99,mA=0,tA=0;addEventListener('pointermove',e=>{mgx=e.clientX/S;mgy=e.clientY/S;if(tA>=0)tA=.34});addEventListener('pointerdown',()=>tA=-.42);addEventListener('pointerup',()=>tA=.34);document.documentElement.addEventListener('pointerleave',()=>tA=0);
 const cols=['#2f6f6a','#478a78','#7fb78f','#b8c98a','#e9d58c','#f0b56c','#f09a5c','#f4c9a6','#f7f1e3'];
-function f(t){t*=.00004;for(let j=0;j<gh;j++)for(let i=0;i<gw;i++){const u=i/gw*3,v=j/gw*3;F[j*gw+i]=(N(u+t,v)*.6+N(u*2.1,v*2.1-t)*.28+N(u*5,v*5)*.08)*1.1+.5}
+function f(t){t*=.00004;mA+=(tA-mA)*.06;const Rb=gw*.07;for(let j=0;j<gh;j++)for(let i=0;i<gw;i++){const u=i/gw*3,v=j/gw*3;F[j*gw+i]=(N(u+t,v)*.6+N(u*2.1,v*2.1-t)*.28+N(u*5,v*5)*.08)*1.1+.5+mA*Math.exp(-((i-mgx)**2+(j-mgy)**2)/(Rb*Rb))}
 x.fillStyle='#0f2a2a';x.fillRect(0,0,W,H);const L=26,s=S*dpr;
 for(let l=1;l<L;l++){const th=l/L;const ci=Math.min(cols.length-1,Math.floor(th*cols.length));x.strokeStyle=cols[ci];x.lineWidth=(l%5===0?1.8:.8)*dpr;x.globalAlpha=l%5===0?1:.7;x.beginPath();
 for(let j=0;j<gh-1;j++)for(let i=0;i<gw-1;i++){const a=F[j*gw+i],b=F[j*gw+i+1],cc=F[(j+1)*gw+i+1],d=F[(j+1)*gw+i];const k=(a>th)|(b>th)<<1|(cc>th)<<2|(d>th)<<3;if(k===0||k===15)continue;

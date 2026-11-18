@@ -9,8 +9,9 @@
 .f .t{top:0;align-items:flex-end;border-bottom:1px solid #000}.f .b{bottom:0;align-items:flex-start}.f span i{font-style:normal;line-height:0}
 .f .t i{transform:translateY(.02em)}.f .b i{transform:translateY(-.02em)}
 .f .fl{top:0;align-items:flex-end;transform-origin:bottom;backface-visibility:hidden;z-index:2;animation:flip .09s linear forwards;border-bottom:1px solid #000}@keyframes flip{to{transform:rotateX(-90deg);filter:brightness(.4)}}
+.in{display:flex;gap:10px;margin-top:16px}.in input{flex:1;min-width:0;background:#111;border:1px solid #333;border-radius:6px;color:#f5d000;font:700 clamp(12px,1.4vw,18px) 'Roboto Mono',monospace;padding:10px 12px;letter-spacing:.15em;text-transform:uppercase}.in input::placeholder{color:#6b5d00}.in button{background:#f5d000;color:#111;border:0;border-radius:6px;padding:0 18px;font:600 clamp(12px,1.3vw,16px) 'Barlow Condensed',sans-serif;letter-spacing:.2em;cursor:pointer}
 .row.g .f span{color:#37d67a}.row.r .f span{color:#ff5a4f}</style></head><body>
-<div class="board"><div class="hd"><h1>Abfahrt <span>Departures</span></h1><b id="clk">00:00</b></div><div class="cols" id="cols"><span>TIME</span><span>DESTINATION</span><span>FLIGHT</span><span>GATE</span><span>REMARKS</span></div><div id="rows"></div></div>
+<div class="board"><div class="hd"><h1>Abfahrt <span>Departures</span></h1><b id="clk">00:00</b></div><div class="cols" id="cols"><span>TIME</span><span>DESTINATION</span><span>FLIGHT</span><span>GATE</span><span>REMARKS</span></div><div id="rows"></div><form class="in" id="fm"><input id="msg" maxlength="14" placeholder="Send a flight anywhere" autocomplete="off" aria-label="Destination"><button>DEPART</button></form></div>
 <script>
 const CH=' ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:-.';const W=[5,14,6,4,9];
 const dest=['LISBON','REYKJAVIK','KYOTO','MONTEVIDEO','TBILISI','HONOLULU','MARRAKECH','OSLO','CAPE TOWN','VALPARAISO','HANOI','QUEBEC','PALERMO','ULAANBAATAR','TROMSO','ZANZIBAR'];
@@ -22,6 +23,7 @@ function setRow(r,vals,cls){r.el.className='row '+(cls||'');vals.forEach((v,ci)=
 let base=new Date();base.setMinutes(Math.ceil(base.getMinutes()/5)*5);
 function data(i){const t=new Date(base.getTime()+i*7*60000);const d=dest[(i*7+Math.floor(Math.random()*3))%dest.length];const rm=i===0?'BOARDING':rem[Math.random()*rem.length|0];return[[String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0'),d,['NA','KL','SV','TP','AY'][i%5]+(100+Math.random()*900|0),String.fromCharCode(65+i%4)+(1+Math.random()*30|0),rm],rm==='DELAYED'?'r':rm==='BOARDING'||rm==='GATE OPEN'?'g':'']}
 for(let i=0;i<10;i++){R.push(mkRow());if(i===0)[...document.getElementById('cols').children].forEach((sp,k)=>{sp.style.width=R[0].el.children[k].offsetWidth+'px';sp.style.flex='none'});setTimeout(()=>{const [v,c]=data(i);setRow(R[i],v,c)},i*200)}
-setInterval(()=>{const i=Math.random()*10|0;const [v,c]=data(i);setRow(R[i],v,c)},3500);
+let mine=0;document.getElementById('fm').addEventListener('submit',e=>{e.preventDefault();const m=document.getElementById('msg');const txt=[...m.value.toUpperCase()].filter(ch=>CH.includes(ch)).join('').trim();if(!txt)return;const k=mine++%3;const [v]=data(k);setRow(R[k],[v[0],txt,'YOU'+(1+k),'Z'+(9-k),'BOARDING'],'g');m.value=''});
+setInterval(()=>{const i=3+(Math.random()*7|0);const [v,c]=data(i);setRow(R[i],v,c)},3500);
 const ck=()=>{const d=new Date();document.getElementById('clk').textContent=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};ck();setInterval(ck,5000);
 </script></body></html>

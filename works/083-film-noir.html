@@ -7,14 +7,17 @@
 .t h1{font:400 clamp(60px,12vw,190px)/.82 'Rozha One',serif;letter-spacing:-.02em;text-shadow:0 8px 30px #000}.t p{font:14px/1.8 'Cutive Mono',monospace;letter-spacing:.2em;margin-top:3vh;opacity:.85;min-height:5.4em}
 .grain{position:fixed;inset:-50%;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E");opacity:.18;animation:g .25s steps(2) infinite;z-index:4;pointer-events:none}@keyframes g{50%{transform:translate(3%,-4%)}}
 .fl{position:fixed;inset:0;background:#fff;opacity:0;animation:fk 4s infinite;z-index:4;pointer-events:none;mix-blend-mode:overlay}@keyframes fk{0%,96%,100%{opacity:0}97%{opacity:.12}98%{opacity:.03}}
+.hint{position:fixed;right:3vw;bottom:3vh;z-index:5;font:12px 'Cutive Mono',monospace;letter-spacing:.25em;color:#bdbdb8}.fl2{position:fixed;inset:0;background:#e8eef5;z-index:2;pointer-events:none;animation:lt .9s ease-out forwards;mix-blend-mode:screen}@keyframes lt{0%{opacity:0}8%{opacity:.85}16%{opacity:.1}26%{opacity:.6}100%{opacity:0}}body{cursor:pointer}
 .vig{position:fixed;inset:0;background:radial-gradient(ellipse,transparent 40%,#000 100%);z-index:3;pointer-events:none}</style></head><body>
 <div class="wall"></div><div class="blinds"></div><canvas id="c"></canvas><div class="vig"></div>
-<div class="t"><small>MERIDIAN PICTURES PRESENTS</small><h1>The<br>Long<br>Rain</h1><p id="cr"></p></div><div class="grain"></div><div class="fl"></div>
+<div class="t"><small>MERIDIAN PICTURES PRESENTS</small><h1>The<br>Long<br>Rain</h1><p id="cr"></p></div><div class="grain"></div><div class="fl"></div><div class="hint">MOVE THE STREETLIGHT · CLICK FOR THUNDER</div>
 <script>
 const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio,1.5);let W,H,P=[];function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr}size();addEventListener('resize',size);
 function f(t){x.clearRect(0,0,W,H);if(P.length<140)P.push({x:W*.78+Math.sin(t*.001)*6,y:H*.9,r:6*dpr,a:.22,vx:(Math.random()-.5)*.4,vy:-.8-Math.random()*.6,ph:Math.random()*6});
 for(let i=P.length-1;i>=0;i--){const p=P[i];p.x+=p.vx*dpr+Math.sin(t*.002+p.ph)*.6*dpr;p.y+=p.vy*dpr;p.r+=.35*dpr;p.a*=.988;if(p.a<.01){P.splice(i,1);continue}const g=x.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r);g.addColorStop(0,`rgba(220,220,220,${p.a})`);g.addColorStop(1,'rgba(220,220,220,0)');x.fillStyle=g;x.fillRect(p.x-p.r,p.y-p.r,p.r*2,p.r*2)}
 x.fillStyle='rgba(255,160,90,.9)';x.beginPath();x.arc(W*.78,H*.9,3*dpr*(1+.2*Math.sin(t*.01)),0,7);x.fill();requestAnimationFrame(f)}requestAnimationFrame(f);
+const bl=document.querySelector('.blinds'),wl=document.querySelector('.wall');addEventListener('pointermove',e=>{const x=e.clientX/innerWidth-.5,y=e.clientY/innerHeight-.5;bl.style.animation='none';bl.style.transform=`rotate(${-14+x*14}deg) skewX(${-18+x*26}deg) translateY(${y*50}px)`;wl.style.background=`radial-gradient(ellipse at ${50+x*60}% ${30+y*40}%,#8a8a8a,#2a2a2a 55%,#0c0c0c)`});
+addEventListener('click',()=>{const f=document.createElement('div');f.className='fl2';document.body.appendChild(f);setTimeout(()=>f.remove(),1000)});
 const C=['STARRING VERA HOLLOWAY','AND JACK MORRO AS "THE DUTCHMAN"','MUSIC BY OSKAR LINDH','DIRECTED BY E. M. KASPRZAK'];let k=0;
 function cr(){const s=C[k++%C.length];let i=0;const e=document.getElementById('cr');e.textContent='';const iv=setInterval(()=>{e.textContent=s.slice(0,++i);if(i>=s.length){clearInterval(iv);setTimeout(cr,1800)}},55)}cr();
 </script></body></html>
