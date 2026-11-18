@@ -1,22 +1,56 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Petri Dish Life</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;600&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#0a0e0c;display:grid;place-items:center;font-family:'Azeret Mono',monospace;color:#b9f5d0}
-.dish{position:relative;width:min(88vmin,820px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 40% 35%,#1d2b22,#0e1612 70%);box-shadow:0 0 0 6px rgba(200,255,230,.12),0 0 0 18px rgba(200,255,230,.05),inset 0 0 60px #000,0 30px 80px #000;overflow:hidden;cursor:crosshair}
-.dish::after{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.12),transparent 30%);pointer-events:none}
-canvas{width:100%;height:100%;display:block}
-.lab{position:fixed;left:24px;top:22px;font-size:11px;line-height:1.7;letter-spacing:.1em}.lab b{font-size:15px;color:#fff;font-weight:600;letter-spacing:.2em}
-.sb{position:fixed;right:24px;bottom:24px;font-size:11px;text-align:right}.sb i{display:block;width:120px;height:3px;background:#b9f5d0;margin:6px 0 0 auto}</style></head><body>
-<div class="lab"><b>CULTURE B-23</b><br>Conway agar · B3/S23<br>generation <span id="g">0</span> · colonies <span id="n">0</span><br>click or drag to inoculate</div>
-<div class="dish"><canvas id="c"></canvas></div><div class="sb">200 µm<i></i></div>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@300;400;600&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}
+body{background:radial-gradient(70% 70% at 50% 45%,#12201a,#060908);display:grid;place-items:center;font-family:'Azeret Mono',monospace;color:#b9f5d0;user-select:none;-webkit-user-select:none}
+.dish{position:relative;width:min(84vmin,800px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 40% 35%,#1d2b22,#0e1612 70%);box-shadow:0 0 0 6px rgba(200,255,230,.12),0 0 0 18px rgba(200,255,230,.05),inset 0 0 60px #000,0 30px 80px #000;overflow:hidden;cursor:none;touch-action:none;animation:in 1.2s cubic-bezier(.2,.8,.2,1) both}
+@keyframes in{from{opacity:0;transform:scale(.94)}}
+.dish::after{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.14),transparent 30%),radial-gradient(circle at 70% 80%,rgba(255,255,255,.04),transparent 30%);pointer-events:none}
+canvas#c{width:100%;height:100%;display:block}
+.lens{position:fixed;width:180px;height:180px;margin:-90px;border-radius:50%;pointer-events:none;box-shadow:0 0 0 3px #b9f5d0,0 0 0 8px rgba(0,0,0,.6),0 20px 40px rgba(0,0,0,.6);overflow:hidden;opacity:0;transition:opacity .25s;z-index:5;background:#0e1612}
+.lens.on{opacity:1}.lens canvas{width:100%;height:100%}.lens::after{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.18),transparent 40%)}
+.lab{position:fixed;left:24px;top:22px;font-size:11px;line-height:1.75;letter-spacing:.1em}.lab b{font-size:15px;color:#fff;font-weight:600;letter-spacing:.2em}
+.lab svg{display:block;width:200px;height:40px;margin-top:8px}
+.ctl{position:fixed;left:24px;bottom:24px;display:flex;flex-direction:column;gap:8px;font-size:10px;letter-spacing:.14em}
+.row{display:flex;gap:6px;flex-wrap:wrap}.row button{font:400 10px 'Azeret Mono';letter-spacing:.12em;color:#b9f5d0;background:rgba(0,0,0,.4);border:1px solid rgba(185,245,208,.25);padding:6px 9px;border-radius:4px;cursor:pointer}.row button:hover{border-color:#b9f5d0}.row button[aria-pressed="true"]{background:#b9f5d0;color:#0a0e0c}
+.sw button{width:26px;height:26px;padding:0;border-radius:50%}
+.sb{position:fixed;right:24px;bottom:24px;font-size:11px;text-align:right}.sb i{display:block;width:120px;height:3px;background:#b9f5d0;margin:6px 0 0 auto}
+@media (max-width:760px){.lab svg{display:none}.ctl{bottom:12px}.sb{display:none}}
+</style></head><body>
+<div class="lab"><b>CULTURE B-23</b><br><span id="rn">Conway agar · B3/S23</span><br>generation <span id="g">0</span> · cells <span id="n">0</span><svg viewBox="0 0 200 40" preserveAspectRatio="none"><path id="sp" fill="none" stroke="#b9f5d0" stroke-width="1.2" vector-effect="non-scaling-stroke"/></svg></div>
+<div class="dish" id="dish"><canvas id="c"></canvas></div><div class="lens" id="lens"><canvas id="lc" width="360" height="360"></canvas></div>
+<div class="ctl"><div class="row sw" id="sw"></div><div class="row" id="rules"></div><div class="row"><button id="pp">❚❚ Pause</button><button id="st">Step</button><button id="rs">Reseed</button><button id="cl">Sterilise</button></div><span style="opacity:.6">Drag to inoculate · Space pause · wheel speed</span></div>
+<div class="sb">200 µm<i></i></div>
 <script>
-const c=document.getElementById('c'),x=c.getContext('2d');const N=160;c.width=c.height=N*4;let A=new Uint16Array(N*N),B=new Uint16Array(N*N),gen=0;const mask=new Uint8Array(N*N);
+const c=document.getElementById('c'),x=c.getContext('2d');const N=170,CS=4;c.width=c.height=N*CS;let A=new Uint16Array(N*N),B=new Uint16Array(N*N),SA=new Uint8Array(N*N),SB=new Uint8Array(N*N),gen=0;const mask=new Uint8Array(N*N);
 for(let y=0;y<N;y++)for(let X=0;X<N;X++)mask[y*N+X]=Math.hypot(X-N/2+.5,y-N/2+.5)<N/2-1?1:0;
-for(let i=0;i<N*N;i++)if(mask[i]&&Math.random()<.22)A[i]=1;
-function step(){for(let y=0;y<N;y++)for(let X=0;X<N;X++){const i=y*N+X;if(!mask[i]){B[i]=0;continue}let n=0;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){if(!dx&&!dy)continue;const yy=(y+dy+N)%N,xx=(X+dx+N)%N;if(A[yy*N+xx])n++}
-B[i]=A[i]?((n===2||n===3)?Math.min(A[i]+1,999):0):(n===3?1:0)}[A,B]=[B,A];gen++}
-function draw(){x.fillStyle='rgba(14,22,18,.55)';x.fillRect(0,0,N*4,N*4);let cnt=0;for(let i=0;i<N*N;i++){const a=A[i];if(!a)continue;cnt++;const X=(i%N)*4,y=(i/N|0)*4;const h=a<3?150:a<12?120-a*4:60+Math.min(a,200)*.4;
-x.fillStyle=`hsl(${h},90%,${a<2?78:58}%)`;x.beginPath();x.arc(X+2,y+2,a<2?1.6:1.9,0,7);x.fill()}document.getElementById('g').textContent=gen;document.getElementById('n').textContent=cnt}
-let dn=false;function inoc(e){const r=c.getBoundingClientRect(),X=Math.floor((e.clientX-r.left)/r.width*N),y=Math.floor((e.clientY-r.top)/r.height*N);for(let k=0;k<30;k++){const xx=X+((Math.random()-.5)*8|0),yy=y+((Math.random()-.5)*8|0);if(xx>=0&&yy>=0&&xx<N&&yy<N&&mask[yy*N+xx])A[yy*N+xx]=1}}
-c.addEventListener('pointerdown',e=>{dn=true;inoc(e)});addEventListener('pointerup',()=>dn=false);c.addEventListener('pointermove',e=>dn&&inoc(e));
-let last=0;function f(t){if(t-last>70){step();last=t}draw();requestAnimationFrame(f)}requestAnimationFrame(f);
+const STR=[[150,'#7dffb0'],[190,'#6ad8ff'],[320,'#ff7ad9'],[48,'#ffd25a']];let strain=0;
+const RULES=[['Life','B3/S23',[3],[2,3]],['HighLife','B36/S23',[3,6],[2,3]],['Day & Night','B3678/S34678',[3,6,7,8],[3,4,6,7,8]],['Coral','B3/S45678',[3],[4,5,6,7,8]],['Maze','B3/S12345',[3],[1,2,3,4,5]]];let rule=0,BR=new Uint8Array(9),SR=new Uint8Array(9);
+function setRule(i){rule=i;BR.fill(0);SR.fill(0);RULES[i][2].forEach(n=>BR[n]=1);RULES[i][3].forEach(n=>SR[n]=1);document.getElementById('rn').textContent=`${RULES[i][0]} agar · ${RULES[i][1]}`;[...document.getElementById('rules').children].forEach((b,k)=>b.setAttribute('aria-pressed',k===i))}
+const sw=document.getElementById('sw');STR.forEach((s,i)=>{const b=document.createElement('button');b.style.background=s[1];b.setAttribute('aria-label','Strain '+(i+1));b.setAttribute('aria-pressed',i===0);b.onclick=()=>{strain=i;[...sw.children].forEach((o,k)=>o.setAttribute('aria-pressed',k===i))};sw.appendChild(b)});
+const rl=document.getElementById('rules');RULES.forEach((r,i)=>{const b=document.createElement('button');b.textContent=r[0];b.onclick=()=>setRule(i);rl.appendChild(b)});setRule(0);
+function seed(){A.fill(0);SA.fill(0);for(let i=0;i<N*N;i++)if(mask[i]&&Math.random()<.22){A[i]=1;const X=i%N,y=i/N|0;SA[i]=(X<N/2?0:1)+(y<N/2?0:2)}gen=0;hist.length=0}
+const hist=[];
+function step(){const cnt=new Uint8Array(4);for(let y=0;y<N;y++)for(let X=0;X<N;X++){const i=y*N+X;if(!mask[i]){B[i]=0;continue}let n=0;cnt[0]=cnt[1]=cnt[2]=cnt[3]=0;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){if(!dx&&!dy)continue;const j=((y+dy+N)%N)*N+(X+dx+N)%N;if(A[j]){n++;cnt[SA[j]]++}}
+if(A[i]){if(SR[n]){B[i]=Math.min(A[i]+1,999);SB[i]=SA[i]}else B[i]=0}else if(BR[n]){B[i]=1;let m=0;for(let k=1;k<4;k++)if(cnt[k]>cnt[m])m=k;SB[i]=m}else B[i]=0}
+[A,B]=[B,A];[SA,SB]=[SB,SA];gen++}
+function draw(){x.fillStyle='rgba(14,22,18,.5)';x.fillRect(0,0,N*CS,N*CS);let cnt=0;for(let i=0;i<N*N;i++){const a=A[i];if(!a)continue;cnt++;const X=(i%N)*CS,y=(i/N|0)*CS;const hh=STR[SA[i]][0];const age=Math.min(a,60);
+x.fillStyle=`hsl(${hh-age*.6},${90-age*.4}%,${a<2?80:62-age*.25}%)`;x.beginPath();x.arc(X+CS/2,y+CS/2,a<2?1.7:2,0,7);x.fill()}
+document.getElementById('g').textContent=gen;document.getElementById('n').textContent=cnt;if(gen%2===0){hist.push(cnt);if(hist.length>120)hist.shift();const mx=Math.max(...hist,1);document.getElementById('sp').setAttribute('d',hist.map((v,i)=>(i?'L':'M')+(i/119*200).toFixed(1)+' '+(38-v/mx*34).toFixed(1)).join(''))}}
+// inoculation and the lens
+const dish=document.getElementById('dish'),lens=document.getElementById('lens'),lc=document.getElementById('lc'),lx=lc.getContext('2d');let dn=false,mx=-1,my=-1;
+function cell(e){const r=c.getBoundingClientRect();return[Math.floor((e.clientX-r.left)/r.width*N),Math.floor((e.clientY-r.top)/r.height*N)]}
+function inoc(e){const [X,y]=cell(e);for(let k=0;k<26;k++){const xx=X+((Math.random()-.5)*8|0),yy=y+((Math.random()-.5)*8|0);if(xx>=0&&yy>=0&&xx<N&&yy<N&&mask[yy*N+xx]){A[yy*N+xx]=1;SA[yy*N+xx]=strain}}}
+dish.addEventListener('pointerdown',e=>{dish.setPointerCapture(e.pointerId);dn=true;inoc(e)});addEventListener('pointerup',()=>dn=false);
+dish.addEventListener('pointermove',e=>{if(dn)inoc(e);const r=c.getBoundingClientRect();mx=(e.clientX-r.left)/r.width;my=(e.clientY-r.top)/r.height;lens.style.left=e.clientX+'px';lens.style.top=e.clientY+'px';lens.classList.add('on')});
+dish.addEventListener('pointerleave',()=>lens.classList.remove('on'));
+let paused=false,speed=70;const pp=document.getElementById('pp');function tp(){paused=!paused;pp.textContent=paused?'▶ Run':'❚❚ Pause'}
+pp.onclick=tp;document.getElementById('st').onclick=()=>{step();draw()};document.getElementById('rs').onclick=seed;document.getElementById('cl').onclick=()=>{A.fill(0);gen=0;hist.length=0};
+addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();tp()}if(e.key==='r'||e.key==='R')seed();const n=+e.key;if(n>=1&&n<=4)sw.children[n-1].click()});
+dish.addEventListener('wheel',e=>{e.preventDefault();speed=Math.max(16,Math.min(400,speed*(e.deltaY>0?1.2:.83)))},{passive:false});
+seed();let last=0;
+function f(t){if(!paused&&t-last>speed){step();last=t}draw();
+if(lens.classList.contains('on')){lx.fillStyle='#0e1612';lx.fillRect(0,0,360,360);const S=N*CS,z=3.2,sx=mx*S-180/z,sy=my*S-180/z;lx.imageSmoothingEnabled=false;lx.drawImage(c,sx,sy,360/z,360/z,0,0,360,360);
+lx.strokeStyle='rgba(185,245,208,.25)';lx.lineWidth=1;lx.beginPath();lx.moveTo(180,150);lx.lineTo(180,210);lx.moveTo(150,180);lx.lineTo(210,180);lx.stroke()}
+requestAnimationFrame(f)}requestAnimationFrame(f);
 </script></body></html>
