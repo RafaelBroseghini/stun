@@ -3,7 +3,7 @@
 <style>
 *{margin:0;box-sizing:border-box}html,body{min-height:100%}
 body{background:#4b3a2b radial-gradient(80% 70% at 50% 40%,#6a523c,#2e2219);display:grid;place-items:center;min-height:100vh;padding:3vh 16px 9vh;font-family:Caveat,cursive;color:#1f3a6b;overflow-x:hidden;user-select:none;-webkit-user-select:none}
-.book{position:relative;width:min(1200px,100%,calc((100vh - 14vh)*1.5));aspect-ratio:1.5;perspective:2400px;animation:open 1.2s cubic-bezier(.2,.8,.2,1) both}@keyframes open{from{transform:rotateX(18deg) translateY(30px);opacity:0}}
+.book{position:relative;width:min(1200px,100%,calc((100vh - 14vh)*1.5));aspect-ratio:1.5;perspective:2400px;animation:open 1.2s cubic-bezier(.2,.8,.2,1) backwards}@keyframes open{from{transform:rotateX(18deg) translateY(30px);opacity:0}}
 .spread{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;box-shadow:0 30px 60px rgba(0,0,0,.5);border-radius:6px;overflow:hidden}
 .pg{position:relative;padding:5% 6%;background:#f1ecdd;background-image:linear-gradient(rgba(70,110,160,.14) 1px,transparent 1px),linear-gradient(90deg,rgba(70,110,160,.14) 1px,transparent 1px);background-size:22px 22px;overflow:hidden}
 .pg.l{box-shadow:inset -30px 0 40px -20px rgba(0,0,0,.25)}.pg.r{box-shadow:inset 30px 0 40px -20px rgba(0,0,0,.25)}
