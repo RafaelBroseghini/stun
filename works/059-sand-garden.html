@@ -1,26 +1,49 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sand Jar</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#2b2135;display:flex;align-items:center;justify-content:center;gap:24px;font-family:'Pixelify Sans',monospace;color:#f4e3c8;touch-action:none}
-.jar{height:min(90vh,120vw);aspect-ratio:.66;border:6px solid rgba(220,240,255,.5);border-top:0;border-radius:0 0 36px 36px;background:rgba(255,255,255,.05);box-shadow:inset 10px 0 30px rgba(255,255,255,.08);overflow:hidden;max-width:70vw}
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;user-select:none;-webkit-user-select:none}
+body{background:radial-gradient(70% 70% at 50% 40%,#3a2d48,#1c1524);display:flex;align-items:center;justify-content:center;gap:28px;font-family:'Pixelify Sans',monospace;color:#f4e3c8;touch-action:none}
+.wrap{position:relative;transition:transform .5s cubic-bezier(.2,.9,.3,1.3)}
+.lid{position:absolute;left:-4%;right:-4%;top:-5%;height:5.5%;background:linear-gradient(90deg,#8a5a30,#c4884a 40%,#8a5a30);border-radius:8px;box-shadow:0 4px 8px rgba(0,0,0,.4)}
+.jar{position:relative;height:min(84vh,120vw);aspect-ratio:.66;border:6px solid rgba(220,240,255,.45);border-top:0;border-radius:0 0 36px 36px;background:rgba(255,255,255,.04);overflow:hidden;max-width:64vw;box-shadow:0 30px 60px rgba(0,0,0,.4)}
+.jar::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,.14),transparent 14%,transparent 80%,rgba(255,255,255,.08) 88%,transparent)}
 canvas{width:100%;height:100%;display:block;image-rendering:pixelated;cursor:crosshair}
-.ui{display:flex;flex-direction:column;gap:10px}.ui h1{font-weight:700;font-size:28px;line-height:1}.ui button{display:flex;align-items:center;gap:10px;padding:8px 12px;font:400 15px 'Pixelify Sans';background:#3c2f4a;color:#f4e3c8;border:2px solid transparent;border-radius:8px;cursor:pointer}.ui button.on{border-color:#f4e3c8}.ui i{width:18px;height:18px;border-radius:4px}
-@media(max-width:640px){body{flex-direction:column;gap:8px}.ui{flex-direction:row;flex-wrap:wrap}.ui h1{display:none}.jar{height:72vh}}</style></head><body>
-<div class="jar"><canvas id="c"></canvas></div><div class="ui" id="ui"><h1>Sand<br>Jar</h1></div>
+.ui{display:flex;flex-direction:column;gap:8px}.ui h1{font-weight:700;font-size:30px;line-height:1;margin-bottom:6px}
+.ui button{display:flex;align-items:center;gap:10px;padding:7px 12px;font:400 15px 'Pixelify Sans';background:#3c2f4a;color:#f4e3c8;border:2px solid transparent;border-radius:8px;cursor:pointer;transition:transform .15s}.ui button:hover{transform:translateX(3px)}.ui button.on{border-color:#f4e3c8}.ui i{width:18px;height:18px;border-radius:4px}
+.ui .act{display:flex;gap:6px}.ui .act button{flex:1;justify-content:center;font-size:13px}
+.ui small{font-size:12px;opacity:.6;line-height:1.4;max-width:16em}
+@media(max-width:640px){body{flex-direction:column;gap:8px}.ui{flex-direction:row;flex-wrap:wrap;justify-content:center}.ui h1,.ui small{display:none}.jar{height:62vh}}
+</style></head><body>
+<div class="wrap" id="wrap"><div class="lid"></div><div class="jar"><canvas id="c"></canvas></div></div><div class="ui" id="ui"><h1>Sand<br>Jar</h1></div>
 <script>
 const c=document.getElementById('c'),x=c.getContext('2d');const W=120,H=180;c.width=W;c.height=H;const G=new Uint8Array(W*H),Cc=new Uint32Array(W*H);
-const M=[['Dune','#e8b04a',1],['Coral','#f07167',1],['Lagoon','#00afb9',1],['Lilac','#b388eb',1],['Ink','#2a2240',1],['Water','#5fa8ff',2],['Stone','#8d8a99',3],['Eraser','#2b2135',0]];let cur=0;
-const ui=document.getElementById('ui');M.forEach((m,i)=>{const b=document.createElement('button');b.innerHTML=`<i style="background:${m[1]}"></i>${m[0]}`;b.className=i?'':'on';b.onclick=()=>{cur=i;[...ui.querySelectorAll('button')].forEach(o=>o.classList.toggle('on',o===b))};ui.appendChild(b)});
+// type: 1 sand, 2 water, 3 stone, 4 oil
+const M=[['Dune','#e8b04a',1],['Coral','#f07167',1],['Lagoon','#00afb9',1],['Lilac','#b388eb',1],['Ink','#2a2240',1],['Water','#5fa8ff',2],['Oil','#c8a040',4],['Stone','#8d8a99',3],['Eraser','#2b2135',0]];let cur=0,brush=3,tilt=0;
+const ui=document.getElementById('ui');M.forEach((m,i)=>{const b=document.createElement('button');b.innerHTML=`<i style="background:${m[1]}"></i>${m[0]}`;b.className=i?'':'on';b.onclick=()=>{cur=i;[...ui.querySelectorAll('.mat')].forEach(o=>o.classList.toggle('on',o===b))};b.classList.add('mat');ui.appendChild(b)});
+const act=document.createElement('div');act.className='act';act.innerHTML='<button id="tl">↶ Tilt</button><button id="tr">Tilt ↷</button>';ui.appendChild(act);
+const act2=document.createElement('div');act2.className='act';act2.innerHTML='<button id="sh">Shake</button><button id="cl">Empty</button>';ui.appendChild(act2);
+const sm=document.createElement('small');sm.textContent='Drag to pour · wheel for a wider spout · ← → tilt the jar';ui.appendChild(sm);
 const hex=h=>{const n=parseInt(h.slice(1),16);return[n>>16,(n>>8)&255,n&255]};
-function put(X,Y,m){if(X<0||Y<0||X>=W||Y>=H)return;const i=Y*W+X;if(m===7){G[i]=0;return}if(G[i])return;G[i]=M[m][2];const [r,g,b]=hex(M[m][1]);const j=.85+Math.random()*.3;Cc[i]=(255<<24)|(Math.min(255,b*j)<<16)|(Math.min(255,g*j)<<8)|Math.min(255,r*j)}
+function put(X,Y,m){if(X<0||Y<0||X>=W||Y>=H)return;const i=Y*W+X;if(M[m][2]===0){G[i]=0;return}if(G[i])return;G[i]=M[m][2];const [r,g,b]=hex(M[m][1]);const j=.85+Math.random()*.3;Cc[i]=(255<<24)|(Math.min(255,b*j)<<16)|(Math.min(255,g*j)<<8)|Math.min(255,r*j)}
 let dn=false,px=0,py=0;const pos=e=>{const r=c.getBoundingClientRect();px=Math.floor((e.clientX-r.left)/r.width*W);py=Math.floor((e.clientY-r.top)/r.height*H)};
-c.addEventListener('pointerdown',e=>{dn=true;pos(e)});c.addEventListener('pointermove',pos);addEventListener('pointerup',()=>dn=false);
-function mv(a,b){G[b]=G[a];Cc[b]=Cc[a];G[a]=0}
-function step(){for(let y=H-2;y>=0;y--){const lr=Math.random()<.5;for(let k=0;k<W;k++){const X=lr?k:W-1-k,i=y*W+X,t=G[i];if(t!==1&&t!==2)continue;const b=i+W;
-if(G[b]===0){mv(i,b);continue}if(t===1&&G[b]===2){const tg=G[b],tc=Cc[b];mv(i,b);G[i]=tg;Cc[i]=tc;continue}const d=Math.random()<.5?-1:1;
-if(X+d>=0&&X+d<W&&G[b+d]===0){mv(i,b+d);continue}if(X-d>=0&&X-d<W&&G[b-d]===0){mv(i,b-d);continue}if(t===2){if(X+d>=0&&X+d<W&&G[i+d]===0)mv(i,i+d);else if(X-d>=0&&X-d<W&&G[i-d]===0)mv(i,i-d)}}}}
+c.addEventListener('pointerdown',e=>{c.setPointerCapture(e.pointerId);dn=true;pos(e);audio()});c.addEventListener('pointermove',pos);addEventListener('pointerup',()=>dn=false);
+c.addEventListener('wheel',e=>{e.preventDefault();brush=Math.max(1,Math.min(10,brush+(e.deltaY>0?-1:1)))},{passive:false});
+const wrap=document.getElementById('wrap');function setTilt(t){tilt=Math.max(-1,Math.min(1,t));wrap.style.transform=`rotate(${tilt*14}deg)`}
+document.getElementById('tl').onclick=()=>setTilt(tilt-1);document.getElementById('tr').onclick=()=>setTilt(tilt+1);
+document.getElementById('cl').onclick=()=>G.fill(0);document.getElementById('sh').onclick=()=>{for(let i=0;i<900;i++){const a=Math.random()*W*H|0,b=Math.random()*W*H|0;if(G[a]===1&&G[b]===1){const t=Cc[a];Cc[a]=Cc[b];Cc[b]=t}}wrap.animate([{transform:`rotate(${tilt*14}deg) translateX(0)`},{transform:`rotate(${tilt*14-3}deg) translateX(-8px)`},{transform:`rotate(${tilt*14+3}deg) translateX(8px)`},{transform:`rotate(${tilt*14}deg)`}],{duration:400,iterations:2})};
+addEventListener('keydown',e=>{if(e.key==='ArrowLeft')setTilt(tilt-1);if(e.key==='ArrowRight')setTilt(tilt+1);const n=+e.key;if(n>=1&&n<=9)ui.querySelectorAll('.mat')[n-1].click()});
+let ac,ng;function audio(){if(ac)return;try{ac=new (window.AudioContext||window.webkitAudioContext)();const b=ac.createBuffer(1,ac.sampleRate*2,ac.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()<.3?(Math.random()*2-1):0;const s=ac.createBufferSource();s.buffer=b;s.loop=true;const f=ac.createBiquadFilter();f.type='highpass';f.frequency.value=3000;ng=ac.createGain();ng.gain.value=0;s.connect(f).connect(ng).connect(ac.destination);s.start()}catch(e){}}
+function mv(a,b){G[b]=G[a];Cc[b]=Cc[a];G[a]=0}function sw(a,b){const tg=G[b],tc=Cc[b];G[b]=G[a];Cc[b]=Cc[a];G[a]=tg;Cc[a]=tc}
+const dense={1:3,2:1,4:0};
+function step(){for(let y=H-2;y>=0;y--){const lr=Math.random()<.5;for(let k=0;k<W;k++){const X=lr?k:W-1-k,i=y*W+X,t=G[i];if(t===0||t===3)continue;
+const tx=X+tilt,b=i+W+tilt;if(tx>=0&&tx<W){const bt=G[b];if(bt===0){mv(i,b);continue}if(bt!==3&&bt!==t&&dense[t]>dense[bt]){sw(i,b);continue}}
+const d=(tilt||(Math.random()<.5?-1:1));const b1=i+W+d,b2=i+W-d;if(X+d>=0&&X+d<W&&G[b1]===0){mv(i,b1);continue}if(!tilt&&X-d>=0&&X-d<W&&G[b2]===0){mv(i,b2);continue}
+if(t===2||t===4){const s1=i+d,s2=i-d;if(X+d>=0&&X+d<W&&G[s1]===0)mv(i,s1);else if(!tilt&&X-d>=0&&X-d<W&&G[s2]===0)mv(i,s2)}}}}
 const img=x.createImageData(W,H),u32=new Uint32Array(img.data.buffer);let auto=0;
-function f(){if(dn)for(let k=0;k<6;k++)put(px+((Math.random()-.5)*6|0),py+((Math.random()-.5)*6|0),cur);
+function f(t){if(dn)for(let k=0;k<brush*2;k++)put(px+((Math.random()-.5)*brush*2|0),py+((Math.random()-.5)*brush*2|0),cur);if(ng)ng.gain.setTargetAtTime(dn&&M[cur][2]===1?.04:0,ac.currentTime,.05);
 if(auto<1400){auto++;const m=Math.floor(auto/200)%5;const ax=Math.floor(W*(.3+.4*Math.sin(auto*.01)));for(let k=0;k<3;k++)put(ax+((Math.random()-.5)*4|0),2,m)}
-step();step();for(let i=0;i<W*H;i++)u32[i]=G[i]?Cc[i]:0;x.putImageData(img,0,0);requestAnimationFrame(f)}
-for(let i=0;i<500;i++){auto++;const m=Math.floor(auto/200)%5;const ax=Math.floor(W*(.3+.4*Math.sin(auto*.01)));for(let k=0;k<3;k++)put(ax+((Math.random()-.5)*4|0),2,m);step();step()}f();
+step();step();
+for(let i=0;i<W*H;i++){if(!G[i]){u32[i]=0;continue}let col=Cc[i];if(G[i]===1&&((i+W<W*H&&G[i+W]===2)||(i>=W&&G[i-W]===2))){col=(col&0xff000000)|((((col>>16)&255)*.72)<<16)|((((col>>8)&255)*.72)<<8)|((col&255)*.72)}if(G[i]===2&&Math.random()<.004)col=0xffffffff;u32[i]=col}
+x.putImageData(img,0,0);if(dn){x.strokeStyle='rgba(255,255,255,.35)';x.lineWidth=.5;x.strokeRect(px-brush,py-brush,brush*2,brush*2)}requestAnimationFrame(f)}
+for(let i=0;i<500;i++){auto++;const m=Math.floor(auto/200)%5;const ax=Math.floor(W*(.3+.4*Math.sin(auto*.01)));for(let k=0;k<3;k++)put(ax+((Math.random()-.5)*4|0),2,m);step();step()}requestAnimationFrame(f);
 </script></body></html>
