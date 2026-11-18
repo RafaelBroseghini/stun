@@ -1,13 +1,28 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Velmora Metro</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@500;800&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#f7f7f2;font-family:'Hanken Grotesk',sans-serif;color:#1a1a1a;display:grid;grid-template-columns:minmax(0,1fr) 250px}
-svg{width:100%;height:100vh}.ln{fill:none;stroke-width:9;stroke-linecap:round;stroke-linejoin:round;transition:opacity .2s}.dim .ln{opacity:.15}.dim .ln.hl{opacity:1}
-.st{fill:#fff;stroke:#1a1a1a;stroke-width:3}.ix{fill:#fff;stroke:#1a1a1a;stroke-width:3.5}text{font-size:12px;font-weight:500;fill:#1a1a1a}.tr{fill:#fff;stroke:#1a1a1a;stroke-width:2}
-aside{padding:28px 22px;border-left:1px solid #ddd;display:flex;flex-direction:column;gap:14px;background:#fff}aside h1{font-weight:800;font-size:28px;line-height:1}aside h1 small{display:block;font-weight:500;font-size:13px;color:#777;margin-top:6px}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;700;800&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}
+body{background:#f7f7f2;font-family:'Hanken Grotesk',sans-serif;color:#1a1a1a;display:grid;grid-template-columns:minmax(0,1fr) 280px;user-select:none;-webkit-user-select:none}
+svg{width:100%;height:100vh;cursor:grab;touch-action:none}svg:active{cursor:grabbing}
+.ln{fill:none;stroke-width:9;stroke-linecap:round;stroke-linejoin:round;transition:opacity .3s}.dim .ln{opacity:.12}.dim .ln.hl{opacity:1}
+.rt{fill:none;stroke:#1a1a1a;stroke-width:17;stroke-linecap:round;stroke-linejoin:round;opacity:.12}
+.st{fill:#fff;stroke:#1a1a1a;stroke-width:3;cursor:pointer;transition:r .2s}.ix{fill:#fff;stroke:#1a1a1a;stroke-width:3.5;cursor:pointer}
+.st:hover,.ix:hover{fill:#ffe14d}.pick{fill:#1a1a1a!important}
+text{font-size:12px;font-weight:500;fill:#1a1a1a;pointer-events:none;paint-order:stroke;stroke:#f7f7f2;stroke-width:4px}.tr{fill:#fff;stroke:#1a1a1a;stroke-width:2}
+.river{fill:none;stroke:#cfe3f2;stroke-width:46;stroke-linecap:round}.park{fill:#e2efd6}
+aside{padding:26px 22px;border-left:1px solid #ddd;display:flex;flex-direction:column;gap:14px;background:#fff;overflow:auto}
+aside h1{font-weight:800;font-size:28px;line-height:1}aside h1 small{display:block;font-weight:500;font-size:13px;color:#777;margin-top:6px}
 .lg{display:flex;align-items:center;gap:10px;font-weight:800;font-size:14px;cursor:pointer;padding:6px 8px;border-radius:8px}.lg:hover{background:#f2f2ee}.lg i{width:34px;height:10px;border-radius:5px}.lg span{font-weight:500;color:#777;font-size:12px;margin-left:auto}
-@media(max-width:760px){body{grid-template-columns:1fr;grid-template-rows:1fr auto}aside{flex-direction:row;flex-wrap:wrap;padding:10px;border:0}aside h1{display:none}svg{height:70vh}}</style></head><body>
-<svg id="s" viewBox="0 0 1000 700"><g id="lines"></g><g id="trains"></g><g id="stations"></g></svg>
-<aside><h1>Velmora Metro<small>Network map · winter timetable</small></h1><div id="lg"></div><div style="font-size:12px;color:#777;margin-top:auto">○ station &nbsp; ◎ interchange<br>Trains every 4 min, 05:30–00:40</div></aside>
+.jr{border:2px solid #1a1a1a;border-radius:12px;padding:12px 14px;font-size:13px;min-height:90px}.jr b{display:block;font-size:15px;font-weight:800;margin-bottom:6px}
+.jr ol{list-style:none;display:flex;flex-direction:column;gap:6px;margin-top:8px}.jr li{display:flex;gap:8px;align-items:flex-start}.jr li i{width:10px;height:10px;border-radius:50%;margin-top:4px;flex:none}
+.jr .tm{display:flex;gap:16px;margin-top:8px;font-weight:800;font-size:20px}.jr .tm small{display:block;font-size:10px;color:#777;font-weight:500;letter-spacing:.1em;text-transform:uppercase}
+.tip{position:fixed;pointer-events:none;background:#1a1a1a;color:#fff;padding:6px 9px;border-radius:6px;font-size:12px;opacity:0;transition:opacity .15s;white-space:nowrap}.tip.on{opacity:1}.tip i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-left:4px}
+@media(max-width:760px){body{grid-template-columns:1fr;grid-template-rows:1fr auto}aside{flex-direction:row;flex-wrap:wrap;padding:10px;border:0;max-height:36vh}aside h1,.lgs{display:none}svg{height:64vh}.jr{flex:1;min-width:100%}}
+</style></head><body>
+<svg id="s" viewBox="0 0 1000 700"><g id="vp"><g id="bg"></g><g id="route"></g><g id="lines"></g><g id="trains"></g><g id="stations"></g></g></svg>
+<aside><h1>Velmora Metro<small>Network map · winter timetable</small></h1>
+<div class="jr" id="jr"><b>Plan a journey</b>Click a station to start, then another to arrive.</div>
+<div class="lgs" id="lg"></div><div style="font-size:12px;color:#777;margin-top:auto">○ station &nbsp; ◎ interchange · drag to pan · wheel to zoom<br>Trains every 4 min, 05:30–00:40</div></aside><div class="tip" id="tip"></div>
 <script>
 const ST={'Pier Gate':[80,520],'Saltmarket':[190,520],'Old Quay':[300,520],'Lantern Sq':[420,400],'Cathedral':[540,400],'Velmora Central':[660,400],'Mint St':[760,300],'Northfield':[860,300],'Airport':[950,300],'Orchard Hill':[200,80],'Glasshouse':[200,180],'Ropewalk':[270,250],'Tannery':[540,520],'Weir':[540,620],'South Docks':[540,680],'West End':[60,250],'Fennel Rd':[170,250],'Gallery':[400,250],'University':[660,230],'Observatory':[730,160],'Kestrel Park':[900,160],'Marsh Lane':[150,670],'Exchange':[420,520],'Brewery':[660,520],'Riverside':[760,620],'East Mills':[950,620],'Theatre':[420,300]};
 const L=[{n:'Harbour',c:'#e4002b',r:['Pier Gate','Saltmarket','Old Quay','Lantern Sq','Cathedral','Velmora Central','Mint St','Northfield','Airport']},
@@ -16,9 +31,31 @@ const L=[{n:'Harbour',c:'#e4002b',r:['Pier Gate','Saltmarket','Old Quay','Lanter
 {n:'River',c:'#0072ce',r:['Marsh Lane','Old Quay','Exchange','Tannery','Brewery','Riverside','East Mills']},
 {n:'Circle',c:'#f2a900',r:['Theatre','Mint St','Riverside','Weir',[420,620],'Exchange','Lantern Sq','Theatre']}];
 const NS='http://www.w3.org/2000/svg',$=id=>document.getElementById(id);const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);p.appendChild(e);return e};
-const use={};L.forEach(l=>{const pts=l.r.map(r=>typeof r==='string'?ST[r]:r);const p=el('path',{d:'M'+pts.map(q=>q.join(' ')).join('L'),class:'ln',stroke:l.c},$('lines'));l.p=p;l.len=p.getTotalLength();const names=l.r.filter(r=>typeof r==='string');new Set(names).forEach(n=>(use[n]=use[n]||new Set()).add(l.n));
-const g=document.createElement('div');g.className='lg';g.innerHTML=`<i style="background:${l.c}"></i>${l.n}<span>${new Set(names).size} stations</span>`;g.onmouseenter=()=>{$('s').classList.add('dim');L.forEach(o=>o.p.classList.toggle('hl',o===l))};g.onmouseleave=()=>$('s').classList.remove('dim');$('lg').appendChild(g)});
-Object.entries(ST).forEach(([n,[x,y]])=>{const ix=use[n]&&use[n].size>1;el('circle',{cx:x,cy:y,r:ix?11:6,class:ix?'ix':'st'},$('stations'));const t=el('text',{x:x+(ix?14:10),y:y-(ix?12:9),'font-weight':ix?800:500},$('stations'));t.textContent=n});
-const T=[];L.forEach(l=>{for(let k=0;k<3;k++)T.push({l,u:k/3,d:k%2?1:-1,e:el('circle',{r:5,class:'tr'},$('trains'))})});
-function f(){for(const t of T){t.u=(t.u+.0007*t.d+1)%1;const p=t.l.p.getPointAtLength(t.u*t.l.len);t.e.setAttribute('cx',p.x);t.e.setAttribute('cy',p.y);t.e.setAttribute('stroke',t.l.c)}requestAnimationFrame(f)}f();
+el('path',{class:'river',d:'M-50 470C150 430 250 600 470 460S760 560 1050 460'},$('bg'));el('ellipse',{class:'park',cx:200,cy:130,rx:80,ry:50},$('bg'));el('ellipse',{class:'park',cx:820,cy:200,rx:90,ry:40},$('bg'));
+const tx=el('text',{x:620,y:488,'font-size':13,'font-style':'italic',fill:'#7aa6c8',stroke:'none'},$('bg'));tx.textContent='River Vel';
+const use={},G={};const addE=(a,b,l,d)=>{(G[a]=G[a]||[]).push({to:b,l,d});(G[b]=G[b]||[]).push({to:a,l,d})};
+L.forEach(l=>{const pts=l.r.map(r=>typeof r==='string'?ST[r]:r);const p=el('path',{d:'M'+pts.map(q=>q.join(' ')).join('L'),class:'ln',stroke:l.c},$('lines'));l.p=p;l.len=p.getTotalLength();const names=l.r.filter(r=>typeof r==='string');new Set(names).forEach(n=>(use[n]=use[n]||new Set()).add(l.n));
+let prev=null,acc=0,lastPt=null;l.r.forEach(r=>{const q=typeof r==='string'?ST[r]:r;if(lastPt)acc+=Math.hypot(q[0]-lastPt[0],q[1]-lastPt[1]);lastPt=q;if(typeof r==='string'){if(prev&&prev!==r)addE(prev,r,l,acc);prev=r;acc=0}});
+const g=document.createElement('div');g.className='lg';g.innerHTML=`<i style="background:${l.c}"></i>${l.n}<span>${new Set(names).size} stations</span>`;g.onmouseenter=()=>{$('s').classList.add('dim');L.forEach(o=>o.p.classList.toggle('hl',o===l))};g.onmouseleave=()=>{if(!route)$('s').classList.remove('dim')};$('lg').appendChild(g)});
+const dots={};Object.entries(ST).forEach(([n,[x,y]])=>{const ix=use[n]&&use[n].size>1;const c=el('circle',{cx:x,cy:y,r:ix?11:6,class:ix?'ix':'st'},$('stations'));dots[n]=c;const t=el('text',{x:x+(ix?14:10),y:y-(ix?12:9),'font-weight':ix?800:500},$('stations'));t.textContent=n;
+c.addEventListener('pointerdown',e=>e.stopPropagation());c.addEventListener('click',()=>pick(n));c.addEventListener('pointerenter',e=>{const tp=$('tip');tp.innerHTML=n+' '+[...use[n]].map(k=>`<i style="background:${L.find(l=>l.n===k).c}"></i>`).join('');tp.classList.add('on')});c.addEventListener('pointermove',e=>{const tp=$('tip');tp.style.left=e.clientX+14+'px';tp.style.top=e.clientY-30+'px'});c.addEventListener('pointerleave',()=>$('tip').classList.remove('on'))});
+// shortest path with a penalty for changing lines
+function plan(a,b){const best={},Q=[[0,a,null,[]]];while(Q.length){Q.sort((p,q)=>p[0]-q[0]);const [d,n,ln,path]=Q.shift();const key=n+'|'+(ln&&ln.n);if(best[key]!==undefined)continue;best[key]=d;if(n===b)return{d,path};for(const e of G[n]||[]){const pen=ln&&ln!==e.l?140:0;Q.push([d+e.d+pen,e.to,e.l,path.concat([{from:n,to:e.to,l:e.l}])])}}return null}
+let A=null,route=null,rider=null;
+function pick(n){if(!A||route){A=n;route=null;$('route').innerHTML='';$('s').classList.remove('dim');Object.values(dots).forEach(d=>d.classList.remove('pick'));dots[n].classList.add('pick');$('jr').innerHTML=`<b>From ${n}</b>Now choose where you’re going.`;return}
+if(n===A)return;dots[n].classList.add('pick');const r=plan(A,n);if(!r)return;route=r;const legs=[];r.path.forEach(s=>{const last=legs[legs.length-1];if(last&&last.l===s.l){last.to=s.to;last.n++}else legs.push({l:s.l,from:s.from,to:s.to,n:1})});
+const pts=[ST[A]];r.path.forEach(s=>pts.push(ST[s.to]));$('route').innerHTML='';const rp=el('path',{class:'rt',d:'M'+pts.map(q=>q.join(' ')).join('L')},$('route'));
+$('s').classList.add('dim');L.forEach(l=>l.p.classList.toggle('hl',legs.some(g=>g.l===l)));const mins=Math.round(r.path.length*2.2+(legs.length-1)*4);
+$('jr').innerHTML=`<b>${A} → ${n}</b><ol>${legs.map(g=>`<li><i style="background:${g.l.c}"></i><span><b style="display:inline;font-size:13px">${g.l.n} line</b> ${g.from} to ${g.to} · ${g.n} stop${g.n>1?'s':''}</span></li>`).join('')}</ol><div class="tm"><div>${mins}<small>minutes</small></div><div>${legs.length-1}<small>changes</small></div><div>${r.path.length}<small>stops</small></div></div>`;
+if(rider)rider.e.remove();rider={p:rp,u:0,len:rp.getTotalLength(),e:el('circle',{r:9,fill:'#1a1a1a',stroke:'#ffe14d','stroke-width':3},$('trains'))};A=null}
+addEventListener('keydown',e=>{if(e.key==='Escape'){A=null;route=null;$('route').innerHTML='';$('s').classList.remove('dim');Object.values(dots).forEach(d=>d.classList.remove('pick'));if(rider){rider.e.remove();rider=null}$('jr').innerHTML='<b>Plan a journey</b>Click a station to start, then another to arrive.'}});
+// pan & zoom
+let vx=0,vy=0,vs=1,drag=null;const vp=$('vp');const apply=()=>vp.setAttribute('transform',`translate(${vx},${vy}) scale(${vs})`);
+$('s').addEventListener('pointerdown',e=>{$('s').setPointerCapture(e.pointerId);drag={x:e.clientX,y:e.clientY,vx,vy}});$('s').addEventListener('pointermove',e=>{if(!drag)return;const k=1000/$('s').clientWidth;vx=drag.vx+(e.clientX-drag.x)*k;vy=drag.vy+(e.clientY-drag.y)*k;apply()});$('s').addEventListener('pointerup',()=>drag=null);
+$('s').addEventListener('wheel',e=>{e.preventDefault();const r=$('s').getBoundingClientRect(),k=1000/r.width,mx=(e.clientX-r.left)*k,my=(e.clientY-r.top)*k;const f=e.deltaY<0?1.12:1/1.12;const ns=Math.max(.7,Math.min(3,vs*f));vx=mx-(mx-vx)*ns/vs;vy=my-(my-vy)*ns/vs;vs=ns;apply()},{passive:false});
+// trains pause briefly at each station
+const T=[];L.forEach(l=>{for(let k=0;k<3;k++)T.push({l,u:k/3,d:k%2?1:-1,e:el('circle',{r:5,class:'tr'},$('trains')),w:0})});
+const stopsOn=L.map(l=>{const ds=[];let acc=0,last=null;l.r.forEach(r=>{const q=typeof r==='string'?ST[r]:r;if(last)acc+=Math.hypot(q[0]-last[0],q[1]-last[1]);last=q;if(typeof r==='string')ds.push(acc/l.len)});return ds});
+function f(){T.forEach(t=>{if(t.w>0){t.w--;return}const nu=(t.u+.0007*t.d+1)%1;const st=stopsOn[L.indexOf(t.l)];if(st.some(s=>(t.u-s)*(nu-s)<0))t.w=40;t.u=nu;const p=t.l.p.getPointAtLength(t.u*t.l.len);t.e.setAttribute('cx',p.x);t.e.setAttribute('cy',p.y);t.e.setAttribute('stroke',t.l.c)});
+if(rider){rider.u=(rider.u+.004)%1.15;const p=rider.p.getPointAtLength(Math.min(1,rider.u)*rider.len);rider.e.setAttribute('cx',p.x);rider.e.setAttribute('cy',p.y)}requestAnimationFrame(f)}f();
 </script></body></html>

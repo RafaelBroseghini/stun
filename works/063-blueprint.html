@@ -1,19 +1,59 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Kettle Mk II Blueprint</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Overpass+Mono:wght@400;700&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#123d7a;background-image:linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(rgba(255,255,255,.18) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.18) 1px,transparent 1px);background-size:20px 20px,20px 20px,100px 100px,100px 100px;display:grid;place-items:center}
-svg{width:96vw;height:94vh}svg *{fill:none;stroke:#e8f1ff;stroke-width:1.4;vector-effect:non-scaling-stroke}
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;user-select:none;-webkit-user-select:none}
+body{background:#123d7a;background-image:radial-gradient(120% 90% at 50% 50%,transparent 55%,rgba(0,10,30,.45)),linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(rgba(255,255,255,.18) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.18) 1px,transparent 1px);background-size:100% 100%,20px 20px,20px 20px,100px 100px,100px 100px;display:grid;place-items:center;cursor:crosshair}
+svg#s{width:96vw;height:94vh;touch-action:none}svg#s *{fill:none;stroke:#e8f1ff;stroke-width:1.4;vector-effect:non-scaling-stroke}
 .d{stroke-dasharray:2000;stroke-dashoffset:2000;animation:dr 3.5s ease forwards}@keyframes dr{to{stroke-dashoffset:0}}
-.dim{stroke:#9fc3ff;stroke-width:.8}.hid{stroke-dasharray:6 4}.ctr{stroke-dasharray:18 4 3 4;stroke:#9fc3ff;stroke-width:.7}
-text{fill:#e8f1ff;stroke:none;font-family:'Overpass Mono',monospace;font-size:13px}.hand{font-family:'Architects Daughter',cursive;font-size:18px;fill:#fff}.tb text{font-size:11px}svg>g{cursor:pointer}svg>g:hover *{stroke:#ffd36a}svg>g:hover text{fill:#ffd36a}.tb .big{font-size:20px;font-weight:700}</style></head><body>
-<svg viewBox="0 0 1200 760" preserveAspectRatio="xMidYMid meet">
+.dim{stroke:#9fc3ff!important;stroke-width:.8!important}.hid{stroke-dasharray:6 4;transition:opacity .4s}body:not(.xray) .hid{opacity:.35}.ctr{stroke-dasharray:18 4 3 4;stroke:#9fc3ff!important;stroke-width:.7!important}
+svg#s text{fill:#e8f1ff!important;stroke:none!important;font-family:'Overpass Mono',monospace;font-size:13px}.hand{font-family:'Architects Daughter',cursive!important;font-size:18px!important;fill:#fff!important}.tb text{font-size:11px!important}.tb .big{font-size:20px!important;font-weight:700}
+.part{cursor:pointer;transition:transform .7s cubic-bezier(.3,.8,.2,1)}.part:hover *{stroke:#ffd36a!important}.part:hover text{fill:#ffd36a!important}
+.part.sel *{stroke:#ffd36a!important}
+.meas line{stroke:#ffd36a!important;stroke-width:1.2!important}.meas text{fill:#ffd36a!important;font-size:12px!important}
+.stamp{opacity:0;transform-origin:center;transform-box:fill-box}.stamp.on{animation:stamp .5s cubic-bezier(.2,.9,.3,1.5) forwards}@keyframes stamp{from{opacity:0;transform:scale(2.4) rotate(-20deg)}to{opacity:.85;transform:scale(1) rotate(-12deg)}}
+.stamp *{stroke:#ff6a5a!important;stroke-width:2.4!important}.stamp text{fill:#ff6a5a!important;font-size:24px!important;font-weight:700;letter-spacing:4px}
+.ui{position:fixed;right:2.5vw;top:3.5vh;display:flex;gap:8px;align-items:center;font:400 11px 'Overpass Mono';color:#e8f1ff}
+.ui button{font:400 11px 'Overpass Mono';letter-spacing:.12em;color:#e8f1ff;background:rgba(18,61,122,.8);border:1px solid rgba(232,241,255,.5);padding:7px 10px;cursor:pointer}.ui button[aria-pressed="true"]{background:#e8f1ff;color:#123d7a}
+.ui input{accent-color:#ffd36a;width:110px}
+.card{position:fixed;left:2.5vw;bottom:3.5vh;width:min(300px,80vw);border:1px solid #e8f1ff;background:rgba(18,61,122,.9);padding:12px 14px;font:400 11px/1.7 'Overpass Mono';color:#e8f1ff;opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s;pointer-events:none}.card.on{opacity:1;transform:none}.card b{display:block;font:400 18px 'Architects Daughter';margin-bottom:4px}
+.co{position:fixed;pointer-events:none;font:400 10px 'Overpass Mono';color:#9fc3ff;transform:translate(14px,12px)}
+</style></head><body>
+<svg id="s" viewBox="0 0 1200 760" preserveAspectRatio="xMidYMid meet">
 <rect x="20" y="20" width="1160" height="720"/><rect x="28" y="28" width="1144" height="704" class="dim"/>
-<g transform="translate(330,400)"><path class="d" d="M-150 160H150L170 60C175 -20 120 -90 0 -95C-120 -90 -175 -20 -170 60Z"/><path class="d" d="M-60 -95C-60 -130 60 -130 60 -95"/><path class="d" d="M-20 -128h40v-14h-40z"/><path class="d" d="M170 40c60 0 110-40 140-100l12 6c-30 70-80 120-150 124"/><path class="d" d="M-170 0c-70 0-80 120 0 120M-170 20c-45 0-50 80 0 80"/>
-<path class="hid" d="M-140 150H140L158 60C162 -10 110 -80 0 -84C-110 -80 -162 -10 -158 60Z"/><path class="ctr" d="M0 -170V200M-220 40H360"/><path class="d" d="M-120 160v18h240v-18"/>
+<g transform="translate(330,400)"><g class="part" data-k="body"><path class="d" d="M-150 160H150L170 60C175 -20 120 -90 0 -95C-120 -90 -175 -20 -170 60Z"/><path class="hid" d="M-140 150H140L158 60C162 -10 110 -80 0 -84C-110 -80 -162 -10 -158 60Z"/><path class="hid" d="M-140 120H140"/><text x="-60" y="100" class="hid" style="font-size:10px">MAX 1.7 L</text></g>
+<g class="part" data-k="lid" id="lid"><path class="d" d="M-60 -95C-60 -130 60 -130 60 -95"/><path class="d" d="M-20 -128h40v-14h-40z"/></g>
+<g class="part" data-k="spout"><path class="d" d="M170 40c60 0 110-40 140-100l12 6c-30 70-80 120-150 124"/></g>
+<g class="part" data-k="handle"><path class="d" d="M-170 0c-70 0-80 120 0 120M-170 20c-45 0-50 80 0 80"/></g>
+<g class="part" data-k="base" id="base"><path class="d" d="M-120 160v18h240v-18"/></g>
+<path class="ctr" d="M0 -170V200M-220 40H360"/>
 <path class="dim" d="M-150 210H150M-150 200v20M150 200v20"/><text x="-26" y="230">Ø 300</text><path class="dim" d="M220 160V-95M210 160h20M210 -95h20"/><text x="230" y="40" transform="rotate(-90 230 40)">255</text>
 <text class="hand" x="-140" y="-190">fig. 1 — elevation, spout E</text><path class="dim" d="M300 -70l60-60h90"/><text x="370" y="-136">spout: 18° rake</text></g>
-<g transform="translate(860,250)"><text class="hand" x="-90" y="-120">fig. 2 — exploded</text><circle class="d" r="70"/><circle class="d" r="54"/><circle class="hid" r="30"/><path class="ctr" d="M-100 0h200M0 -100v200"/><circle class="d" cy="-90" r="12" transform="translate(0,-20)"/>
-<g transform="translate(0,190)"><path class="d" d="M-90 0h180l-14 40h-152z"/><path class="d" d="M-60 40v30h120v-30"/><text x="100" y="30">B — heating base</text><path class="ctr" d="M0 -40v130"/></g><text x="80" y="-80">A — lid assembly</text></g>
-<g class="tb" transform="translate(790,560)"><rect width="370" height="160"/><path d="M0 40h370M0 80h370M0 120h370M200 40v120"/><text x="12" y="28" class="big">ORBITAL KETTLE · MK II</text><text x="12" y="64">DRAWN: E. HALVORSEN</text><text x="212" y="64">SCALE 1 : 2.5</text><text x="12" y="104">MATERIAL: 304 STAINLESS</text><text x="212" y="104">SHEET 3 OF 7</text><text x="12" y="144">CAPACITY 1.7 L · 2.2 kW</text><text x="212" y="144">REV. C · 11/2026</text></g>
-<text class="hand" x="60" y="712" style="font-size:15px;opacity:.8">hover a figure to trace it · click the sheet to redraw</text><text class="hand" x="60" y="80">NB: handle insulated — check with Ingrid re: cork vs. walnut</text></svg>
-<script>const ds=document.querySelectorAll('.d');ds.forEach((p,i)=>p.style.animationDelay=(i*.18)+'s');document.querySelector('svg').addEventListener('click',()=>{ds.forEach(p=>{p.style.animation='none';p.getBoundingClientRect();p.style.animation=''})})</script>
+<g transform="translate(860,250)"><text class="hand" x="-90" y="-120">fig. 2 — exploded</text>
+<g class="part" data-k="lid" id="lid2"><circle class="d" r="70"/><circle class="d" r="54"/><circle class="hid" r="30"/><circle class="d" cy="-110" r="12"/><text x="80" y="-80">A — lid assembly</text></g><path class="ctr" d="M-100 0h200M0 -100v200"/>
+<g class="part" data-k="base" id="base2" transform="translate(0,190)"><path class="d" d="M-90 0h180l-14 40h-152z"/><path class="d" d="M-60 40v30h120v-30"/><path class="hid" d="M-40 10h80M-30 22h60"/><text x="100" y="30">B — heating base</text><path class="ctr" d="M0 -40v130"/></g></g>
+<g class="tb" transform="translate(790,560)"><rect width="370" height="160"/><path d="M0 40h370M0 80h370M0 120h370M200 40v120"/><text x="12" y="28" class="big">ORBITAL KETTLE · MK II</text><text x="12" y="64">DRAWN: E. HALVORSEN</text><text x="212" y="64">SCALE 1 : 2.5</text><text x="12" y="104">MATERIAL: 304 STAINLESS</text><text x="212" y="104">SHEET 3 OF 7</text><text x="12" y="144">CAPACITY 1.7 L · 2.2 kW</text><text x="212" y="144" id="rev">REV. C · 11/2026</text></g>
+<g transform="translate(1000,470)"><g class="stamp" id="stamp"><rect x="-110" y="-30" width="220" height="60" rx="6"/><rect x="-102" y="-22" width="204" height="44" rx="4"/><text x="-82" y="9">APPROVED</text></g></g>
+<g class="meas" id="meas"></g>
+<text class="hand" x="60" y="712" style="font-size:15px;opacity:.8">drag to measure · click a part for its spec · slide to explode</text><text class="hand" x="60" y="80">NB: handle insulated — check with Ingrid re: cork vs. walnut</text></svg>
+<div class="ui"><span>EXPLODE</span><input type="range" id="ex" min="0" max="100" value="0"><button id="xr" aria-pressed="false">X-RAY</button><button id="ap">APPROVE</button><button id="rd">REDRAW</button></div>
+<div class="card" id="card"><b id="cn"></b><span id="cs"></span></div><div class="co" id="co"></div>
+<script>
+const s=document.getElementById('s'),NS='http://www.w3.org/2000/svg';const ds=document.querySelectorAll('.d');ds.forEach((p,i)=>p.style.animationDelay=(i*.18)+'s');
+const SPEC={body:['Body · 304 stainless','Deep-drawn, 0.8 mm wall. Brushed exterior, electropolished interior. Water window on the W face.'],lid:['A — Lid assembly','Spring-hinged, silicone gasket Ø 108. Bakelite knob, M5 stud. Opens to 85°.'],spout:['Spout','18° rake, anti-drip lip, removable limescale mesh (60 mesh).'],handle:['Handle','Insulated, cork or walnut (TBC). Two M6 inserts, 22 mm clearance.'],base:['B — Heating base','2.2 kW concealed element, 360° cordless connector, boil-dry cut-out at 105 °C.']};
+let sel=null;document.querySelectorAll('.part').forEach(p=>p.addEventListener('click',e=>{e.stopPropagation();const k=p.dataset.k;document.querySelectorAll('.part').forEach(o=>o.classList.toggle('sel',o.dataset.k===k&&sel!==k));if(sel===k){sel=null;document.getElementById('card').classList.remove('on');return}sel=k;document.getElementById('cn').textContent=SPEC[k][0];document.getElementById('cs').textContent=SPEC[k][1];document.getElementById('card').classList.add('on')}));
+document.getElementById('ex').oninput=e=>{const v=e.target.value/100;document.getElementById('lid').style.transform=`translateY(${-v*90}px)`;document.getElementById('base').style.transform=`translateY(${v*60}px)`;document.getElementById('lid2').style.transform=`translateY(${-v*50}px)`;document.getElementById('base2').setAttribute('transform',`translate(0,${190+v*40})`)};
+document.getElementById('xr').onclick=e=>{document.body.classList.toggle('xray');e.target.setAttribute('aria-pressed',document.body.classList.contains('xray'))};
+document.getElementById('rd').onclick=()=>{ds.forEach(p=>{p.style.animation='none';p.getBoundingClientRect();p.style.animation=''})};
+let ac;function thunk(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.frequency.setValueAtTime(140,ac.currentTime);o.frequency.exponentialRampToValueAtTime(50,ac.currentTime+.12);g.gain.setValueAtTime(.3,ac.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+.2);o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+.22)}catch(e){}}
+document.getElementById('ap').onclick=()=>{const st=document.getElementById('stamp');st.classList.remove('on');void st.getBoundingClientRect();st.classList.add('on');setTimeout(thunk,180);document.getElementById('rev').textContent='REV. D · APPROVED'};
+// measuring tool: drag anywhere to lay a dimension line, in drawing millimetres (1 unit = 1 mm at 1:2.5)
+const meas=document.getElementById('meas');let m0=null,cur=null;const pt=e=>{const p=s.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(s.getScreenCTM().inverse())};
+const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);p.appendChild(e);return e};
+s.addEventListener('pointerdown',e=>{if(e.target.closest('.part'))return;s.setPointerCapture(e.pointerId);m0=pt(e);cur=el('g',{},meas);cur.l=el('line',{},cur);cur.a=el('line',{},cur);cur.b=el('line',{},cur);cur.t=el('text',{},cur)});
+s.addEventListener('pointermove',e=>{const p=pt(e);const co=document.getElementById('co');co.style.left=e.clientX+'px';co.style.top=e.clientY+'px';co.textContent=`X ${((p.x-330)*2.5/2.5).toFixed(0)} · Y ${((400-p.y)).toFixed(0)} mm`;if(!m0||!cur)return;
+const dx=p.x-m0.x,dy=p.y-m0.y,L=Math.hypot(dx,dy),nx=-dy/(L||1)*8,ny=dx/(L||1)*8;cur.l.setAttribute('x1',m0.x);cur.l.setAttribute('y1',m0.y);cur.l.setAttribute('x2',p.x);cur.l.setAttribute('y2',p.y);[[cur.a,m0],[cur.b,p]].forEach(([ln,q])=>{ln.setAttribute('x1',q.x-nx);ln.setAttribute('y1',q.y-ny);ln.setAttribute('x2',q.x+nx);ln.setAttribute('y2',q.y+ny)});
+cur.t.setAttribute('x',(m0.x+p.x)/2+nx*1.6);cur.t.setAttribute('y',(m0.y+p.y)/2+ny*1.6);cur.t.textContent=`${(L).toFixed(0)} mm`});
+s.addEventListener('pointerup',()=>{if(cur&&cur.t.textContent===''){cur.remove()}else if(cur){const g=cur;setTimeout(()=>{g.style.transition='opacity 1s';g.style.opacity=0;setTimeout(()=>g.remove(),1000)},4000)}m0=null;cur=null});
+addEventListener('keydown',e=>{if(e.key==='x')document.getElementById('xr').click();if(e.key==='a')document.getElementById('ap').click()});
+</script>
 </body></html>
