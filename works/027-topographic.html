@@ -1,21 +1,59 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Contour Survey</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#0f2a2a}canvas{display:block;width:100%;height:100%}
-.leg{position:fixed;left:24px;bottom:24px;background:#0f2a2acc;border:1px solid #2e5a55;padding:14px 16px;color:#cfe8d8;font:400 12px Barlow,sans-serif;letter-spacing:.06em}.leg b{display:block;font-weight:600;font-size:14px;letter-spacing:.2em;margin-bottom:8px}.bar{height:8px;width:180px;background:linear-gradient(90deg,#2f6f6a,#7fb78f,#e9d58c,#f09a5c,#f7f1e3);margin:8px 0 4px}.sc{display:flex;justify-content:space-between}</style></head><body>
-<canvas id="c"></canvas><div class="leg"><b>SHEET 47-C · KAIROA RANGE</b>Contour interval 40 m · hover to raise a summit, press to dig a crater<div class="bar"></div><div class="sc"><span>0 m</span><span>1,000</span><span>2,000 m</span></div></div>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600&family=Barlow+Condensed:wght@500&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#0f2a2a;user-select:none;-webkit-user-select:none}canvas{display:block;width:100%;height:100%;cursor:crosshair;touch-action:none}
+.leg{position:fixed;left:24px;bottom:24px;background:rgba(15,42,42,.82);backdrop-filter:blur(6px);border:1px solid #2e5a55;padding:14px 16px;color:#cfe8d8;font:400 12px/1.5 Barlow,sans-serif;letter-spacing:.06em;transition:background .5s,color .5s,border-color .5s}
+.leg b{display:block;font-weight:600;font-size:14px;letter-spacing:.2em;margin-bottom:6px}.bar{height:8px;width:200px;margin:8px 0 4px}.sc{display:flex;justify-content:space-between;font-size:11px}
+.ro{position:fixed;right:24px;top:24px;text-align:right;color:#cfe8d8;font:500 12px/1.5 'Barlow Condensed';letter-spacing:.2em;text-transform:uppercase;pointer-events:none;transition:color .5s}
+.ro b{display:block;font:600 34px/1 Barlow;letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.btn{position:fixed;right:24px;bottom:24px;display:flex;gap:6px}.btn button{font:500 12px 'Barlow Condensed';letter-spacing:.2em;text-transform:uppercase;padding:8px 12px;border:1px solid #2e5a55;background:rgba(15,42,42,.8);color:#cfe8d8;cursor:pointer}.btn button:hover{border-color:#cfe8d8}
+body.paper .leg{background:rgba(244,238,222,.9);color:#3d3423;border-color:#b8a98a}body.paper .ro{color:#3d3423}body.paper .btn button{background:rgba(244,238,222,.9);color:#3d3423;border-color:#b8a98a}
+@media (max-width:640px){.leg{right:24px;bottom:70px}.bar{width:100%}}
+</style></head><body>
+<canvas id="c"></canvas>
+<div class="ro">Elevation<b id="el">— m</b><span id="co">—</span></div>
+<div class="leg"><b>SHEET 47-C · KAIROA RANGE</b>Contour interval 40 m<br>Hover · raise a summit &nbsp; Hold · dig &nbsp; Shift-hold · build<div class="bar" id="bar"></div><div class="sc"><span>0 m</span><span>1,000</span><span>2,000 m</span></div></div>
+<div class="btn"><button id="pp">Paper map</button><button id="rs">Resurvey</button></div>
 <script>
-const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio,2);let W,H,gw,gh,F;const S=7;
-const P=new Uint8Array(512);for(let i=0;i<256;i++)P[i]=i;for(let i=255;i>0;i--){const j=Math.random()*(i+1)|0;[P[i],P[j]]=[P[j],P[i]]}for(let i=0;i<256;i++)P[i+256]=P[i];
+const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio||1,2);let W,H,gw,gh,F,D,shade,sx;const S=7;
+let P;function perm(){P=new Uint8Array(512);for(let i=0;i<256;i++)P[i]=i;for(let i=255;i>0;i--){const j=Math.random()*(i+1)|0;[P[i],P[j]]=[P[j],P[i]]}for(let i=0;i<256;i++)P[i+256]=P[i]}perm();
 const fd=t=>t*t*t*(t*(t*6-15)+10),lp=(a,b,t)=>a+t*(b-a),gr=(h,x,y)=>{h&=7;const u=h<4?x:y,v=h<4?y:x;return((h&1)?-u:u)+((h&2)?-2*v:2*v)};
 function N(x,y){let X=Math.floor(x)&255,Y=Math.floor(y)&255;x-=Math.floor(x);y-=Math.floor(y);const u=fd(x),v=fd(y),a=P[X]+Y,b=P[X+1]+Y;return lp(lp(gr(P[a],x,y),gr(P[b],x-1,y),u),lp(gr(P[a+1],x,y-1),gr(P[b+1],x-1,y-1),u),v)}
-function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr;gw=Math.ceil(W/(S*dpr))+1;gh=Math.ceil(H/(S*dpr))+1;F=new Float32Array(gw*gh)}size();addEventListener('resize',size);
-let mgx=-99,mgy=-99,mA=0,tA=0;addEventListener('pointermove',e=>{mgx=e.clientX/S;mgy=e.clientY/S;if(tA>=0)tA=.34});addEventListener('pointerdown',()=>tA=-.42);addEventListener('pointerup',()=>tA=.34);document.documentElement.addEventListener('pointerleave',()=>tA=0);
-const cols=['#2f6f6a','#478a78','#7fb78f','#b8c98a','#e9d58c','#f0b56c','#f09a5c','#f4c9a6','#f7f1e3'];
-function f(t){t*=.00004;mA+=(tA-mA)*.06;const Rb=gw*.07;for(let j=0;j<gh;j++)for(let i=0;i<gw;i++){const u=i/gw*3,v=j/gw*3;F[j*gw+i]=(N(u+t,v)*.6+N(u*2.1,v*2.1-t)*.28+N(u*5,v*5)*.08)*1.1+.5+mA*Math.exp(-((i-mgx)**2+(j-mgy)**2)/(Rb*Rb))}
-x.fillStyle='#0f2a2a';x.fillRect(0,0,W,H);const L=26,s=S*dpr;
-for(let l=1;l<L;l++){const th=l/L;const ci=Math.min(cols.length-1,Math.floor(th*cols.length));x.strokeStyle=cols[ci];x.lineWidth=(l%5===0?1.8:.8)*dpr;x.globalAlpha=l%5===0?1:.7;x.beginPath();
-for(let j=0;j<gh-1;j++)for(let i=0;i<gw-1;i++){const a=F[j*gw+i],b=F[j*gw+i+1],cc=F[(j+1)*gw+i+1],d=F[(j+1)*gw+i];const k=(a>th)|(b>th)<<1|(cc>th)<<2|(d>th)<<3;if(k===0||k===15)continue;
-const X=i*s,Y=j*s;const e=[[X+s*(th-a)/(b-a),Y],[X+s,Y+s*(th-b)/(cc-b)],[X+s*(th-d)/(cc-d),Y+s],[X,Y+s*(th-a)/(d-a)]];
+function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr;gw=Math.ceil(W/(S*dpr))+1;gh=Math.ceil(H/(S*dpr))+1;F=new Float32Array(gw*gh);D=new Float32Array(gw*gh);shade=document.createElement('canvas');shade.width=gw;shade.height=gh;sx=shade.getContext('2d')}size();addEventListener('resize',size);
+const NIGHT={bg:'#0f2a2a',cols:['#2f6f6a','#478a78','#7fb78f','#b8c98a','#e9d58c','#f0b56c','#f09a5c','#f4c9a6','#f7f1e3'],water:'rgba(40,110,140,.45)',label:'#cfe8d8',grid:'rgba(207,232,216,.08)'};
+const PAPER={bg:'#f4eede',cols:['#8a6a3a','#8a6a3a','#8a6a3a','#8a6a3a','#8a6a3a','#8a6a3a','#8a6a3a','#8a6a3a','#8a6a3a'],water:'rgba(90,150,190,.55)',label:'#5a4523',grid:'rgba(90,70,40,.12)'};let T=NIGHT;
+function setBar(){document.getElementById('bar').style.background=T===NIGHT?'linear-gradient(90deg,#2f6f6a,#7fb78f,#e9d58c,#f09a5c,#f7f1e3)':'linear-gradient(90deg,#7aa8c4,#d8e2b6,#e8d2a0,#c9a070,#a87e52)'}setBar();
+document.getElementById('pp').onclick=()=>{T=T===NIGHT?PAPER:NIGHT;document.body.classList.toggle('paper',T===PAPER);document.getElementById('pp').textContent=T===PAPER?'Night map':'Paper map';setBar()};
+document.getElementById('rs').onclick=()=>{perm();D.fill(0)};
+let mgx=-99,mgy=-99,mA=0,tA=0,down=false,shift=false;
+c.addEventListener('pointermove',e=>{mgx=e.clientX/S;mgy=e.clientY/S;shift=e.shiftKey;if(!down)tA=.3});c.addEventListener('pointerdown',e=>{c.setPointerCapture(e.pointerId);down=true;shift=e.shiftKey;tA=0});c.addEventListener('pointerup',()=>{down=false;tA=.3});c.addEventListener('pointerleave',()=>{tA=0;mgx=mgy=-99});
+addEventListener('keydown',e=>{if(e.key==='p'||e.key==='P')document.getElementById('pp').click();if(e.key==='r'||e.key==='R')document.getElementById('rs').click()});
+const elE=document.getElementById('el'),coE=document.getElementById('co');
+function f(t){t*=.00003;mA+=(tA-mA)*.06;const Rb=gw*.07,R2=Rb*Rb;
+if(down){const r=gw*.045;for(let j=Math.max(0,mgy-r*3|0);j<Math.min(gh,mgy+r*3);j++)for(let i=Math.max(0,mgx-r*3|0);i<Math.min(gw,mgx+r*3);i++){D[j*gw+i]+=(shift?.012:-.012)*Math.exp(-((i-mgx)**2+(j-mgy)**2)/(r*r))}}
+for(let j=0;j<gh;j++)for(let i=0;i<gw;i++){const u=i/gw*3,v=j/gw*3;F[j*gw+i]=(N(u+t,v)*.6+N(u*2.1,v*2.1-t)*.28+N(u*5,v*5)*.08)*1.1+.5+mA*Math.exp(-((i-mgx)**2+(j-mgy)**2)/R2)+D[j*gw+i]}
+// hillshade from the NW
+const img=sx.createImageData(gw,gh),d=img.data;const paper=T===PAPER;
+for(let j=0;j<gh;j++)for(let i=0;i<gw;i++){const k=j*gw+i,dx=(F[k+(i<gw-1?1:0)]-F[k-(i>0?1:0)])*gw*.6,dy=(F[k+(j<gh-1?gw:0)]-F[k-(j>0?gw:0)])*gw*.6;const l=Math.max(-1,Math.min(1,(-dx-dy)*.35));const h=F[k];
+if(paper){const base=h<.3?[205,222,232]:[244-h*30,238-h*40,222-h*60];d[k*4]=base[0]+l*28;d[k*4+1]=base[1]+l*28;d[k*4+2]=base[2]+l*24}else{d[k*4]=15+l*18+h*10;d[k*4+1]=42+l*24+h*14;d[k*4+2]=42+l*20+h*8}d[k*4+3]=255}
+sx.putImageData(img,0,0);x.imageSmoothingEnabled=true;x.drawImage(shade,0,0,gw*S*dpr,gh*S*dpr);
+const s=S*dpr;
+// lakes below the 0.3 level
+x.fillStyle=T.water;for(let j=0;j<gh-1;j++)for(let i=0;i<gw-1;i++){if(F[j*gw+i]<.3)x.fillRect(i*s,j*s,s+.5,s+.5)}
+// sheet grid
+x.strokeStyle=T.grid;x.lineWidth=dpr;x.beginPath();for(let gx=0;gx<W;gx+=120*dpr){x.moveTo(gx,0);x.lineTo(gx,H)}for(let gy=0;gy<H;gy+=120*dpr){x.moveTo(0,gy);x.lineTo(W,gy)}x.stroke();
+const Lv=26;const labels=[];
+for(let l=1;l<Lv;l++){const th=l/Lv;const ci=Math.min(T.cols.length-1,Math.floor(th*T.cols.length));x.strokeStyle=T.cols[ci];const idx=l%5===0;x.lineWidth=(idx?1.8:.8)*dpr;x.globalAlpha=idx?1:paper?.55:.7;x.beginPath();let lab=null;
+for(let j=0;j<gh-1;j++)for(let i=0;i<gw-1;i++){const a=F[j*gw+i],b=F[j*gw+i+1],cc=F[(j+1)*gw+i+1],dd=F[(j+1)*gw+i];const k=(a>th)|(b>th)<<1|(cc>th)<<2|(dd>th)<<3;if(k===0||k===15)continue;
+const X=i*s,Y=j*s;const e=[[X+s*(th-a)/(b-a),Y],[X+s,Y+s*(th-b)/(cc-b)],[X+s*(th-dd)/(cc-dd),Y+s],[X,Y+s*(th-a)/(dd-a)]];
 const seg={1:[[0,3]],2:[[0,1]],3:[[1,3]],4:[[1,2]],5:[[0,1],[2,3]],6:[[0,2]],7:[[2,3]],8:[[2,3]],9:[[0,2]],10:[[0,3],[1,2]],11:[[1,2]],12:[[1,3]],13:[[0,1]],14:[[0,3]]}[k];
-for(const [p,q] of seg){x.moveTo(e[p][0],e[p][1]);x.lineTo(e[q][0],e[q][1])}}x.stroke()}x.globalAlpha=1;requestAnimationFrame(f)}requestAnimationFrame(f);
+for(const [p,q] of seg){x.moveTo(e[p][0],e[p][1]);x.lineTo(e[q][0],e[q][1])}if(idx&&!lab&&i>8&&j>8&&i%23===7&&j%17===5)lab=[X,Y,Math.atan2(e[seg[0][1]][1]-e[seg[0][0]][1],e[seg[0][1]][0]-e[seg[0][0]][0])]}x.stroke();if(lab)labels.push([lab,l])}
+x.globalAlpha=1;x.font=`500 ${11*dpr}px "Barlow Condensed"`;x.textAlign='center';x.textBaseline='middle';
+for(const [[X,Y,a],l] of labels){x.save();x.translate(X,Y);let aa=a;if(aa>Math.PI/2)aa-=Math.PI;if(aa<-Math.PI/2)aa+=Math.PI;x.rotate(aa);const txt=String(Math.round(l/Lv*2000));const w=x.measureText(txt).width+6*dpr;x.fillStyle=paper?'#f4eede':T.bg;x.fillRect(-w/2,-7*dpr,w,14*dpr);x.fillStyle=T.label;x.fillText(txt,0,0);x.restore()}
+// compass
+const cx=W-70*dpr,cy=H-140*dpr;x.strokeStyle=T.label;x.fillStyle=T.label;x.globalAlpha=.7;x.lineWidth=dpr;x.beginPath();x.arc(cx,cy,22*dpr,0,7);x.stroke();x.beginPath();x.moveTo(cx,cy-30*dpr);x.lineTo(cx+6*dpr,cy);x.lineTo(cx,cy-4*dpr);x.lineTo(cx-6*dpr,cy);x.closePath();x.fill();x.fillText('N',cx,cy-40*dpr);x.globalAlpha=1;
+// cursor readout
+if(mgx>-50){const i=Math.round(mgx),j=Math.round(mgy);if(i>=0&&j>=0&&i<gw&&j<gh){const h=F[j*gw+i];elE.textContent=Math.max(0,Math.round(h*2000)).toLocaleString('en')+' m';coE.textContent=`${(38.2+j/gh*.4).toFixed(3)}°S · ${(176.1+i/gw*.6).toFixed(3)}°E`}
+x.strokeStyle=T.label;x.globalAlpha=.5;x.setLineDash([4*dpr,4*dpr]);x.beginPath();x.arc(mgx*s,mgy*s,gw*.045*s*2,0,7);x.stroke();x.setLineDash([]);x.globalAlpha=1}
+requestAnimationFrame(f)}requestAnimationFrame(f);
 </script></body></html>

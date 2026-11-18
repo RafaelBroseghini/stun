@@ -1,28 +1,75 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Skyline Weather</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;400;600&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#c9d6df;font-family:Outfit,system-ui,sans-serif;display:flex;align-items:center;justify-content:center;gap:5vw;transition:background 1s}
-.ph{position:relative;width:min(360px,86vw);height:min(740px,92vh);border-radius:46px;overflow:hidden;box-shadow:0 0 0 10px #111,0 40px 80px rgba(0,0,0,.4);color:#fff;transition:background 1s}
-canvas{position:absolute;inset:0;width:100%;height:100%}.ui{position:relative;height:100%;display:flex;flex-direction:column;padding:56px 26px 26px}
-.city{font-size:26px;font-weight:600}.date{opacity:.8;font-size:14px}.tmp{font-size:118px;font-weight:200;line-height:1;margin-top:auto;letter-spacing:-.04em}.cond{font-size:20px;margin-bottom:22px}
-.days{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;background:rgba(255,255,255,.18);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-radius:22px;padding:14px 8px;text-align:center;font-size:13px}.days b{display:block;font-size:17px;font-weight:600;margin-top:4px}
-.sun{position:absolute;right:-40px;top:80px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,#fff6c9,#ffd45e 50%,rgba(255,180,60,0) 72%);animation:p 4s ease-in-out infinite alternate;transition:opacity 1s}@keyframes p{to{transform:scale(1.08)}}
-.cl{position:absolute;width:220px;height:70px;background:#fff;border-radius:50px;filter:blur(2px);opacity:.92;transition:opacity 1s}.cl::before,.cl::after{content:"";position:absolute;background:inherit;border-radius:50%}.cl::before{width:100px;height:100px;left:30px;top:-50px}.cl::after{width:80px;height:80px;left:110px;top:-35px}
-.c1{top:150px;left:-60px;animation:dr 26s linear infinite}.c2{top:230px;left:120px;transform:scale(.7);animation:dr 34s linear infinite -12s}@keyframes dr{from{translate:-120px 0}to{translate:420px 0}}
-.tabs{display:flex;flex-direction:column;gap:10px}.tabs button{font:600 15px Outfit,sans-serif;padding:14px 22px;border-radius:16px;border:0;background:rgba(255,255,255,.55);cursor:pointer;text-align:left;min-width:180px;display:flex;justify-content:space-between;gap:20px}.tabs button.on{background:#111;color:#fff}
-@media(max-width:700px){body{flex-direction:column-reverse;gap:10px}.tabs{flex-direction:row;flex-wrap:wrap;justify-content:center}.tabs button{min-width:0;padding:8px 12px}.ph{height:78vh}}</style></head><body>
-<div class="ph" id="ph"><canvas id="c"></canvas><div class="sun" id="sun"></div><div class="cl c1" id="c1"></div><div class="cl c2" id="c2"></div>
-<div class="ui"><div class="city" id="city"></div><div class="date" id="date"></div><div class="tmp" id="tmp"></div><div class="cond" id="cond"></div><div class="days" id="days"></div></div></div>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;600&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}
+body{background:#c9d6df;font-family:Outfit,system-ui,sans-serif;display:flex;align-items:center;justify-content:center;gap:5vw;transition:background 1.2s;perspective:1400px;user-select:none;-webkit-user-select:none}
+.ph{position:relative;width:min(360px,86vw);height:min(740px,92vh);border-radius:48px;overflow:hidden;box-shadow:0 0 0 10px #111,0 0 0 11px #333,0 50px 90px rgba(0,0,0,.45);color:#fff;transition:transform .5s cubic-bezier(.2,.8,.2,1);animation:in 1s cubic-bezier(.2,.8,.2,1) both}
+@keyframes in{from{opacity:0;transform:translateY(30px) rotateX(10deg)}}
+.isl{position:absolute;left:50%;top:12px;width:110px;height:32px;margin-left:-55px;border-radius:20px;background:#000;z-index:5;transition:width .4s cubic-bezier(.2,.9,.3,1.3),margin .4s cubic-bezier(.2,.9,.3,1.3);display:flex;align-items:center;justify-content:space-between;padding:0 12px;font-size:12px;overflow:hidden}
+.isl.wide{width:200px;margin-left:-100px}.isl span{opacity:0;transition:opacity .3s;white-space:nowrap}.isl.wide span{opacity:1}
+canvas{position:absolute;inset:0;width:100%;height:100%}
+.ui{position:relative;height:100%;display:flex;flex-direction:column;padding:60px 22px 22px;gap:12px;z-index:2}
+.city{font-size:26px;font-weight:600;display:flex;align-items:center;gap:8px}.city svg{width:14px;height:14px;fill:#fff}.date{opacity:.8;font-size:14px}
+.tmp{font-size:112px;font-weight:200;line-height:1;margin-top:auto;letter-spacing:-.05em;font-variant-numeric:tabular-nums;text-shadow:0 4px 30px rgba(0,0,0,.12)}.cond{font-size:19px;font-weight:300;margin-top:-6px}
+.glass{background:rgba(255,255,255,.16);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);border-radius:22px;border:1px solid rgba(255,255,255,.22)}
+.hours{padding:10px 8px 8px;cursor:ew-resize;touch-action:none}.hours .lab{font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.75;padding:0 6px 4px;display:flex;justify-content:space-between}
+.hours svg{width:100%;height:70px;display:block;overflow:visible}.hours text{font:400 10px Outfit;fill:#fff}
+.tiles{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}.tiles div{padding:10px 12px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;opacity:.95}.tiles b{display:flex;align-items:center;gap:6px;font-size:18px;font-weight:400;letter-spacing:0;text-transform:none;margin-top:4px}
+.tiles svg{width:16px;height:16px;transition:transform 1s cubic-bezier(.2,.8,.2,1)}
+.flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:3}
+.tabs{display:flex;flex-direction:column;gap:10px}.tabs button{font:600 15px Outfit,sans-serif;padding:14px 22px;border-radius:16px;border:0;background:rgba(255,255,255,.55);cursor:pointer;text-align:left;min-width:190px;display:flex;justify-content:space-between;align-items:center;gap:20px;transition:background .3s,color .3s,transform .3s cubic-bezier(.2,.9,.3,1.4)}
+.tabs button:hover{transform:translateX(4px)}.tabs button.on{background:#111;color:#fff}.tabs small{font-weight:400;opacity:.6;font-size:12px;display:block}
+@media(max-width:760px){body{flex-direction:column-reverse;gap:10px}.tabs{flex-direction:row;flex-wrap:wrap;justify-content:center}.tabs button{min-width:0;padding:8px 12px}.tabs small{display:none}.ph{height:80vh}.tmp{font-size:84px}}
+</style></head><body>
+<div class="ph" id="ph"><canvas id="c"></canvas><div class="flash" id="fl"></div><div class="isl" id="isl"><span id="isT">☂ Rain in 12 min</span><span>●</span></div>
+<div class="ui"><div class="city"><span id="city"></span><svg viewBox="0 0 24 24"><path d="M12 2 4 20l8-4 8 4z"/></svg></div><div class="date" id="date"></div><div class="tmp" id="tmp"></div><div class="cond" id="cond"></div>
+<div class="hours glass" id="hours"><div class="lab"><span>Hourly · drag to scrub</span><span id="hr">Now</span></div><svg viewBox="0 0 300 70" preserveAspectRatio="none" id="hs"></svg></div>
+<div class="tiles"><div class="glass">Wind<b><svg viewBox="0 0 24 24" id="wa"><path d="M12 2l5 20-5-4-5 4z" fill="#fff"/></svg><span id="wv">12</span> km/h</b></div><div class="glass">Humidity<b id="hu">62%</b></div><div class="glass">UV<b id="uv">3</b></div></div></div></div>
 <div class="tabs" id="tabs"></div>
 <script>
-const C=[{n:'Lisbon',t:24,c:'Clear and bright',k:'sun',bg:'linear-gradient(#3fa7f5,#8fd0ff 60%,#ffe3a6)',page:'#ffe9c2'},{n:'Bergen',t:9,c:'Steady rain',k:'rain',bg:'linear-gradient(#2c3e50,#4b6075 60%,#6d8399)',page:'#aab7c4'},{n:'Sapporo',t:-3,c:'Light snow',k:'snow',bg:'linear-gradient(#8ea7c4,#c3d3e6 70%,#eef3f9)',page:'#e3ebf4'},{n:'Galway',t:14,c:'Drifting cloud',k:'cloud',bg:'linear-gradient(#6f8fb0,#a9c0d6 60%,#dfe8f0)',page:'#c9d6df'}];
-const days=['Thu','Fri','Sat','Sun','Mon'];const tabs=document.getElementById('tabs');let cur=0,mode='sun';
-C.forEach((c,i)=>{const b=document.createElement('button');b.innerHTML=`<span>${c.n}</span><span>${c.t}°</span>`;b.onclick=()=>set(i);tabs.appendChild(b)});
-function set(i){cur=i;const c=C[i];mode=c.k;document.getElementById('ph').style.background=c.bg;document.body.style.background=c.page;document.getElementById('city').textContent=c.n;document.getElementById('tmp').textContent=c.t+'°';document.getElementById('cond').textContent=c.c;
-document.getElementById('date').textContent=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});document.getElementById('days').innerHTML=days.map((d,k)=>`<div>${d}<b>${c.t+Math.round(Math.sin(k*1.7+i)*4)}°</b></div>`).join('');
-document.getElementById('sun').style.opacity=c.k==='sun'?1:c.k==='cloud'?.35:0;['c1','c2'].forEach(id=>document.getElementById(id).style.opacity=c.k==='sun'?.5:c.k==='cloud'?.95:c.k==='rain'?.55:.7);[...tabs.children].forEach((b,k)=>b.classList.toggle('on',k===i))}
-const cv=document.getElementById('c'),x=cv.getContext('2d');let ps=[];function sz(){cv.width=cv.clientWidth;cv.height=cv.clientHeight}sz();addEventListener('resize',sz);
-for(let i=0;i<220;i++)ps.push({x:Math.random()*400,y:Math.random()*800,v:Math.random()});
-function f(){x.clearRect(0,0,cv.width,cv.height);if(mode==='rain'){x.strokeStyle='rgba(210,230,255,.55)';x.lineWidth=1.2;x.beginPath();for(const p of ps){p.y+=10+p.v*8;p.x-=1.5;if(p.y>cv.height){p.y=-20;p.x=Math.random()*cv.width+40}x.moveTo(p.x,p.y);x.lineTo(p.x+2,p.y-14)}x.stroke()}
-if(mode==='snow'){x.fillStyle='rgba(255,255,255,.9)';for(const p of ps){p.y+=.6+p.v*1.4;p.x+=Math.sin(p.y*.02+p.v*9)*.6;if(p.y>cv.height){p.y=-5;p.x=Math.random()*cv.width}x.beginPath();x.arc(p.x,p.y,1+p.v*2.5,0,7);x.fill()}}requestAnimationFrame(f)}
-set(0);f();setInterval(()=>set((cur+1)%C.length),5000);tabs.addEventListener('click',()=>{},{once:true});
+const C=[{n:'Lisbon',t:24,c:'Clear and bright',k:'sun',page:'#ffe9c2',w:12,wd:40,h:48,uv:7},{n:'Bergen',t:9,c:'Steady rain',k:'rain',page:'#aab7c4',w:28,wd:200,h:91,uv:1},{n:'Sapporo',t:-3,c:'Light snow',k:'snow',page:'#e3ebf4',w:9,wd:320,h:78,uv:1},{n:'Galway',t:14,c:'Drifting cloud',k:'cloud',page:'#c9d6df',w:22,wd:260,h:70,uv:3},{n:'Darwin',t:31,c:'Thunderstorms',k:'storm',page:'#8b8fa8',w:41,wd:130,h:88,uv:2}];
+const $=id=>document.getElementById(id);const tabs=$('tabs');let cur=0,mode='sun',hour=new Date().getHours()+new Date().getMinutes()/60,dispHour=hour,auto=true;
+C.forEach((c,i)=>{const b=document.createElement('button');b.innerHTML=`<span>${c.n}<small>${c.c}</small></span><span>${c.t}°</span>`;b.onclick=()=>{auto=false;set(i)};tabs.appendChild(b)});
+const temps=k=>Array.from({length:24},(_,h)=>C[k].t+Math.round(Math.sin((h-9)/24*6.283)*5+Math.sin(h*1.7+k)*1.2));
+function hourly(){const T=temps(cur),mn=Math.min(...T),mx=Math.max(...T);const y=v=>50-(v-mn)/(mx-mn||1)*34;let d='',dots='';const hs=$('hs');
+for(let h=0;h<24;h++){const X=h/23*300;d+=(h?'L':'M')+X.toFixed(1)+' '+y(T[h]).toFixed(1);if(h%3===0)dots+=`<text x="${X}" y="68" text-anchor="middle" opacity=".7">${String(h).padStart(2,'0')}</text><circle cx="${X}" cy="${y(T[h])}" r="2" fill="#fff" opacity=".6"/><text x="${X}" y="${y(T[h])-7}" text-anchor="middle">${T[h]}°</text>`}
+hs.innerHTML=`<defs><linearGradient id="hf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><path d="${d}L300 58L0 58Z" fill="url(#hf)"/><path d="${d}" fill="none" stroke="#fff" stroke-width="1.6" vector-effect="non-scaling-stroke"/>${dots}<line id="cur" y1="0" y2="58" stroke="#fff" stroke-width="1" vector-effect="non-scaling-stroke"/><circle id="cd" r="4" fill="#fff"/>`}
+function set(i){cur=i;const c=C[i];mode=c.k;document.body.style.background=c.page;$('city').textContent=c.n;$('cond').textContent=c.c;$('date').textContent=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+$('wv').textContent=c.w;$('wa').style.transform=`rotate(${c.wd}deg)`;$('hu').textContent=c.h+'%';$('uv').textContent=c.uv;[...tabs.children].forEach((b,k)=>b.classList.toggle('on',k===i));hourly();
+const isl=$('isl');isl.classList.toggle('wide',c.k==='rain'||c.k==='storm');$('isT').textContent=c.k==='storm'?'⚡ Storm cell nearby':'☂ Rain all afternoon'}
+// scrub the hour
+const hb=$('hours');const scrub=e=>{const r=hb.getBoundingClientRect();hour=Math.max(0,Math.min(23.99,(e.clientX-r.left-8)/(r.width-16)*24));auto=false};hb.addEventListener('pointerdown',e=>{hb.setPointerCapture(e.pointerId);scrub(e);hb.onpointermove=scrub});hb.addEventListener('pointerup',()=>hb.onpointermove=null);
+addEventListener('keydown',e=>{if(e.key==='ArrowRight'){auto=false;set((cur+1)%C.length)}if(e.key==='ArrowLeft'){auto=false;set((cur+C.length-1)%C.length)}});
+const ph=$('ph');addEventListener('pointermove',e=>{const nx=e.clientX/innerWidth-.5,ny=e.clientY/innerHeight-.5;ph.style.transform=`rotateY(${nx*10}deg) rotateX(${-ny*8}deg)`});
+// sky renderer
+const cv=$('c'),x=cv.getContext('2d');const dpr=Math.min(devicePixelRatio||1,2);let W,H;function sz(){W=cv.width=cv.clientWidth*dpr;H=cv.height=cv.clientHeight*dpr}sz();addEventListener('resize',sz);
+const ps=Array.from({length:260},()=>({x:Math.random(),y:Math.random(),v:Math.random()}));const clouds=Array.from({length:7},(_,i)=>({x:Math.random(),y:.08+Math.random()*.35,s:.6+Math.random()*.8,v:.00008+Math.random()*.00012}));const splash=[];let snowLine=0,flashT=0;
+const skyK={sun:[['#0b1d3a','#1d3b6e','#3a5a8a'],['#ff9a6b','#ffc28a','#ffe3a6'],['#3fa7f5','#8fd0ff','#ffe3a6']],rain:[['#0c1218','#18222e','#28333f'],['#4a4f5e','#6b6f7a','#8a8a90'],['#2c3e50','#4b6075','#6d8399']],snow:[['#141c2e','#26324a','#3a4660'],['#b6a8c4','#d6c8d8','#eee0e4'],['#8ea7c4','#c3d3e6','#eef3f9']],cloud:[['#101826','#1e2a3a','#2e3a4a'],['#c49a8a','#dcbaa8','#ecd8c8'],['#6f8fb0','#a9c0d6','#dfe8f0']],storm:[['#06080e','#10141f','#1a1f2c'],['#3a3044','#5a4458','#7a5a60'],['#2a2f40','#3c4256','#565c70']]};
+const mix=(a,b,t)=>{const p=s=>[1,3,5].map(i=>parseInt(s.slice(i,i+2),16));const A=p(a),B=p(b);return `rgb(${A.map((v,i)=>Math.round(v+(B[i]-v)*t)).join(',')})`};
+function skyAt(h){const K=skyK[mode];const day=Math.max(0,Math.min(1,(Math.sin((h-6)/24*6.283)+.15)*1.6));const dusk=Math.min(1,Math.exp(-Math.pow((h-19)/1.6,2))+Math.exp(-Math.pow((h-6.5)/1.4,2)));return [0,1,2].map(i=>blend(mix(K[0][i],K[2][i],day),mix(K[1][i],K[1][i],0),dusk*.85))}
+function blend(a,b,t){const p=s=>s.match(/\d+/g).map(Number);const A=p(a),B=p(b);return `rgb(${A.map((v,i)=>Math.round(v+(B[i]-v)*t)).join(',')})`}
+function cloud(cx,cy,s,a,dark){x.fillStyle=dark?`rgba(70,76,92,${a})`:`rgba(255,255,255,${a})`;const r=40*s*dpr;[[0,0,1],[.9,-.3,.8],[1.7,.05,.7],[-.8,.1,.7],[.4,-.7,.75]].forEach(([dx,dy,k])=>{x.beginPath();x.arc(cx+dx*r,cy+dy*r,r*k,0,7);x.fill()})}
+let last=performance.now();
+function f(now){const dt=Math.min(50,now-last);last=now;if(auto){hour=(hour+dt/1000*.25)%24}dispHour+=((hour-dispHour+36)%24-12)*.1;dispHour=(dispHour+24)%24;
+const S=skyAt(dispHour),g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,S[0]);g.addColorStop(.6,S[1]);g.addColorStop(1,S[2]);x.fillStyle=g;x.fillRect(0,0,W,H);
+const day=Math.max(0,Math.sin((dispHour-6)/24*6.283));
+// stars at night
+if(day<.3){x.fillStyle='#fff';for(let i=0;i<60;i++){x.globalAlpha=(.3-day)*2*(.5+.5*Math.sin(now*.002+i));x.fillRect((i*97%100)/100*W,(i*53%60)/100*H*.6,1.2*dpr,1.2*dpr)}x.globalAlpha=1}
+// sun / moon on an arc
+const su=((dispHour-6)/12),sx2=W*(.1+su*.8),sy2=H*(.52-Math.sin(Math.max(0,Math.min(1,su))*Math.PI)*.4);if(su>-.05&&su<1.05&&(mode==='sun'||mode==='cloud')){const rg=x.createRadialGradient(sx2,sy2,0,sx2,sy2,110*dpr);rg.addColorStop(0,'rgba(255,250,220,1)');rg.addColorStop(.25,'rgba(255,214,94,.9)');rg.addColorStop(1,'rgba(255,180,60,0)');x.fillStyle=rg;x.globalAlpha=mode==='cloud'?.5:1;x.fillRect(sx2-110*dpr,sy2-110*dpr,220*dpr,220*dpr);x.globalAlpha=1}
+else if(day<.2){x.fillStyle='rgba(240,240,255,.9)';x.beginPath();x.arc(W*.75,H*.16,16*dpr,0,7);x.fill()}
+// clouds
+const nc=mode==='sun'?2:mode==='snow'?5:7,dark=mode==='rain'||mode==='storm';clouds.slice(0,nc).forEach(cl=>{cl.x+=cl.v*dt*(mode==='storm'?3:1);if(cl.x>1.3)cl.x=-.4;cloud(cl.x*W,cl.y*H,cl.s,dark?.85:mode==='sun'?.5:.85,dark)});
+// precipitation
+if(mode==='rain'||mode==='storm'){x.strokeStyle='rgba(210,230,255,.5)';x.lineWidth=1.2*dpr;x.beginPath();for(const p of ps){p.y+=(.018+p.v*.012)*dt/16;p.x-=.002*dt/16;if(p.y>1){if(Math.random()<.3)splash.push({x:p.x,y:.97+Math.random()*.02,a:1});p.y=-.05;p.x=Math.random()*1.1}x.moveTo(p.x*W,p.y*H);x.lineTo(p.x*W+2*dpr,p.y*H-14*dpr)}x.stroke();
+for(let i=splash.length-1;i>=0;i--){const s=splash[i];s.a-=.06;if(s.a<=0){splash.splice(i,1);continue}x.strokeStyle=`rgba(220,235,255,${s.a*.6})`;x.beginPath();x.ellipse(s.x*W,s.y*H,(1-s.a)*8*dpr,(1-s.a)*2*dpr,0,0,7);x.stroke()}}
+if(mode==='storm'){flashT-=dt;if(flashT<0&&Math.random()<.004){flashT=900;const fl=$('fl');fl.style.transition='none';fl.style.opacity=.7;requestAnimationFrame(()=>{fl.style.transition='opacity .5s';fl.style.opacity=0});bolt()}}
+if(mode==='snow'){x.fillStyle='rgba(255,255,255,.9)';for(const p of ps){p.y+=(.0006+p.v*.0014)*dt/16*2;p.x+=Math.sin(p.y*20+p.v*9)*.0006;if(p.y>1){p.y=-.02;p.x=Math.random();snowLine=Math.min(14,snowLine+.004)}x.beginPath();x.arc(p.x*W,p.y*H,(1+p.v*2.4)*dpr,0,7);x.fill()}x.fillStyle='rgba(255,255,255,.85)';x.fillRect(0,H-snowLine*dpr,W,snowLine*dpr)}else snowLine=0;
+if(bt>0){bt-=dt;x.strokeStyle=`rgba(230,240,255,${bt/300})`;x.lineWidth=2.4*dpr;x.beginPath();bp.forEach(([a,b],i)=>i?x.lineTo(a,b):x.moveTo(a,b));x.stroke()}
+// readouts follow the scrub hour
+const T=temps(cur),h=Math.floor(dispHour)%24;$('tmp').textContent=T[h]+'°';$('hr').textContent=Math.abs(dispHour-(new Date().getHours()+new Date().getMinutes()/60))<.3?'Now':String(h).padStart(2,'0')+':00';
+const cx=dispHour/24*300;const cl=$('cur'),cd=$('cd');if(cl){cl.setAttribute('x1',cx);cl.setAttribute('x2',cx);const mn=Math.min(...T),mx=Math.max(...T);cd.setAttribute('cx',cx);cd.setAttribute('cy',50-(T[h]-mn)/(mx-mn||1)*34)}
+requestAnimationFrame(f)}
+let bt=0,bp=[];function bolt(){bt=300;bp=[];let bx=W*(.2+Math.random()*.6),by=H*.15;bp.push([bx,by]);while(by<H*.75){bx+=(Math.random()-.5)*40*dpr;by+=(14+Math.random()*24)*dpr;bp.push([bx,by])}}
+set(0);requestAnimationFrame(f);setInterval(()=>{if(auto)set((cur+1)%C.length)},6000);
 </script></body></html>
