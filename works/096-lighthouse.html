@@ -2,12 +2,15 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@500&display=swap">
 <style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#07101f}canvas{display:block;width:100%;height:100%}
 .t{position:fixed;left:5vw;top:6vh;color:#e6edf5;font:500 clamp(22px,3vw,40px)/1.1 'Alegreya SC',serif;letter-spacing:.06em}.t small{display:block;font-size:13px;letter-spacing:.3em;opacity:.7;margin-top:8px}</style></head><body>
-<canvas id="c"></canvas><div class="t">Skerry Point Light<small>Fl W 10s · 28 m · 18 NM</small></div>
+<canvas id="c"></canvas><div class="t">Skerry Point Light<small>Fl W 10s · 28 m · 18 NM · hold to aim the beam and sound the horn</small></div>
 <script>
 const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio,2);let W,H,stars;function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr;stars=Array.from({length:260},()=>[Math.random()*W,Math.random()*H*.6,Math.random()])}size();addEventListener('resize',size);
-function f(t){const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#050b18');g.addColorStop(.6,'#13264a');g.addColorStop(.7,'#1d3358');g.addColorStop(1,'#07101f');x.fillStyle=g;x.fillRect(0,0,W,H);
+let ang=0,aim=null,lt=0,A=null,horn=null;const aimAt=e=>{const lx=W*.72,v=Math.max(-1,Math.min(1,(e.clientX*dpr-lx)/(W*.45)));aim=Math.acos(v)};
+addEventListener('pointerdown',e=>{aimAt(e);try{A=A||new AudioContext();const g=A.createGain(),fl=A.createBiquadFilter();fl.type='lowpass';fl.frequency.value=380;g.gain.setValueAtTime(0,A.currentTime);g.gain.linearRampToValueAtTime(.22,A.currentTime+.25);fl.connect(g);g.connect(A.destination);const os=[88,88.7,176].map(fq=>{const o=A.createOscillator();o.type='sawtooth';o.frequency.value=fq;o.connect(fl);o.start();return o});horn={g,os}}catch(_){}});
+addEventListener('pointermove',e=>{if(aim!==null)aimAt(e)});addEventListener('pointerup',()=>{aim=null;if(horn&&A){const h=horn;h.g.gain.cancelScheduledValues(A.currentTime);h.g.gain.setValueAtTime(h.g.gain.value,A.currentTime);h.g.gain.linearRampToValueAtTime(0,A.currentTime+.8);h.os.forEach(o=>o.stop(A.currentTime+.9));horn=null}});
+function f(t){const dt=Math.min(60,t-lt);lt=t;if(aim===null)ang+=dt/10000*Math.PI*2;else{const d=Math.atan2(Math.sin(aim-ang),Math.cos(aim-ang));ang+=d*.1}const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#050b18');g.addColorStop(.6,'#13264a');g.addColorStop(.7,'#1d3358');g.addColorStop(1,'#07101f');x.fillStyle=g;x.fillRect(0,0,W,H);
 for(const [sx,sy,b] of stars){x.globalAlpha=b*.8*(.6+.4*Math.sin(t*.002+sx));x.fillStyle='#fff';x.fillRect(sx,sy,dpr,dpr)}x.globalAlpha=1;
-const hz=H*.7,lx=W*.72,ly=H*.36;const a=(t/10000)*Math.PI*2;const facing=Math.cos(a);
+const hz=H*.7,lx=W*.72,ly=H*.36;const a=ang;const facing=Math.cos(a);
 x.globalCompositeOperation='lighter';for(const side of [1,-1]){const dir=a+(side<0?Math.PI:0);const len=Math.max(W,H)*1.4,spread=.09;const ex=Math.cos(dir)*Math.abs(Math.cos(dir)),k=Math.sin(dir);
 const vis=Math.abs(Math.cos(dir));const L=len*(.25+vis*.75);const g2=x.createLinearGradient(lx,ly,lx+Math.sign(Math.cos(dir))*L,ly);const fr=Math.sin(dir)>0?1:.35;g2.addColorStop(0,`rgba(255,246,210,${.55*fr})`);g2.addColorStop(1,'rgba(255,246,210,0)');x.fillStyle=g2;
 x.beginPath();x.moveTo(lx,ly);x.lineTo(lx+Math.sign(Math.cos(dir))*L,ly-L*spread*(1+k*.3));x.lineTo(lx+Math.sign(Math.cos(dir))*L,ly+L*spread*(1-k*.3)*.8);x.closePath();x.fill()}

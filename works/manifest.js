@@ -5,7 +5,7 @@ window.STUN_WORKS=[
 "title": "Aurora over the Fjord",
 "cat": "Scene",
 "blurb": "Aurora curtains ripple over a fjord, mirrored in still water.",
-"try": "Watch",
+"try": "Move to steer, click for a storm",
 "thumb": "thumbs/001.jpg"
 },
 {
@@ -23,7 +23,7 @@ window.STUN_WORKS=[
 "title": "Zürcher Klangtage",
 "cat": "Type & Print",
 "blurb": "A Swiss-style festival poster with a rolling red disc.",
-"try": "Watch",
+"try": "Move the disc, click to recolour",
 "thumb": "thumbs/003.jpg"
 },
 {
@@ -32,7 +32,7 @@ window.STUN_WORKS=[
 "title": "Night Drive",
 "cat": "Scene",
 "blurb": "An endless neon grid racing toward a striped sunset.",
-"try": "Watch",
+"try": "Steer, hold to speed up",
 "thumb": "thumbs/004.jpg"
 },
 {
@@ -104,7 +104,7 @@ window.STUN_WORKS=[
 "title": "Lava Lamp",
 "cat": "Object",
 "blurb": "A lava lamp with gooey wax blobs rising and sinking.",
-"try": "Watch",
+"try": "Click to re-wax",
 "thumb": "thumbs/012.jpg"
 },
 {
@@ -113,7 +113,7 @@ window.STUN_WORKS=[
 "title": "The Brass Orrery",
 "cat": "Object",
 "blurb": "A brass orrery with planets on engraved orbits.",
-"try": "Watch",
+"try": "Drag to wind time",
 "thumb": "thumbs/013.jpg"
 },
 {
@@ -176,7 +176,7 @@ window.STUN_WORKS=[
 "title": "Platform Four",
 "cat": "Scene",
 "blurb": "Rain sliding down a window over a blur of city lights.",
-"try": "Watch",
+"try": "Wipe the misted glass",
 "thumb": "thumbs/020.jpg"
 },
 {
@@ -185,7 +185,7 @@ window.STUN_WORKS=[
 "title": "The Meridian Express",
 "cat": "Type & Print",
 "blurb": "An Art Deco railway poster with a turning sunburst.",
-"try": "Watch",
+"try": "Tilt the poster, click",
 "thumb": "thumbs/021.jpg"
 },
 {
@@ -203,7 +203,7 @@ window.STUN_WORKS=[
 "title": "Departures Board",
 "cat": "Interface",
 "blurb": "A split-flap departures board flipping to new flights.",
-"try": "Watch",
+"try": "Type a destination",
 "thumb": "thumbs/023.jpg"
 },
 {
@@ -239,7 +239,7 @@ window.STUN_WORKS=[
 "title": "Contour Survey",
 "cat": "Generative",
 "blurb": "Moving topographic contours from marching squares.",
-"try": "Watch",
+"try": "Hover to raise, press to dig",
 "thumb": "thumbs/027.jpg"
 },
 {
@@ -257,7 +257,7 @@ window.STUN_WORKS=[
 "title": "Pixel Dusk",
 "cat": "Scene",
 "blurb": "A dithered pixel-art evening walk with parallax.",
-"try": "Watch",
+"try": "Point to walk",
 "thumb": "thumbs/029.jpg"
 },
 {
@@ -410,7 +410,7 @@ window.STUN_WORKS=[
 "title": "Event Horizon",
 "cat": "Scene",
 "blurb": "A black hole with a Doppler-bright accretion disk.",
-"try": "Watch",
+"try": "Move to tilt, click to feed",
 "thumb": "thumbs/046.jpg"
 },
 {
@@ -419,7 +419,7 @@ window.STUN_WORKS=[
 "title": "Dawn Voyage",
 "cat": "Scene",
 "blurb": "A sailboat riding layered waves at dawn.",
-"try": "Watch",
+"try": "Move to change the sea",
 "thumb": "thumbs/047.jpg"
 },
 {
@@ -428,7 +428,7 @@ window.STUN_WORKS=[
 "title": "Caravan by Moonlight",
 "cat": "Scene",
 "blurb": "A camel caravan crossing moonlit dunes.",
-"try": "Watch",
+"try": "Move the moon, click",
 "thumb": "thumbs/048.jpg"
 },
 {
@@ -554,7 +554,7 @@ window.STUN_WORKS=[
 "title": "Field Notebook No. 9",
 "cat": "Type & Print",
 "blurb": "A naturalist's notebook with sketches drawing in.",
-"try": "Watch",
+"try": "Sketch in the margins",
 "thumb": "thumbs/062.jpg"
 },
 {
@@ -563,7 +563,7 @@ window.STUN_WORKS=[
 "title": "Kettle Mk II Blueprint",
 "cat": "Type & Print",
 "blurb": "A blueprint of a kettle, drafting itself line by line.",
-"try": "Watch",
+"try": "Hover figures, click to redraw",
 "thumb": "thumbs/063.jpg"
 },
 {
@@ -626,7 +626,7 @@ window.STUN_WORKS=[
 "title": "Low-Poly Flyover",
 "cat": "Scene",
 "blurb": "A flat-shaded low-poly flight up a mountain valley.",
-"try": "Watch",
+"try": "Steer the flight",
 "thumb": "thumbs/070.jpg"
 },
 {
@@ -662,7 +662,7 @@ window.STUN_WORKS=[
 "title": "Small Press Fair",
 "cat": "Type & Print",
 "blurb": "A two-colour risograph poster with misregistration.",
-"try": "Watch",
+"try": "Move to misregister, click",
 "thumb": "thumbs/074.jpg"
 },
 {
@@ -671,7 +671,7 @@ window.STUN_WORKS=[
 "title": "Hello 1986",
 "cat": "Type & Print",
 "blurb": "An 80s Memphis party invitation full of squiggles.",
-"try": "Watch",
+"try": "Chase shapes, click",
 "thumb": "thumbs/075.jpg"
 },
 {
@@ -698,7 +698,7 @@ window.STUN_WORKS=[
 "title": "Girih Tilework",
 "cat": "Generative",
 "blurb": "Eight-fold girih stars and crosses in tile.",
-"try": "Watch",
+"try": "Move the light, click",
 "thumb": "thumbs/078.jpg"
 },
 {
@@ -716,7 +716,7 @@ window.STUN_WORKS=[
 "title": "ARPA Radar",
 "cat": "Interface",
 "blurb": "A marine radar sweep with tracked contacts.",
-"try": "Watch",
+"try": "Click to plot a contact",
 "thumb": "thumbs/080.jpg"
 },
 {
@@ -743,7 +743,7 @@ window.STUN_WORKS=[
 "title": "The Long Rain",
 "cat": "Type & Print",
 "blurb": "A film-noir title sequence behind venetian blinds.",
-"try": "Watch",
+"try": "Move the light, click",
 "thumb": "thumbs/083.jpg"
 },
 {
@@ -752,7 +752,7 @@ window.STUN_WORKS=[
 "title": "Midnight Mittens",
 "cat": "Type & Print",
 "blurb": "A comic page about a cat burglar.",
-"try": "Watch",
+"try": "Hover and tap panels",
 "thumb": "thumbs/084.jpg"
 },
 {
@@ -797,7 +797,7 @@ window.STUN_WORKS=[
 "title": "Café Menu Board",
 "cat": "Type & Print",
 "blurb": "A chalkboard café menu.",
-"try": "Watch",
+"try": "Draw with chalk",
 "thumb": "thumbs/089.jpg"
 },
 {
@@ -860,7 +860,7 @@ window.STUN_WORKS=[
 "title": "Lighthouse at Skerry Point",
 "cat": "Scene",
 "blurb": "A lighthouse beam sweeping across a night sea.",
-"try": "Watch",
+"try": "Hold to aim and sound",
 "thumb": "thumbs/096.jpg"
 },
 {
@@ -878,7 +878,7 @@ window.STUN_WORKS=[
 "title": "Nixie Clock",
 "cat": "Object",
 "blurb": "A nixie-tube clock showing local time.",
-"try": "Watch",
+"try": "Click to change mode",
 "thumb": "thumbs/098.jpg"
 },
 {
@@ -887,7 +887,7 @@ window.STUN_WORKS=[
 "title": "Abyssal Jellies",
 "cat": "Scene",
 "blurb": "Bioluminescent jellyfish pulsing in the deep.",
-"try": "Watch",
+"try": "Lead them with light",
 "thumb": "thumbs/099.jpg"
 },
 {

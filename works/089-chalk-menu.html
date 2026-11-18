@@ -9,9 +9,15 @@ ul{list-style:none;font-size:clamp(14px,1.7vw,24px);line-height:1.45}li{display:
 .sp{color:#9fe0c8;transform:rotate(-4deg);font-size:clamp(16px,2vw,28px);margin-top:4%;border:2px solid #9fe0c8;padding:2% 4%;display:inline-block;border-radius:40% 10%/20% 40%}
 .chalk{filter:url(#rough)}svg.d{position:absolute;stroke:#f2f0e8;fill:none;stroke-width:3;stroke-linecap:round;opacity:.85}</style></head><body>
 <svg width="0" height="0" style="position:absolute"><filter id="rough"><feTurbulence baseFrequency=".9" numOctaves="2" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.2"/></filter></svg>
-<div class="b chalk"><h1>The Copper Kettle<small>~ open 7 till 4 · cash &amp; cards ~</small></h1>
+<div class="b chalk"><h1>The Copper Kettle<small>~ open 7 till 4 · cash &amp; cards ~<br>draw on the board with chalk · double-click to wipe</small></h1>
 <div><h2>Coffee &amp; Tea</h2><ul><li><span>Flat white</span>3.20</li><li><span>Cortado</span>2.90</li><li><span>Filter of the day <small>Huila, Colombia — plum &amp; cocoa</small></span>3.00</li><li><span>Cardamom chai</span>3.40</li><li><span>Pot of Assam</span>2.60</li></ul><div class="sp">oat milk is free ♥</div></div>
 <div><h2>From the Oven</h2><ul><li><span>Cinnamon knot</span>3.10</li><li><span>Sourdough toast, <i>cultured butter</i></span>4.50</li><li><span>Leek &amp; gruyère tart</span>7.80</li><li><span>Rye, smoked trout, dill</span>9.20</li><li><span>Pear &amp; almond cake</span>3.90</li></ul></div>
-<svg class="d" viewBox="0 0 80 80" style="right:3%;bottom:4%;width:9%"><path d="M15 30h44v26a14 14 0 0 1-14 14H29a14 14 0 0 1-14-14z"/><path d="M59 36c12 0 12 16 0 16"/><path d="M28 22c-4-6 4-8 0-14M38 22c-4-6 4-8 0-14M48 22c-4-6 4-8 0-14"/></svg>
+<canvas id="ch" style="position:absolute;inset:0;width:100%;height:100%;z-index:3;cursor:crosshair;touch-action:none"></canvas><svg class="d" viewBox="0 0 80 80" style="right:3%;bottom:4%;width:9%"><path d="M15 30h44v26a14 14 0 0 1-14 14H29a14 14 0 0 1-14-14z"/><path d="M59 36c12 0 12 16 0 16"/><path d="M28 22c-4-6 4-8 0-14M38 22c-4-6 4-8 0-14M48 22c-4-6 4-8 0-14"/></svg>
 <svg class="d" viewBox="0 0 80 50" style="left:42%;bottom:5%;width:12%"><path d="M5 40c10-30 60-30 70 0z"/><path d="M20 30c4-6 8-6 12 0M40 26c4-6 8-6 12 0"/></svg></div>
+<script>
+const cv=document.getElementById('ch'),x=cv.getContext('2d'),d=Math.min(devicePixelRatio,2);function sz(){const r=cv.getBoundingClientRect();cv.width=r.width*d;cv.height=r.height*d}sz();addEventListener('resize',sz);
+const cols=['#f2f0e8','#ffd98a','#ffb3a7','#9fe0c8'];let col=0,L=null;cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);L=[e.offsetX*d,e.offsetY*d];if(e.button===2||e.shiftKey)col=(col+1)%cols.length});cv.addEventListener('pointerup',()=>{L=null;col=(col+1)%cols.length});
+cv.addEventListener('pointermove',e=>{if(!L)return;const X=e.offsetX*d,Y=e.offsetY*d,dist=Math.hypot(X-L[0],Y-L[1]),n=Math.max(1,dist/1.2|0);x.fillStyle=cols[col];for(let i=0;i<n;i++){const t=i/n,px=L[0]+(X-L[0])*t,py=L[1]+(Y-L[1])*t;for(let k=0;k<5;k++){x.globalAlpha=.25+Math.random()*.5;x.fillRect(px+(Math.random()-.5)*5*d,py+(Math.random()-.5)*5*d,1.4*d,1.4*d)}}x.globalAlpha=1;L=[X,Y]});
+cv.addEventListener('dblclick',()=>{let a=0;const iv=setInterval(()=>{x.globalCompositeOperation='destination-out';x.fillStyle='rgba(0,0,0,.25)';x.fillRect(0,0,cv.width,cv.height);x.globalCompositeOperation='source-over';if(++a>12){x.clearRect(0,0,cv.width,cv.height);clearInterval(iv)}},40)});
+</script>
 </body></html>

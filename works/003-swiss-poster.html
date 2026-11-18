@@ -16,4 +16,9 @@ h1 span{display:block;animation:drop .9s cubic-bezier(.2,.9,.2,1) both}h1 span:n
 <div class="p"><div class="g"></div><div class="dot"></div><h1><span>Klang</span><span>und</span><span>Raum</span></h1><div class="v">Zürcher Klangtage · 14.–22. Mai</div><div class="bar"></div>
 <div class="num">20<i>27</i></div>
 <div class="cols"><div><b>Tonhalle</b>Werke für Raum, Stimme und Elektronik. Ein Festival der neuen Musik in neun Abenden.</div><div><b>Programm</b>Do 14.5. Eröffnung<br>Sa 16.5. Stille Partituren<br>Mi 20.5. Lautsprecherorchester</div><div><b>Eintritt</b>CHF 28 / 14<br>klangtage.ch<br>Bahnhof Enge, 8002 Zürich</div></div></div>
+<script>
+const p=document.querySelector('.p'),d=document.querySelector('.dot'),nm=document.querySelector('.num i');const C=['#e2231a','#1d4fd8','#f2b400','#111'];let ci=0;
+p.addEventListener('pointermove',e=>{const r=p.getBoundingClientRect();d.style.animation='none';d.style.transition='left .7s cubic-bezier(.2,.8,.2,1),top .7s cubic-bezier(.2,.8,.2,1),background .4s';d.style.left=((e.clientX-r.left)/r.width*100-26)+'%';d.style.top=((e.clientY-r.top)/r.height*100-17.3)+'%'});
+p.addEventListener('click',()=>{ci=(ci+1)%C.length;d.style.background=C[ci];nm.style.color=C[ci]});p.style.cursor='pointer';
+</script>
 </body></html>
