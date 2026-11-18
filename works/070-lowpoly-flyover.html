@@ -1,21 +1,52 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Low-Poly Flyover</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend+Zetta:wght@300;700&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#ffd9b3}canvas{display:block;width:100%;height:100%}
-.t{position:fixed;left:0;right:0;top:6vh;text-align:center;color:#3b2b5a;font:300 11px 'Lexend Zetta',sans-serif;letter-spacing:.2em}.t b{display:block;font-weight:700;font-size:clamp(20px,3vw,40px);letter-spacing:.05em;margin-bottom:8px}</style></head><body>
-<canvas id="c"></canvas><div class="t"><b>FJELLHEIM</b>ALT 2,400 M · GROUND SPEED 310 KM/H · STEER WITH THE CURSOR</div>
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#ffd9b3;user-select:none;-webkit-user-select:none}canvas{display:block;width:100%;height:100%;cursor:crosshair;touch-action:none}
+.t{position:fixed;left:0;right:0;top:6vh;text-align:center;color:var(--ink,#3b2b5a);font:300 10px 'Lexend Zetta',sans-serif;letter-spacing:.2em;pointer-events:none;transition:color 1s}.t b{display:block;font-weight:700;font-size:clamp(20px,3vw,40px);letter-spacing:.05em;margin-bottom:8px}
+.hud{position:fixed;bottom:4vh;left:50%;transform:translateX(-50%);display:flex;gap:4vw;align-items:center;padding:10px 22px;border-radius:99px;background:rgba(255,255,255,.28);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:var(--ink,#3b2b5a);font:300 9px 'Lexend Zetta';letter-spacing:.2em;pointer-events:none;transition:color 1s}
+.hud b{display:block;font:700 18px 'Lexend Zetta';letter-spacing:.02em;margin-top:2px;font-variant-numeric:tabular-nums}
+.ah{width:84px;height:84px;border-radius:50%;overflow:hidden;position:relative;border:2px solid currentColor;box-shadow:0 6px 18px rgba(0,0,0,.2)}.ah i{position:absolute;left:-50%;top:-50%;width:200%;height:200%;background:linear-gradient(#7c8fd6 50%,#8a6a4a 50%);transform:rotate(var(--r,0deg)) translateY(var(--p,0%))}.ah::after{content:"";position:absolute;left:20%;right:20%;top:50%;height:2px;margin-top:-1px;background:#ffd34a;box-shadow:0 0 0 1px #000}
+.tod{position:fixed;right:3vw;top:5vh;display:flex;gap:6px}.tod button{font:300 9px 'Lexend Zetta';letter-spacing:.16em;color:var(--ink,#3b2b5a);background:rgba(255,255,255,.3);border:1px solid currentColor;padding:7px 9px;border-radius:99px;cursor:pointer;backdrop-filter:blur(4px)}.tod button[aria-pressed="true"]{background:var(--ink,#3b2b5a);color:#fff}
+@media (max-width:640px){.tod{top:auto;bottom:16vh;right:auto;left:50%;transform:translateX(-50%)}.ah{width:60px;height:60px}}
+</style></head><body>
+<canvas id="c"></canvas><div class="t"><b>FJELLHEIM</b>STEER WITH THE CURSOR · HOLD TO THROTTLE UP</div>
+<div class="tod" id="tod"><button data-k="0" aria-pressed="true">Dusk</button><button data-k="1">Noon</button><button data-k="2">Night</button><button data-k="3">Winter</button></div>
+<div class="hud"><div>ALT<b id="al">2,400 M</b></div><div class="ah"><i id="ah"></i></div><div>HDG<b id="hd">312°</b></div><div>GS<b id="gs">310 KM/H</b></div></div>
 <script>
-const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio,2);let W,H;function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr}size();addEventListener('resize',size);
+const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio||1,2);let W,H;function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr}size();addEventListener('resize',size);
 const P=new Uint8Array(512);for(let i=0;i<256;i++)P[i]=i;for(let i=255;i>0;i--){const j=Math.random()*(i+1)|0;[P[i],P[j]]=[P[j],P[i]]}for(let i=0;i<256;i++)P[i+256]=P[i];
 const fd=t=>t*t*t*(t*(t*6-15)+10),lp=(a,b,t)=>a+t*(b-a),gr=(h,x,y)=>{h&=7;const u=h<4?x:y,v=h<4?y:x;return((h&1)?-u:u)+((h&2)?-2*v:2*v)};
 function N(x,y){let X=Math.floor(x)&255,Y=Math.floor(y)&255;x-=Math.floor(x);y-=Math.floor(y);const u=fd(x),v=fd(y),a=P[X]+Y,b=P[X+1]+Y;return lp(lp(gr(P[a],x,y),gr(P[b],x-1,y),u),lp(gr(P[a+1],x,y-1),gr(P[b+1],x-1,y-1),u),v)}
 const h=(i,j)=>{const v=N(i*.09,j*.09)*1.4+N(i*.23,j*.23)*.4;const valley=Math.min(1,Math.abs(i)/6);return Math.max(-.35,v*valley*1.3+(Math.abs(i)/30))};
-const GX=64,GZ=60,L=[.4,-.8,.45];const ll=Math.hypot(...L);L[0]/=ll;L[1]/=ll;L[2]/=ll;let z0=0,camX=0,steer=0,roll=0,alt=1.25,talt=1.25;addEventListener('pointermove',e=>{steer=e.clientX/innerWidth-.5;talt=.85+(1-e.clientY/innerHeight)*1.4});
-function col(y,s){let c=y<-.3?[70,120,170]:y<-.15?[214,196,150]:y<.35?[96,150,90]:y<.75?[120,110,120]:[245,245,250];const k=.55+s*.6;return `rgb(${c[0]*k|0},${c[1]*k|0},${c[2]*k|0})`}
-function proj(X,Y,Z){const cy=alt,p=1/(Z+.0001);return[W/2+X*p*W*.55,H*.42-(Y-cy)*p*W*.55]}
-function f(){z0+=.05;const g=x.createLinearGradient(0,0,0,H*.6);g.addColorStop(0,'#7c8fd6');g.addColorStop(.6,'#ffb4a2');g.addColorStop(1,'#ffd9b3');x.fillStyle=g;x.fillRect(0,0,W,H);x.fillStyle='#fff1d6';x.beginPath();x.arc(W*.5,H*.34,Math.min(W,H)*.07,0,7);x.fill();
-camX+=steer*.09;roll+=(-steer*.32-roll)*.05;alt+=(talt-alt)*.03;const zf=Math.floor(z0),fr=z0-zf,T=.45,io=Math.floor(camX/T),ifr=camX/T-io;x.save();x.translate(W/2,H*.45);x.rotate(roll);x.scale(1+Math.abs(roll)*.9,1+Math.abs(roll)*.9);x.translate(-W/2,-H*.45);for(let k=GZ;k>=1;k--){const j=zf+k,Z=(k-fr)*T+.2;for(let i=-GX/2;i<GX/2;i++){const Xs=(i-ifr)*T,ii=i+io,q=[[Xs,h(ii,j),Z],[Xs+T,h(ii+1,j),Z],[Xs+T,h(ii+1,j+1),Z+T],[Xs,h(ii,j+1),Z+T]];
+const TOD=[{sky:['#7c8fd6','#ffb4a2','#ffd9b3'],sun:'#fff1d6',L:[.4,-.8,.45],cols:[[70,120,170],[214,196,150],[96,150,90],[120,110,120],[245,245,250]],fog:[255,200,180],ink:'#3b2b5a',amb:.55},
+{sky:['#3f8fe0','#9fd0f5','#e6f4ff'],sun:'#fffbe8',L:[.1,-1,.3],cols:[[40,130,200],[230,210,160],[90,170,80],[130,120,110],[255,255,255]],fog:[220,235,250],ink:'#173a5a',amb:.6},
+{sky:['#05071a','#1a1f45','#2a2f5a'],sun:'#e8ecff',L:[-.3,-.6,.6],cols:[[20,40,80],[70,70,90],[30,60,50],[50,50,70],[150,160,190]],fog:[30,36,70],ink:'#d8dcff',amb:.35},
+{sky:['#8aa0c0','#d8e0ea','#f2f4f8'],sun:'#ffffff',L:[.3,-.8,.4],cols:[[120,150,180],[220,225,230],[230,235,240],[200,205,215],[255,255,255]],fog:[230,236,244],ink:'#2a3a52',amb:.7}];let tod=0;
+function setTod(k){tod=k;document.querySelectorAll('#tod button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.k===k));document.body.style.setProperty('--ink',TOD[k].ink)}
+document.querySelectorAll('#tod button').forEach(b=>b.onclick=()=>setTod(+b.dataset.k));
+const GX=64,GZ=60;let z0=0,camX=0,steer=0,roll=0,pitch=0,alt=1.25,talt=1.25,speed=.05,tsp=.05,hdg=312;
+addEventListener('pointermove',e=>{steer=e.clientX/innerWidth-.5;talt=.85+(1-e.clientY/innerHeight)*1.4});addEventListener('pointerdown',()=>{tsp=.12;audio()});addEventListener('pointerup',()=>tsp=.05);
+addEventListener('keydown',e=>{const n=+e.key;if(n>=1&&n<=4)setTod(n-1);if(e.code==='Space'){e.preventDefault();tsp=.12;audio()}});addEventListener('keyup',e=>{if(e.code==='Space')tsp=.05});
+let ac,eg,eo;function audio(){if(ac)return;try{ac=new (window.AudioContext||window.webkitAudioContext)();const b=ac.createBuffer(1,ac.sampleRate*2,ac.sampleRate),d=b.getChannelData(0);let l=0;for(let i=0;i<d.length;i++){l=(l+.02*(Math.random()*2-1))/1.02;d[i]=l*3}const s=ac.createBufferSource();s.buffer=b;s.loop=true;eo=ac.createBiquadFilter();eo.type='lowpass';eo.frequency.value=400;eg=ac.createGain();eg.gain.value=0;s.connect(eo).connect(eg).connect(ac.destination);s.start()}catch(e){}}
+const clouds=Array.from({length:14},()=>({x:(Math.random()-.5)*20,y:1.6+Math.random()*1.2,z:Math.random()*26+2,s:.6+Math.random()*1.2}));
+const stars=Array.from({length:180},()=>[Math.random(),Math.random()*.5]);
+function proj(X,Y,Z){const p=1/(Z+.0001);return[W/2+X*p*W*.55,H*.42-(Y-alt)*p*W*.55]}
+function f(){const T=TOD[tod];speed+=(tsp-speed)*.03;z0+=speed;const L=T.L.slice(),ll=Math.hypot(...L);L[0]/=ll;L[1]/=ll;L[2]/=ll;
+const g=x.createLinearGradient(0,0,0,H*.6);g.addColorStop(0,T.sky[0]);g.addColorStop(.6,T.sky[1]);g.addColorStop(1,T.sky[2]);x.fillStyle=g;x.fillRect(0,0,W,H);
+if(tod===2){x.fillStyle='#fff';for(const [a,b] of stars){x.globalAlpha=.4+Math.random()*.4;x.fillRect(((a-camX*.002)%1+1)%1*W,b*H,dpr,dpr)}x.globalAlpha=1}
+x.fillStyle=T.sun;x.beginPath();x.arc(W*.5-steer*W*.05,H*.34,Math.min(W,H)*(tod===2?.04:.07),0,7);x.fill();
+camX+=steer*.09;hdg=(hdg+steer*.6+360)%360;roll+=(-steer*.32-roll)*.05;alt+=(talt-alt)*.03;pitch+=((talt-alt)*.6-pitch)*.1;const zf=Math.floor(z0),fr=z0-zf,Tl=.45,io=Math.floor(camX/Tl),ifr=camX/Tl-io;
+x.save();x.translate(W/2,H*.45);x.rotate(roll);x.scale(1+Math.abs(roll)*.9,1+Math.abs(roll)*.9);x.translate(-W/2,-H*.45);
+const col=(y,s)=>{const C=T.cols;let cc=y<-.3?C[0]:y<-.15?C[1]:y<.35?C[2]:y<.75?C[3]:C[4];const k=T.amb+s*.6;return `rgb(${cc[0]*k|0},${cc[1]*k|0},${cc[2]*k|0})`};
+for(let k=GZ;k>=1;k--){const j=zf+k,Z=(k-fr)*Tl+.2;for(let i=-GX/2;i<GX/2;i++){const Xs=(i-ifr)*Tl,ii=i+io,q=[[Xs,h(ii,j),Z],[Xs+Tl,h(ii+1,j),Z],[Xs+Tl,h(ii+1,j+1),Z+Tl],[Xs,h(ii,j+1),Z+Tl]];
 for(const tri of [[q[0],q[1],q[2]],[q[0],q[2],q[3]]]){const a=tri[0],b=tri[1],cc=tri[2];const u=[b[0]-a[0],Math.max(b[1],-.3)-Math.max(a[1],-.3),b[2]-a[2]],v=[cc[0]-a[0],Math.max(cc[1],-.3)-Math.max(a[1],-.3),cc[2]-a[2]];let n=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]];const nl=Math.hypot(...n);n=n.map(e=>e/nl);const s=Math.max(0,-(n[0]*L[0]+n[1]*L[1]+n[2]*L[2]));
-const ym=(a[1]+b[1]+cc[1])/3;const pts=tri.map(p=>proj(p[0],Math.max(p[1],-.3),p[2]));x.fillStyle=col(ym,ym<-.3?.8:s);x.beginPath();x.moveTo(...pts[0]);x.lineTo(...pts[1]);x.lineTo(...pts[2]);x.closePath();x.fill();x.strokeStyle=x.fillStyle;x.lineWidth=1;x.stroke()}}
-const fog=Math.max(0,(k-GZ*.45)/(GZ*.55));if(fog>0){const y=proj(0,0,Z)[1];x.fillStyle=`rgba(255,200,180,${fog*.08})`;x.fillRect(0,0,W,y+40*dpr)}}
-x.restore();requestAnimationFrame(f)}f();
+const ym=(a[1]+b[1]+cc[1])/3;const pts=tri.map(p=>proj(p[0],Math.max(p[1],-.3),p[2]));let fill=col(ym,ym<-.3?.8:s);if(ym<-.3&&tod===2&&Math.random()<.002)fill='#fff';x.fillStyle=fill;x.beginPath();x.moveTo(...pts[0]);x.lineTo(...pts[1]);x.lineTo(...pts[2]);x.closePath();x.fill();x.strokeStyle=x.fillStyle;x.lineWidth=1;x.stroke()}}
+const fog=Math.max(0,(k-GZ*.45)/(GZ*.55));if(fog>0){const y=proj(0,0,Z)[1];x.fillStyle=`rgba(${T.fog},${fog*.08})`;x.fillRect(-W,-H,W*3,y+40*dpr+H)}}
+// low-poly clouds drifting past
+for(const cl of clouds.sort((a,b)=>b.z-a.z)){cl.z-=speed*.9;if(cl.z<.6){cl.z=28;cl.x=(Math.random()-.5)*20+camX}const [px,py]=proj(cl.x-camX,cl.y,cl.z);const r=cl.s*W*.08/cl.z;x.fillStyle=tod===2?'rgba(80,90,130,.5)':'rgba(255,255,255,.75)';x.beginPath();for(let k=0;k<7;k++){const a=k/7*Math.PI*2;x.lineTo(px+Math.cos(a)*r*(k%2?1:.7),py+Math.sin(a)*r*.45)}x.fill()}
+x.restore();
+const altm=Math.round(1800+alt*500);document.getElementById('al').textContent=altm.toLocaleString('en')+' M';document.getElementById('hd').textContent=String(Math.round(hdg)).padStart(3,'0')+'°';document.getElementById('gs').textContent=Math.round(speed*6200)+' KM/H';
+const ah=document.getElementById('ah');ah.style.setProperty('--r',(-roll*57)+'deg');ah.style.setProperty('--p',(pitch*40)+'%');
+if(eg){eg.gain.setTargetAtTime(.04+speed*.6,ac.currentTime,.1);eo.frequency.setTargetAtTime(300+speed*4000,ac.currentTime,.1)}
+requestAnimationFrame(f)}f();
 </script></body></html>

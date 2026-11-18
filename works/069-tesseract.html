@@ -1,20 +1,41 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tesseract</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300&family=IBM+Plex+Mono&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#f2f0ea}canvas{display:block;width:100%;height:100%}
-.t{position:fixed;left:5vw;top:6vh;font:300 clamp(40px,7vw,110px)/.9 Newsreader,serif;color:#141414;letter-spacing:-.02em}.t small{display:block;font:12px 'IBM Plex Mono',monospace;letter-spacing:.12em;margin-top:16px;color:#555}
-.pl{position:fixed;right:5vw;bottom:6vh;display:flex;gap:8px;font:12px 'IBM Plex Mono',monospace}.pl label{display:flex;gap:6px;align-items:center;padding:6px 10px;border:1px solid #141414;border-radius:20px;cursor:pointer}.pl input{accent-color:#ff4a1c}</style></head><body>
-<canvas id="c"></canvas><div class="t">Tesseract<small>a 4-cube rotating through the 3rd dimension we cannot see<br>16 vertices · 32 edges · 24 faces · 8 cells</small></div>
-<div class="pl" id="pl"></div>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;1,6..72,300&family=IBM+Plex+Mono&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#f2f0ea;user-select:none;-webkit-user-select:none}canvas{display:block;width:100%;height:100%;cursor:grab;touch-action:none}canvas:active{cursor:grabbing}
+.t{position:fixed;left:5vw;top:6vh;font:300 clamp(40px,7vw,110px)/.9 Newsreader,serif;color:#141414;letter-spacing:-.02em;pointer-events:none}.t small{display:block;font:12px/1.7 'IBM Plex Mono',monospace;letter-spacing:.1em;margin-top:16px;color:#555}
+.t em{font-style:italic}
+.pl{position:fixed;right:5vw;bottom:6vh;display:flex;gap:8px;font:12px 'IBM Plex Mono',monospace;flex-wrap:wrap;justify-content:flex-end;max-width:90vw}
+.pl label,.pl button{display:flex;gap:6px;align-items:center;padding:6px 10px;border:1px solid #141414;border-radius:20px;cursor:pointer;background:transparent;font:inherit;color:#141414}.pl input{accent-color:#ff4a1c}
+.pl button[aria-pressed="true"]{background:#141414;color:#f2f0ea}
+.k{position:fixed;left:5vw;bottom:6vh;font:11px/1.8 'IBM Plex Mono';color:#777;pointer-events:none}
+@media (max-width:700px){.k{display:none}}
+</style></head><body>
+<canvas id="c"></canvas><div class="t" id="tt"><em>Tesseract</em><small id="ds">a 4-cube rotating through a direction we cannot see<br>16 vertices · 32 edges · 24 faces · 8 cells</small></div>
+<div class="pl"><div style="display:flex;gap:6px" id="sh"></div><div style="display:flex;gap:6px" id="pl"></div><button id="fc" aria-pressed="true">faces</button></div>
+<div class="k">drag · turn it in 3D<br>shift-drag or wheel · turn it through the 4th</div>
 <script>
-const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio,2);let W,H;function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr}size();addEventListener('resize',size);
-const V=[];for(let i=0;i<16;i++)V.push([i&1?1:-1,i&2?1:-1,i&4?1:-1,i&8?1:-1]);const E=[];for(let i=0;i<16;i++)for(let j=i+1;j<16;j++){let d=0;for(let k=0;k<4;k++)if(V[i][k]!==V[j][k])d++;if(d===1)E.push([i,j])}
+const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio||1,2);let W,H;function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr}size();addEventListener('resize',size);
+function hyper(){const V=[];for(let i=0;i<16;i++)V.push([i&1?1:-1,i&2?1:-1,i&4?1:-1,i&8?1:-1]);const E=[];for(let i=0;i<16;i++)for(let j=i+1;j<16;j++){let d=0;for(let k=0;k<4;k++)if(V[i][k]!==V[j][k])d++;if(d===1)E.push([i,j])}
+const F=[];for(let a=0;a<4;a++)for(let b=a+1;b<4;b++){const fx=[0,1,2,3].filter(k=>k!==a&&k!==b);for(const s0 of [-1,1])for(const s1 of [-1,1]){const q=V.map((v,i)=>i).filter(i=>V[i][fx[0]]===s0&&V[i][fx[1]]===s1);const ord=[q.find(i=>V[i][a]<0&&V[i][b]<0),q.find(i=>V[i][a]>0&&V[i][b]<0),q.find(i=>V[i][a]>0&&V[i][b]>0),q.find(i=>V[i][a]<0&&V[i][b]>0)];F.push(ord)}}return{V,E,F,n:'Tesseract',d:'a 4-cube rotating through a direction we cannot see<br>16 vertices · 32 edges · 24 faces · 8 cells'}}
+function cross16(){const V=[];for(let k=0;k<4;k++)for(const s of [-1.4,1.4]){const v=[0,0,0,0];v[k]=s;V.push(v)}const E=[];for(let i=0;i<8;i++)for(let j=i+1;j<8;j++)if(Math.floor(i/2)!==Math.floor(j/2))E.push([i,j]);const F=[];for(let i=0;i<8;i++)for(let j=i+1;j<8;j++)for(let k=j+1;k<8;k++){const g=[i,j,k].map(a=>Math.floor(a/2));if(new Set(g).size===3)F.push([i,j,k])}return{V,E,F,n:'16-cell',d:'the 4D cross-polytope, dual of the tesseract<br>8 vertices · 24 edges · 32 faces · 16 cells'}}
+function simplex(){const s=1.3;const V=[[1,1,1,-1/Math.sqrt(5)],[1,-1,-1,-1/Math.sqrt(5)],[-1,1,-1,-1/Math.sqrt(5)],[-1,-1,1,-1/Math.sqrt(5)],[0,0,0,4/Math.sqrt(5)]].map(v=>v.map(a=>a*s));const E=[],F=[];for(let i=0;i<5;i++)for(let j=i+1;j<5;j++){E.push([i,j]);for(let k=j+1;k<5;k++)F.push([i,j,k])}return{V,E,F,n:'5-cell',d:'the simplest 4D solid: five tetrahedra sharing faces<br>5 vertices · 10 edges · 10 faces · 5 cells'}}
+const SH=[hyper(),cross16(),simplex()];let S=SH[0];
+const shEl=document.getElementById('sh');SH.forEach((s,i)=>{const b=document.createElement('button');b.textContent=s.n;b.setAttribute('aria-pressed',i===0);b.onclick=()=>{S=s;[...shEl.children].forEach((o,k)=>o.setAttribute('aria-pressed',k===i));document.querySelector('#tt em').textContent=s.n;document.getElementById('ds').innerHTML=s.d};shEl.appendChild(b)});
 const planes={XW:[0,3,1],YW:[1,3,.7],ZW:[2,3,.5],XY:[0,1,.3]};const on={XW:true,YW:false,ZW:true,XY:true};const pl=document.getElementById('pl');
 Object.keys(planes).forEach(k=>{const l=document.createElement('label');l.innerHTML=`<input type="checkbox" ${on[k]?'checked':''}> ${k}`;l.querySelector('input').onchange=e=>on[k]=e.target.checked;pl.appendChild(l)});
-const ang={XW:0,YW:0,ZW:0,XY:0};
-function f(){x.fillStyle='#f2f0ea';x.fillRect(0,0,W,H);for(const k in planes)if(on[k])ang[k]+=.006*planes[k][2];
-const P=V.map(v=>{let p=v.slice();for(const k in planes){const [a,b]=planes[k],t=ang[k],ca=Math.cos(t),sa=Math.sin(t);const pa=p[a]*ca-p[b]*sa,pb=p[a]*sa+p[b]*ca;p[a]=pa;p[b]=pb}
-const w=1/(2.6-p[3]);const q=[p[0]*w,p[1]*w,p[2]*w];const ry=.5,cy=Math.cos(ry),sy=Math.sin(ry);const X=q[0]*cy-q[2]*sy,Z=q[0]*sy+q[2]*cy;const z=1/(3-Z);const S=Math.min(W,H)*1.05;return[W*.58+X*z*S,H*.52+q[1]*z*S,p[3],Z]});
-const es=E.map(([a,b])=>[a,b,(P[a][3]+P[b][3])/2]).sort((p,q)=>p[2]-q[2]);
+let faces=true;document.getElementById('fc').onclick=e=>{faces=!faces;e.target.setAttribute('aria-pressed',faces)};
+const ang={XW:0,YW:0,ZW:0,XY:0};let ry=.5,rx=.25,vry=0,vrx=0,w4=0,drag=null;
+c.addEventListener('pointerdown',e=>{c.setPointerCapture(e.pointerId);drag={x:e.clientX,y:e.clientY,s:e.shiftKey}});c.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.x=e.clientX;drag.y=e.clientY;if(drag.s||e.shiftKey){ang.XW+=dx*.008;ang.YW+=dy*.008}else{vry=dx*.006;vrx=dy*.006;ry+=vry;rx+=vrx}});c.addEventListener('pointerup',()=>drag=null);
+c.addEventListener('wheel',e=>{e.preventDefault();ang.ZW+=e.deltaY*.002},{passive:false});
+addEventListener('keydown',e=>{const n=+e.key;if(n>=1&&n<=3)shEl.children[n-1].click();if(e.key==='f')document.getElementById('fc').click()});
+function f(){x.fillStyle='#f2f0ea';x.fillRect(0,0,W,H);for(const k in planes)if(on[k])ang[k]+=.006*planes[k][2];if(!drag){ry+=vry;rx+=vrx;vry*=.95;vrx*=.95}
+const cy=Math.cos(ry),sy=Math.sin(ry),cx=Math.cos(rx),sx=Math.sin(rx);const Sz=Math.min(W,H)*1.05;
+const P=S.V.map(v=>{let p=v.slice();for(const k in planes){const [a,b]=planes[k],t=ang[k],ca=Math.cos(t),sa=Math.sin(t);const pa=p[a]*ca-p[b]*sa,pb=p[a]*sa+p[b]*ca;p[a]=pa;p[b]=pb}
+const w=1/(2.6-p[3]);const q=[p[0]*w,p[1]*w,p[2]*w];let X=q[0]*cy-q[2]*sy,Z=q[0]*sy+q[2]*cy;let Y=q[1]*cx-Z*sx;Z=q[1]*sx+Z*cx;const z=1/(3-Z);return[W*.58+X*z*Sz,H*.52+Y*z*Sz,p[3],Z,X,Y]});
+// floor shadow
+x.fillStyle='rgba(20,20,20,.06)';for(const [a,b] of S.E){const A=P[a],B=P[b];x.beginPath();x.ellipse((A[0]+B[0])/2,H*.88,Math.abs(A[0]-B[0])/2+3*dpr,4*dpr,0,0,7);x.fill()}
+if(faces){const fs=S.F.map(fc=>[fc,fc.reduce((s,i)=>s+P[i][3],0)/fc.length,fc.reduce((s,i)=>s+P[i][2],0)/fc.length]).sort((a,b)=>a[1]-b[1]);for(const [fc,z,w] of fs){x.fillStyle=w>0?`rgba(255,74,28,${.02+(w+1)*.025})`:`rgba(20,20,20,${.012+(w+1)*.012})`;x.beginPath();fc.forEach((i,k)=>k?x.lineTo(P[i][0],P[i][1]):x.moveTo(P[i][0],P[i][1]));x.closePath();x.fill()}}
+const es=S.E.map(([a,b])=>[a,b,(P[a][3]+P[b][3])/2]).sort((p,q)=>p[2]-q[2]);
 for(const [a,b] of es){const w=(P[a][2]+P[b][2])/2;const inner=w>0;x.strokeStyle=inner?'#ff4a1c':'#141414';x.globalAlpha=.35+(w+1)/2*.65;x.lineWidth=(1+(w+1)*1.4)*dpr;x.beginPath();x.moveTo(P[a][0],P[a][1]);x.lineTo(P[b][0],P[b][1]);x.stroke()}
 x.globalAlpha=1;for(const p of P){x.fillStyle=p[2]>0?'#ff4a1c':'#141414';x.beginPath();x.arc(p[0],p[1],(2+(p[2]+1)*2)*dpr,0,7);x.fill()}requestAnimationFrame(f)}f();
 </script></body></html>
