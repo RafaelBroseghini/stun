@@ -1,23 +1,93 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Night Drive</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Monoton&family=Orbitron:wght@500&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}html{background:#0d0221}body{background:linear-gradient(#0d0221 0%,#261447 38%,#6b1a6b 52%,#ff2a6d 58%,#0d0221 58.2%);perspective:320px;font-family:Orbitron,sans-serif}
-.stars{position:absolute;inset:0 0 45% 0;background-image:radial-gradient(1px 1px at 20% 30%,#fff,transparent),radial-gradient(1px 1px at 70% 20%,#fff,transparent),radial-gradient(1.5px 1.5px at 40% 10%,#fff,transparent),radial-gradient(1px 1px at 85% 40%,#fff,transparent),radial-gradient(1px 1px at 10% 15%,#fff,transparent),radial-gradient(1px 1px at 55% 35%,#fff9,transparent);background-size:300px 200px;opacity:.8}
-.sun{position:absolute;left:50%;top:22vh;width:min(46vh,70vw);aspect-ratio:1;transform:translateX(-50%);border-radius:50%;background:linear-gradient(#fff36e 10%,#ff9a3c 45%,#ff2a6d 80%);
--webkit-mask:linear-gradient(#000 50%,transparent 50%,transparent 53%,#000 53%,#000 60%,transparent 60%,transparent 64%,#000 64%,#000 70%,transparent 70%,transparent 75%,#000 75%,#000 80%,transparent 80%,transparent 86%,#000 86%,#000 90%,transparent 90%);mask:linear-gradient(#000 50%,transparent 50%,transparent 53%,#000 53%,#000 60%,transparent 60%,transparent 64%,#000 64%,#000 70%,transparent 70%,transparent 75%,#000 75%,#000 80%,transparent 80%,transparent 86%,#000 86%,#000 90%,transparent 90%);filter:drop-shadow(0 0 40px #ff2a6d)}
-.glow{position:absolute;left:50%;top:28vh;width:90vh;height:60vh;transform:translateX(-50%);background:radial-gradient(closest-side,rgba(255,42,109,.35),transparent);pointer-events:none}
-svg{position:absolute;left:0;width:100%;top:calc(58% - 18vh);height:18vh}
-.floor{position:absolute;left:-50%;right:-50%;top:58%;height:100vh;transform-origin:top;transform:translateX(var(--sx,0px)) rotateX(78deg);background-image:linear-gradient(90deg,#ff2a6d 2px,transparent 2px),linear-gradient(#05d9e8 2px,transparent 2px);background-size:60px 60px;background-color:#0d0221;animation:run var(--sp,.6s) linear infinite;box-shadow:inset 0 40px 80px #0d0221}
-@keyframes run{to{background-position:0 60px}}
-.fade{position:absolute;left:0;right:0;top:58%;height:12vh;background:linear-gradient(#0d0221,transparent)}
-h1{position:absolute;left:0;right:0;top:9vh;text-align:center;font:400 clamp(40px,10vw,140px)/1 Monoton,cursive;color:#fff;background:linear-gradient(#e0f7ff 30%,#05d9e8 50%,#7700a6 52%,#ff2a6d 80%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 12px rgba(5,217,232,.6))}
-p{position:absolute;bottom:5vh;left:0;right:0;text-align:center;color:#05d9e8;letter-spacing:.6em;font-size:12px;text-shadow:0 0 8px #05d9e8}</style></head><body>
-<div class="stars"></div><div class="glow"></div><div class="sun"></div>
-<svg viewBox="0 0 1000 100" preserveAspectRatio="none"><polygon points="0,100 80,40 150,70 240,10 330,60 400,30 470,100" fill="#170a33" stroke="#ff2a6d" stroke-width="1.5"/><polygon points="530,100 600,35 680,65 760,15 850,55 920,30 1000,60 1000,100" fill="#170a33" stroke="#05d9e8" stroke-width="1.5"/></svg>
-<div class="floor"></div><div class="fade"></div><h1>Night Drive</h1><p>Exit 88 · 3 a.m. · <span id="bpm">128</span> bpm · steer with the cursor · hold to floor it</p>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Monoton&family=Orbitron:wght@400;600;800&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#0d0221;user-select:none;-webkit-user-select:none}
+canvas{display:block;width:100%;height:100%}
+.scan{position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(rgba(0,0,0,.18) 0 1px,transparent 1px 3px);mix-blend-mode:multiply}
+.vig{position:fixed;inset:0;pointer-events:none;background:radial-gradient(120% 90% at 50% 45%,transparent 55%,rgba(5,0,15,.75))}
+h1{position:fixed;left:0;right:0;top:7vh;text-align:center;font:400 clamp(44px,10.5vw,150px)/1 Monoton,cursive;background:linear-gradient(#f4fbff 28%,#7ff4ff 46%,#4a0080 50%,#ff2a6d 62%,#ffd27a 86%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 14px rgba(5,217,232,.55));pointer-events:none;animation:neon 2.4s steps(1) both}
+@keyframes neon{0%{opacity:0}8%{opacity:1}11%{opacity:.2}14%{opacity:1}30%{opacity:.4}32%{opacity:1}}
+.tag{position:fixed;left:0;right:0;top:calc(7vh + clamp(44px,10.5vw,150px) + 4px);text-align:center;font:italic 600 clamp(13px,1.8vw,22px)/1 Orbitron;letter-spacing:.5em;color:#ff7ad9;text-shadow:0 0 12px #ff2a6d;pointer-events:none;opacity:0;animation:f 1s 1.4s forwards}
+@keyframes f{to{opacity:1}}
+.hud{position:fixed;bottom:4vh;font:600 10px/1.6 Orbitron;letter-spacing:.3em;color:#05d9e8;text-shadow:0 0 8px #05d9e8;pointer-events:none;text-transform:uppercase}
+.hud b{display:block;font:800 clamp(28px,4vw,48px)/1 Orbitron;letter-spacing:.02em;color:#e8fbff;margin-top:4px;font-variant-numeric:tabular-nums}
+.hud.l{left:4vw}.hud.r{right:4vw;text-align:right;color:#ff7ad9;text-shadow:0 0 8px #ff2a6d}
+.meter{width:min(220px,30vw);height:6px;margin-top:10px;background:rgba(5,217,232,.15);position:relative;overflow:hidden}
+.meter i{position:absolute;inset:0;background:linear-gradient(90deg,#05d9e8,#ff2a6d);transform-origin:left;transform:scaleX(.3)}
+.help{position:fixed;left:0;right:0;bottom:1.6vh;text-align:center;font:400 9px Orbitron;letter-spacing:.4em;color:rgba(5,217,232,.55);pointer-events:none}
+@media (max-width:640px){.help{display:none}}
+</style></head><body>
+<canvas id="c"></canvas><div class="scan"></div><div class="vig"></div>
+<h1>Night Drive</h1><div class="tag">exit 88 · 3 a.m.</div>
+<div class="hud l">Velocity<b id="spd">000</b><div class="meter"><i id="mt"></i></div></div>
+<div class="hud r">Now playing · Exit 88<b id="bpm">128</b>bpm · odo <span id="odo">0.0</span> km</div>
+<div class="help">steer with the cursor or ← → · hold or space to floor it</div>
 <script>
-const r=document.documentElement.style,sun=document.querySelector('.sun'),svg=document.querySelector('svg');let tx=0,cx=0;
-addEventListener('pointermove',e=>tx=(e.clientX/innerWidth-.5));
-addEventListener('pointerdown',()=>{r.setProperty('--sp','.16s');document.getElementById('bpm').textContent=174});addEventListener('pointerup',()=>{r.setProperty('--sp','.6s');document.getElementById('bpm').textContent=128});
-(function f(){cx+=(tx-cx)*.06;r.setProperty('--sx',(-cx*40)+'vw');sun.style.transform=`translateX(calc(-50% + ${cx*-6}vw))`;svg.style.transform=`translateX(${cx*-10}vw)`;document.body.style.transform=`rotate(${cx*-4}deg) scale(1.08)`;requestAnimationFrame(f)})();
+const c=document.getElementById('c'),x=c.getContext('2d');let W,H,dpr=Math.min(devicePixelRatio||1,2),hy,f,stars,mts,sunC=document.createElement('canvas'),sx=sunC.getContext('2d');
+function rnd(a,b){return a+Math.random()*(b-a)}
+function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr;hy=H*.6;f=H*.95;
+stars=Array.from({length:220},()=>({x:Math.random(),y:Math.pow(Math.random(),1.4)*.58,r:rnd(.6,1.8)*dpr,p:Math.random()*7}));
+mts=[0,1].map(l=>{const a=[];let h=0;for(let i=0;i<=48;i++){const u=-.2+i/48*1.4;const edge=Math.pow(Math.min(1,Math.abs(u-.5)*2.1),1.3);h=(l?.05:.09)*edge*(i%2?rnd(.4,.8):rnd(.9,1.4))+(l?.02:.0);a.push([u,h])}return a})}
+size();addEventListener('resize',size);
+let steer=0,tsteer=0,camX=0,dist=0,speed=0,tspeed=16,boost=false,keys={},palms=[],t0=performance.now(),odo=0;
+for(let i=0;i<14;i++)palms.push({X:(i%2?1:-1)*rnd(5.5,9),z:2+i*3,s:rnd(.85,1.2)});
+addEventListener('pointermove',e=>tsteer=(e.clientX/innerWidth-.5)*2);
+addEventListener('pointerdown',()=>boost=true);addEventListener('pointerup',()=>boost=false);addEventListener('pointercancel',()=>boost=false);
+addEventListener('keydown',e=>{keys[e.key]=1;if(e.code==='Space'){boost=true;e.preventDefault()}});addEventListener('keyup',e=>{keys[e.key]=0;if(e.code==='Space')boost=false});
+const P=(X,Z,Y=0)=>[W/2+(X-camX)*f/Z,hy+(1-Y)*f/Z];
+function palm(X,Z,s){const [bx,by]=P(X,Z),[,ty]=P(X,Z,5.2*s);const k=f/Z;const lean=(X>0?1:-1)*.8*k*s;
+x.strokeStyle='#ff2a6d';x.shadowColor='#ff2a6d';x.shadowBlur=10*dpr;x.lineWidth=Math.max(1,.12*k*s);x.fillStyle='#07000f';
+x.beginPath();x.moveTo(bx,by);x.quadraticCurveTo(bx+lean*.2,(by+ty)/2,bx+lean,ty);x.stroke();
+x.lineWidth=Math.max(1,.07*k*s);for(let i=0;i<7;i++){const a=-Math.PI/2+(i-3)*.48,L=1.5*k*s;const ex=bx+lean+Math.cos(a)*L*1.2,ey=ty+Math.sin(a)*L*.5+L*.55;x.beginPath();x.moveTo(bx+lean,ty);x.quadraticCurveTo(bx+lean+Math.cos(a)*L*.7,ty+Math.sin(a)*L*.8,ex,ey);x.stroke()}x.shadowBlur=0}
+function frame(now){const t=(now-t0)/1000;
+if(keys.ArrowLeft)tsteer=Math.max(-1,tsteer-.04);if(keys.ArrowRight)tsteer=Math.min(1,tsteer+.04);
+steer+=(tsteer-steer)*.06;tspeed=boost?46:16;speed+=(tspeed-speed)*(boost?.03:.02);camX+=(steer*3.2-camX)*.05;dist+=speed/60;odo+=speed/60*.009;
+// sky
+const g=x.createLinearGradient(0,0,0,hy);g.addColorStop(0,'#0a011c');g.addColorStop(.5,'#261447');g.addColorStop(.86,'#7a1b74');g.addColorStop(1,'#ff2a6d');x.fillStyle=g;x.fillRect(0,0,W,hy);
+for(const s of stars){x.globalAlpha=.4+.6*Math.abs(Math.sin(t*1.2+s.p));x.fillStyle='#fff';x.fillRect(((s.x-steer*.01)%1+1)%1*W,s.y*H,s.r,s.r)}x.globalAlpha=1;
+// sun with scrolling bands
+const R=Math.min(H*.25,W*.3),scx=W/2-steer*W*.03,scy=hy-R*.42;sunC.width=sunC.height=Math.ceil(R*2.2);const o=R*1.1;
+const sg=sx.createLinearGradient(0,o-R,0,o+R);sg.addColorStop(0,'#fff36e');sg.addColorStop(.45,'#ffa23c');sg.addColorStop(.8,'#ff2a6d');sx.fillStyle=sg;sx.beginPath();sx.arc(o,o,R,0,7);sx.fill();
+sx.globalCompositeOperation='destination-out';for(let i=0;i<9;i++){const u=((i+(t*.35%1))/9);const yy=o+R*(.05+u*.95);const th=R*(.012+u*.07);sx.fillRect(0,yy,sunC.width,th)}sx.globalCompositeOperation='source-over';
+x.save();x.shadowColor='#ff2a6d';x.shadowBlur=60*dpr;x.drawImage(sunC,scx-o,scy-o);x.restore();
+const gl=x.createRadialGradient(scx,hy,0,scx,hy,R*2.4);gl.addColorStop(0,'rgba(255,42,109,.45)');gl.addColorStop(1,'rgba(255,42,109,0)');x.fillStyle=gl;x.fillRect(0,0,W,hy);
+// mountains
+mts.forEach((m,l)=>{const off=-steer*W*(l?.08:.05);x.beginPath();x.moveTo(-W,hy);m.forEach(([u,h])=>x.lineTo(u*W+off,hy-h*H));x.lineTo(W*2,hy);x.closePath();x.fillStyle=l?'#12062a':'#1b0b3b';x.fill();x.strokeStyle=l?'#05d9e8':'#ff2a6d';x.lineWidth=1.5*dpr;x.shadowColor=x.strokeStyle;x.shadowBlur=8*dpr;x.stroke();x.shadowBlur=0;
+x.globalAlpha=.35;x.lineWidth=dpr;x.beginPath();m.forEach(([u,h],i)=>{if(i%2===0){x.moveTo(u*W+off,hy-h*H);x.lineTo(u*W+off+(i%4?20:-20)*dpr,hy)}});x.stroke();x.globalAlpha=1});
+// ground
+x.fillStyle='#0d0221';x.fillRect(0,hy,W,H-hy);
+// road surface
+const rd=[[-3,.6],[3,.6],[3,80],[-3,80]].map(([X,Z])=>P(X,Z));x.beginPath();rd.forEach(([a,b],i)=>i?x.lineTo(a,b):x.moveTo(a,b));x.fillStyle='#16052c';x.fill();
+x.lineWidth=1.6*dpr;x.shadowBlur=10*dpr;
+// horizontal grid rows
+x.strokeStyle='#05d9e8';x.shadowColor='#05d9e8';const sp=2;for(let k=0;k<44;k++){const Z=k*sp+sp-(dist%sp)+.6;if(Z>88)break;const [,yy]=P(0,Z);x.globalAlpha=Math.min(1,(1-Z/88)*1.4);x.beginPath();x.moveTo(0,yy);x.lineTo(W,yy);x.stroke()}
+// vertical grid lines
+x.strokeStyle='#ff2a6d';x.shadowColor='#ff2a6d';x.globalAlpha=1;for(let X=-30;X<=30;X+=2){const a=P(X,.6),b=P(X,90);x.beginPath();x.moveTo(a[0],a[1]);x.lineTo(b[0],b[1]);x.stroke()}
+// center dashes
+x.fillStyle='#ffe66d';x.shadowColor='#ffe66d';for(let k=0;k<24;k++){const Z=k*4+4-(dist%4)+.6;const a=P(-.08,Z),b=P(.08,Z),c2=P(.08,Z+1.6),d=P(-.08,Z+1.6);x.globalAlpha=Math.min(1,1-Z/90);x.beginPath();x.moveTo(...a);x.lineTo(...b);x.lineTo(...c2);x.lineTo(...d);x.fill()}
+x.globalAlpha=1;x.shadowBlur=0;
+// horizon haze
+const hz=x.createLinearGradient(0,hy,0,hy+H*.12);hz.addColorStop(0,'rgba(255,42,109,.55)');hz.addColorStop(.25,'rgba(80,10,90,.35)');hz.addColorStop(1,'rgba(13,2,33,0)');x.fillStyle=hz;x.fillRect(0,hy,W,H*.12);
+x.fillStyle='#ffd0f0';x.fillRect(0,hy-dpr,W,1.5*dpr);
+// palms, far to near
+for(const p of palms){p.z-=speed/60;if(p.z<.9){p.z+=42;p.X=(Math.random()<.5?-1:1)*rnd(5.5,9)}}
+palms.slice().sort((a,b)=>b.z-a.z).forEach(p=>{if(p.z<42&&p.z>2.2){x.globalAlpha=Math.min(1,(42-p.z)/10,(p.z-2.2)/2);palm(p.X,p.z,p.s)}});x.globalAlpha=1;
+// speed streaks
+if(speed>22){x.strokeStyle='rgba(255,255,255,.5)';x.lineWidth=dpr;const n=(speed-22)*.6|0;for(let i=0;i<n;i++){const a=Math.random()*6.28,r0=rnd(.25,.5)*W,len=rnd(.05,.12)*W;const ox=W/2,oy=hy;x.globalAlpha=Math.random()*.5;x.beginPath();x.moveTo(ox+Math.cos(a)*r0,oy+Math.sin(a)*r0*.6);x.lineTo(ox+Math.cos(a)*(r0+len),oy+Math.sin(a)*(r0+len)*.6);x.stroke()}x.globalAlpha=1}
+// car (rear view, wireframe)
+const cw=Math.min(W*.3,440*dpr),ch=cw*.36,ccx=W/2+(steer*3.2-camX)*cw*.6,ccy=H-ch*.55-H*.02;
+x.save();x.translate(ccx,ccy);x.rotate((tsteer-steer)*.12);const bob=Math.sin(t*20)*dpr*(speed/40);x.translate(0,bob);
+x.fillStyle='rgba(8,0,20,.92)';x.strokeStyle='#05d9e8';x.shadowColor='#05d9e8';x.shadowBlur=12*dpr;x.lineWidth=2*dpr;
+x.beginPath();x.moveTo(-cw/2,ch*.25);x.lineTo(-cw*.47,-ch*.12);x.lineTo(-cw*.3,-ch*.22);x.lineTo(-cw*.2,-ch*.62);x.lineTo(cw*.2,-ch*.62);x.lineTo(cw*.3,-ch*.22);x.lineTo(cw*.47,-ch*.12);x.lineTo(cw/2,ch*.25);x.closePath();x.fill();x.stroke();
+x.beginPath();x.moveTo(-cw*.17,-ch*.56);x.lineTo(cw*.17,-ch*.56);x.lineTo(cw*.24,-ch*.25);x.lineTo(-cw*.24,-ch*.25);x.closePath();x.strokeStyle='#ff7ad9';x.shadowColor='#ff2a6d';x.stroke();
+const tl=boost?1:.75;x.fillStyle=`rgba(255,30,80,${tl})`;x.shadowColor='#ff1e50';x.shadowBlur=(boost?40:20)*dpr;x.fillRect(-cw*.44,-ch*.08,cw*.88,ch*.09);
+x.shadowBlur=0;x.fillStyle='#0d0221';x.fillRect(-cw*.06,-ch*.07,cw*.12,ch*.07);x.fillStyle='#05d9e8';x.font=`800 ${ch*.08}px Orbitron`;x.textAlign='center';x.fillText('OUTRUN',0,ch*.16);
+x.fillStyle='#000';x.fillRect(-cw*.46,ch*.2,cw*.16,ch*.2);x.fillRect(cw*.3,ch*.2,cw*.16,ch*.2);
+if(boost){for(let i=0;i<2;i++){const ex=(i?1:-1)*cw*.22;const fl=x.createRadialGradient(ex,ch*.3,0,ex,ch*.3,ch*.35);fl.addColorStop(0,'rgba(255,255,220,.9)');fl.addColorStop(.3,'rgba(80,200,255,.6)');fl.addColorStop(1,'rgba(80,200,255,0)');x.fillStyle=fl;x.fillRect(ex-ch*.4,ch*.1,ch*.8,ch*.6)}}
+x.restore();
+spdE.textContent=String(Math.round(speed*7.2)).padStart(3,'0');mt.style.transform=`scaleX(${speed/48})`;bpm.textContent=Math.round(110+speed*1.4);odoE.textContent=odo.toFixed(1);
+requestAnimationFrame(frame)}
+const spdE=document.getElementById('spd'),mt=document.getElementById('mt'),bpm=document.getElementById('bpm'),odoE=document.getElementById('odo');
+requestAnimationFrame(frame);
 </script>
 </body></html>

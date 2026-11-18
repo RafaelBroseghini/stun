@@ -1,16 +1,45 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mostly Empty Space</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Mono&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#ece8ff}canvas{display:block;width:100%;height:100%}
-p{position:fixed;left:24px;bottom:22px;font:12px 'DM Mono',monospace;color:#3a2c8c;letter-spacing:.08em}</style></head><body><canvas id="c"></canvas><p>99.9999999% of an atom is empty space — move your cursor through it</p>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Mono:wght@300;400&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#ece8ff;cursor:none}canvas{display:block;width:100%;height:100%}
+.grid{position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(58,44,140,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(58,44,140,.06) 1px,transparent 1px);background-size:48px 48px;mask:radial-gradient(80% 70% at 50% 50%,#000,transparent)}
+.hd{position:fixed;left:28px;top:24px;font:400 11px/1.7 'DM Mono',monospace;color:#3a2c8c;letter-spacing:.12em;text-transform:uppercase;pointer-events:none}
+.hd b{font:400 20px 'Archivo Black';letter-spacing:-.01em;text-transform:none;display:block;color:#1c1259}
+.ft{position:fixed;left:28px;right:28px;bottom:22px;display:flex;justify-content:space-between;align-items:flex-end;gap:20px;font:300 11px/1.6 'DM Mono',monospace;color:#3a2c8c;letter-spacing:.08em;pointer-events:none}
+.dots{display:flex;gap:8px;pointer-events:auto}.dots button{border:0;background:none;padding:6px 0;cursor:pointer;font:400 10px 'DM Mono';letter-spacing:.14em;color:#3a2c8c;opacity:.4;transition:opacity .3s;position:relative}
+.dots button::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:#3a2c8c;transform:scaleX(0);transform-origin:left}
+.dots button.on{opacity:1}.dots button.on::after{animation:prog var(--d,4.2s) linear forwards}@keyframes prog{to{transform:scaleX(1)}}
+.scale{position:fixed;right:28px;top:24px;text-align:right;font:300 10px/1.8 'DM Mono',monospace;color:#3a2c8c;letter-spacing:.12em;text-transform:uppercase;pointer-events:none}
+.scale i{display:block;width:120px;height:6px;margin:6px 0 4px auto;border:1px solid #3a2c8c;border-top:0}
+@media (max-width:640px){.ft .k{display:none}.scale{display:none}}
+@media (hover:none){body{cursor:auto}}
+</style></head><body><canvas id="c"></canvas><div class="grid"></div>
+<div class="hd"><b>Mostly Empty Space</b>a study in nuclear typography</div>
+<div class="scale">Nucleus to cloud<i></i>1 : 100 000</div>
+<div class="ft"><span class="k">Move · the electron cloud repels &nbsp; Click · fission &nbsp; Hold · attract &nbsp; Space · next word</span><div class="dots" id="dots"></div></div>
 <script>
-const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio,2);let W,H,ps=[],wi=0,m={x:-9e9,y:-9e9};
-const words=['MATTER','IS','MOSTLY','EMPTY','SPACE'];
-function targets(w){const o=document.createElement('canvas');o.width=W;o.height=H;const g=o.getContext('2d');let fs=Math.min(H*.42,W*1.5/w.length);g.font=`${fs}px "Archivo Black",Impact,sans-serif`;g.textAlign='center';g.textBaseline='middle';g.fillText(w,W/2,H/2);const d=g.getImageData(0,0,W,H).data,t=[],st=Math.max(4,Math.round(5*dpr*(W/1600+.5)));for(let y=0;y<H;y+=st)for(let X=0;X<W;X+=st)if(d[(y*W+X)*4+3]>128)t.push([X,y]);return t.sort(()=>Math.random()-.5)}
-function setWord(){const t=targets(words[wi]);while(ps.length<t.length)ps.push({x:Math.random()*W,y:Math.random()*H,vx:0,vy:0});ps.forEach((p,i)=>{if(i<t.length){p.tx=t[i][0];p.ty=t[i][1];p.free=false}else{p.free=true;p.tx=Math.random()*W;p.ty=Math.random()*H}});wi=(wi+1)%words.length}
+const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio||1,2);let W,H,ps=[],wi=0,m={x:-9e9,y:-9e9},down=false,shock=[],timer;
+const words=['MATTER','IS','MOSTLY','EMPTY','SPACE'];const dots=document.getElementById('dots');
+words.forEach((w,i)=>{const b=document.createElement('button');b.textContent=w;b.onclick=()=>{wi=i;setWord()};dots.appendChild(b)});
+function targets(w){const o=document.createElement('canvas');o.width=W;o.height=H;const g=o.getContext('2d',{willReadFrequently:true});let fs=H*.44;g.font=`${fs}px "Archivo Black",Impact,sans-serif`;const mw=g.measureText(w).width;if(mw>W*.86){fs*=W*.86/mw;g.font=`${fs}px "Archivo Black",Impact,sans-serif`}g.textAlign='center';g.textBaseline='middle';g.fillText(w,W/2,H/2+fs*.04);const d=g.getImageData(0,0,W,H).data,t=[],st=Math.max(4,Math.round(5*dpr*(W/1600/dpr+.5)));for(let y=0;y<H;y+=st)for(let X=0;X<W;X+=st)if(d[(y*W+X)*4+3]>128)t.push([X,y]);for(let i=t.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[t[i],t[j]]=[t[j],t[i]]}return t}
+function setWord(){const t=targets(words[wi]);while(ps.length<t.length+300)ps.push({x:Math.random()*W,y:Math.random()*H,vx:0,vy:0,a:Math.random()*6.28,r:0,o:Math.random()*6.28});
+ps.forEach((p,i)=>{if(i<t.length){p.tx=t[i][0];p.ty=t[i][1];p.free=false}else{p.free=true;p.cx=Math.random()*W;p.cy=Math.random()*H;p.or=(20+Math.random()*90)*dpr;p.sp=(.004+Math.random()*.012)*(Math.random()<.5?-1:1)}});
+[...dots.children].forEach((b,i)=>{b.classList.remove('on');if(i===wi){void b.offsetWidth;b.classList.add('on')}});
+clearTimeout(timer);timer=setTimeout(()=>{wi=(wi+1)%words.length;setWord()},4200)}
 function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr;setWord()}
-size();document.fonts.ready.then(size);setInterval(setWord,3200);addEventListener('resize',size);
+size();document.fonts.ready.then(()=>{size()});addEventListener('resize',size);
 addEventListener('pointermove',e=>{m.x=e.clientX*dpr;m.y=e.clientY*dpr});addEventListener('pointerleave',()=>{m.x=m.y=-9e9});
-function f(){x.fillStyle='rgba(236,232,255,.35)';x.fillRect(0,0,W,H);const R=110*dpr;
-for(const p of ps){let ax=(p.tx-p.x)*.012,ay=(p.ty-p.y)*.012;const dx=p.x-m.x,dy=p.y-m.y,d2=dx*dx+dy*dy;if(d2<R*R){const d=Math.sqrt(d2)||1,f=(1-d/R)*6;ax+=dx/d*f;ay+=dy/d*f}p.vx=(p.vx+ax)*.86;p.vy=(p.vy+ay)*.86;p.x+=p.vx;p.y+=p.vy;
-const sp=Math.min(1,Math.hypot(p.vx,p.vy)/8);x.fillStyle=p.free?'rgba(58,44,140,.18)':`hsl(${250-sp*220},${70+sp*30}%,${28+sp*30}%)`;const r=(p.free?1:1.7)*dpr;x.fillRect(p.x-r,p.y-r,r*2,r*2)}requestAnimationFrame(f)}f();
+addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;down=true;dt0=performance.now()});let dt0=0;
+addEventListener('pointerup',e=>{down=false;if(e.target.closest('button'))return;if(performance.now()-dt0<250){shock.push({x:e.clientX*dpr,y:e.clientY*dpr,r:0});for(const p of ps){const dx=p.x-e.clientX*dpr,dy=p.y-e.clientY*dpr,d=Math.hypot(dx,dy)+1;const f=Math.min(40,9000*dpr/d);p.vx+=dx/d*f;p.vy+=dy/d*f}}});
+addEventListener('keydown',e=>{if(e.code==='Space'||e.key==='ArrowRight'){e.preventDefault();wi=(wi+1)%words.length;setWord()}if(e.key==='ArrowLeft'){wi=(wi+words.length-1)%words.length;setWord()}});
+let t=0;function f(){t++;x.globalCompositeOperation='source-over';x.fillStyle='rgba(236,232,255,.32)';x.fillRect(0,0,W,H);const R=120*dpr;
+for(const p of ps){let ax,ay;if(p.free){p.a+=p.sp;const ox=p.cx+Math.cos(p.a)*p.or,oy=p.cy+Math.sin(p.a)*p.or*.4;ax=(ox-p.x)*.02;ay=(oy-p.y)*.02}else{ax=(p.tx-p.x)*.012;ay=(p.ty-p.y)*.012}
+const dx=p.x-m.x,dy=p.y-m.y,d2=dx*dx+dy*dy;const RR=down?R*2.2:R;if(d2<RR*RR){const d=Math.sqrt(d2)||1;if(down){const f=(1-d/RR)*2.4;ax-=dx/d*f-dy/d*f*.9;ay-=dy/d*f+dx/d*f*.9}else{const f=(1-d/R)*6;ax+=dx/d*f;ay+=dy/d*f}}
+p.vx=(p.vx+ax)*.86;p.vy=(p.vy+ay)*.86;p.x+=p.vx;p.y+=p.vy;const sp=Math.min(1,Math.hypot(p.vx,p.vy)/9);
+if(p.free){x.fillStyle='rgba(58,44,140,.35)';x.fillRect(p.x-dpr*.6,p.y-dpr*.6,dpr*1.2,dpr*1.2)}else{x.fillStyle=`hsl(${252-sp*230},${72+sp*28}%,${26+sp*32}%)`;const r=(1.6+sp*.8)*dpr;x.beginPath();x.arc(p.x,p.y,r,0,6.283);x.fill()}}
+// shockwaves
+for(let i=shock.length-1;i>=0;i--){const s=shock[i];s.r+=22*dpr;const a=1-s.r/(900*dpr);if(a<=0){shock.splice(i,1);continue}x.strokeStyle=`rgba(255,80,140,${a*.6})`;x.lineWidth=2*dpr;x.beginPath();x.arc(s.x,s.y,s.r,0,6.283);x.stroke()}
+// cursor: a little atom
+if(m.x>-1e8){x.save();x.translate(m.x,m.y);x.strokeStyle='rgba(58,44,140,.55)';x.lineWidth=dpr;for(let k=0;k<3;k++){x.save();x.rotate(k*Math.PI/3+t*.01);x.beginPath();x.ellipse(0,0,(down?34:22)*dpr,7*dpr,0,0,6.283);x.stroke();const a=t*.08*(k+1);x.fillStyle='#ff508c';x.beginPath();x.arc(Math.cos(a)*(down?34:22)*dpr,Math.sin(a)*7*dpr,2.2*dpr,0,6.283);x.fill();x.restore()}x.fillStyle='#3a2c8c';x.beginPath();x.arc(0,0,3*dpr,0,6.283);x.fill();x.restore()}
+requestAnimationFrame(f)}f();
 </script></body></html>
