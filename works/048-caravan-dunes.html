@@ -1,24 +1,57 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Caravan by Moonlight</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&family=Aref+Ruqaa:wght@700&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:linear-gradient(#0b0c2a 0%,#1e1f55 45%,#5a3d6e 70%,#b4707a 82%);font-family:Marcellus,serif}
-.stars{position:absolute;inset:0 0 40% 0;background-image:radial-gradient(1.2px 1.2px at 10% 20%,#fff,transparent),radial-gradient(1px 1px at 30% 60%,#fffd,transparent),radial-gradient(1.5px 1.5px at 50% 10%,#fff,transparent),radial-gradient(1px 1px at 70% 40%,#fff,transparent),radial-gradient(1px 1px at 90% 70%,#fffc,transparent),radial-gradient(1px 1px at 20% 85%,#fff9,transparent),radial-gradient(1.3px 1.3px at 80% 15%,#fff,transparent);background-size:260px 180px;animation:tw 4s ease-in-out infinite alternate}@keyframes tw{to{opacity:.6}}
-.moon{position:absolute;right:16%;top:12%;width:min(16vh,22vw);aspect-ratio:1;border-radius:50%;box-shadow:inset calc(min(16vh,22vw)*-.28) calc(min(16vh,22vw)*-.08) 0 0 #fff1c9;filter:drop-shadow(0 0 30px rgba(255,241,201,.5));transform:rotate(-20deg)}
-.d{position:absolute;left:-20%;right:-20%;border-radius:50% 50% 0 0/100% 100% 0 0}
-.d1{bottom:22%;height:40%;background:linear-gradient(170deg,#c48a6e,#6e3f4f 60%);left:-10%;right:30%}
-.d2{bottom:16%;height:34%;background:linear-gradient(190deg,#d99c7a,#7a4655 55%);left:30%;right:-30%}
-.d3{bottom:-10%;height:48%;background:linear-gradient(175deg,#e8b48c 0%,#a5606a 40%,#4a2740 100%);border-radius:60% 40% 0 0/100% 100% 0 0}
-.d4{bottom:-28%;height:46%;background:linear-gradient(185deg,#f2c39a,#b06a6e 45%,#3a1f35);left:-40%;right:10%}
-.car{position:absolute;bottom:37.4%;left:0;display:flex;gap:1.4vw;animation:walk 60s linear infinite -22s;align-items:flex-end}@keyframes walk{from{transform:translateX(-30vw)}to{transform:translateX(110vw)}}
-.car svg{width:clamp(36px,5vw,70px);height:auto;animation:bob 1.1s ease-in-out infinite alternate}.car svg:nth-child(2){animation-delay:-.3s}.car svg:nth-child(3){animation-delay:-.6s}.car svg:nth-child(4){animation-delay:-.2s;width:clamp(24px,3vw,44px)}@keyframes bob{to{transform:translateY(-2px)}}
-.shine{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at var(--mx,84%) var(--my,20%),rgba(255,241,201,.32),transparent 45%);mix-blend-mode:soft-light;z-index:5}.ss{position:absolute;height:2px;width:160px;background:linear-gradient(90deg,#fff,transparent);transform:rotate(-28deg);transform-origin:left;pointer-events:none;animation:ss 1s ease-out forwards}@keyframes ss{from{opacity:1}to{opacity:0;translate:-420px 220px}}body{cursor:pointer}.moon{transition:left .8s cubic-bezier(.2,.8,.2,1),top .8s cubic-bezier(.2,.8,.2,1)}
-.t{position:absolute;left:6vw;top:8vh;color:#f8dcc0}.t h1{font-family:'Aref Ruqaa',serif;font-size:clamp(34px,6vw,90px);line-height:1}.t p{letter-spacing:.35em;text-transform:uppercase;font-size:12px;margin-top:10px;opacity:.8}</style></head><body>
-<div class="stars"></div><div class="moon"></div><div class="t"><h1>Rihla</h1><p>Erg Chebbi · second night · 11 km to the well · move the moon · click for a shooting star</p></div><div class="shine" id="sh"></div>
-<div class="d d1"></div><div class="d d2"></div>
-<div class="car" id="car"></div><div class="d d3"></div><div class="d d4"></div>
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;user-select:none;-webkit-user-select:none}
+body{background:linear-gradient(#070820 0%,#1e1f55 45%,#5a3d6e 70%,#b4707a 82%);font-family:Marcellus,serif;cursor:pointer}
+canvas{position:fixed;inset:0;width:100%;height:100%}
+.t{position:fixed;left:6vw;top:8vh;color:#f8dcc0;pointer-events:none;z-index:3}.t h1{font-family:'Aref Ruqaa',serif;font-size:clamp(34px,6vw,90px);line-height:1;text-shadow:0 0 30px rgba(255,220,180,.3);animation:in 2s both}@keyframes in{from{opacity:0;filter:blur(8px)}}
+.t p{letter-spacing:.32em;text-transform:uppercase;font-size:11px;margin-top:10px;opacity:.8;line-height:1.9}
+.t b{font-weight:400;color:#ffe0a8}
+.k{position:fixed;right:5vw;bottom:4vh;color:#f8dcc0;opacity:.6;letter-spacing:.28em;text-transform:uppercase;font-size:10px;text-align:right;line-height:2;pointer-events:none;z-index:3}
+</style></head><body>
+<canvas id="c"></canvas>
+<div class="t"><h1>Rihla</h1><p>Erg Chebbi · second night<br><b id="km">11.0</b> km to the well · <span id="hr">23:40</span></p></div>
+<div class="k">Drag the moon · click for a shooting star<br>Hold to call a gust of wind</div>
 <script>
-const camel='<svg viewBox="0 0 60 44"><path fill="#2a1630" d="M6 14c2-4 6-5 8-3 2 2 2 5 4 6 3-8 8-12 13-12 4 0 6 4 9 4 4 0 6-6 10-6 4 0 5 4 5 7l-2 0c0-2-1-3-3-3-3 0-4 6-6 10v5l2 18h-3l-2-15-3 0-1 15h-3l0-15c-6 1-12 1-16-1l-2 16h-3l1-17-2 1-1 16H5l2-18c-3-3-4-7-1-8z"/></svg>';
-const man='<svg viewBox="0 0 20 44"><path fill="#2a1630" d="M10 2a4 4 0 110 8 4 4 0 010-8zM5 12h10l3 18h-4l-1 14h-2l-1-12-1 12H7l-1-14H2z"/></svg>';
-document.getElementById('car').innerHTML=camel+camel+camel+man;
-const mo=document.querySelector('.moon'),sh=document.getElementById('sh');addEventListener('pointermove',e=>{const x=e.clientX/innerWidth,y=Math.min(.42,e.clientY/innerHeight);mo.style.right='auto';mo.style.left=`calc(${x*100}% - min(8vh,11vw))`;mo.style.top=`calc(${y*100}% - min(8vh,11vw))`;sh.style.setProperty('--mx',x*100+'%');sh.style.setProperty('--my',y*100+'%')});
-addEventListener('click',e=>{const s=document.createElement('i');s.className='ss';s.style.left=(e.clientX+60)+'px';s.style.top=Math.min(e.clientY,innerHeight*.45)+'px';document.body.appendChild(s);setTimeout(()=>s.remove(),1100)});
+const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio||1,2);let W,H,stars,sand=[];
+function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr;stars=Array.from({length:420},()=>({x:Math.random()*W,y:Math.pow(Math.random(),1.5)*H*.6,r:Math.random()*1.4*dpr+.3,p:Math.random()*6}))}size();addEventListener('resize',size);
+let mx=.82,my=.16,tmx=.82,tmy=.16,dragM=false,gust=0,hold=false,shots=[],walk=0,dist=11,prints=[];
+const moonPos=()=>[mx*W,my*H];
+addEventListener('pointerdown',e=>{const [a,b]=moonPos();if(Math.hypot(e.clientX*dpr-a,e.clientY*dpr-b)<Math.min(W,H)*.1){dragM=true}else{hold=true;holdT=performance.now();sx=e.clientX;sy=e.clientY}});let holdT=0,sx=0,sy=0;
+addEventListener('pointermove',e=>{if(dragM){tmx=e.clientX/innerWidth;tmy=Math.min(.42,Math.max(.05,e.clientY/innerHeight))}});
+addEventListener('pointerup',e=>{if(!dragM&&performance.now()-holdT<250){shots.push({x:e.clientX*dpr+60*dpr,y:Math.min(e.clientY*dpr,H*.45),l:1});chime()}dragM=false;hold=false});
+addEventListener('keydown',e=>{if(e.key===' '){e.preventDefault();shots.push({x:Math.random()*W,y:Math.random()*H*.35,l:1})}});
+let ac;function chime(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();[1320,1760,2093].forEach((f,i)=>{const o=ac.createOscillator(),g=ac.createGain(),t=ac.currentTime+i*.06;o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.03,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+1.2);o.connect(g).connect(ac.destination);o.start(t);o.stop(t+1.3)})}catch(e){}}
+// dune profiles: layered, lit from the moon's side
+const D=[[.62,.2,1.3,'#c48a6e','#6e3f4f',.06],[.68,.18,1.8,'#d99c7a','#7a4655',.12],[.8,.22,1.1,'#e8b48c','#4a2740',.3],[.95,.2,1.6,'#f2c39a','#3a1f35',.6]];
+const dy=(k,X,off)=>{const [b,a,f]=D[k];const u=X/W*f+off+k*3.1;return H*b-H*a*(.5+.3*Math.sin(u*2.1)+.2*Math.sin(u*5.3+1))};
+function camel(px,py,s,ph,lead){x.save();x.translate(px,py);x.scale(s,s);x.fillStyle='#1c0e22';const leg=(hx,o)=>{const a=Math.sin(ph+o)*.45;x.save();x.translate(hx,-20);x.rotate(a);x.fillRect(-1.6,0,3.2,20);x.restore()};
+leg(-12,0);leg(14,Math.PI);x.beginPath();x.moveTo(-20,-22);x.quadraticCurveTo(-22,-34,-10,-36);x.quadraticCurveTo(-4,-50,6,-38);x.quadraticCurveTo(14,-34,20,-28);x.quadraticCurveTo(26,-28,28,-40);x.quadraticCurveTo(30,-50,38,-48);x.lineTo(40,-44);x.quadraticCurveTo(34,-44,33,-36);x.quadraticCurveTo(32,-24,22,-18);x.lineTo(-18,-18);x.closePath();x.fill();leg(-8,Math.PI);leg(18,0);
+x.fillStyle='#5a2a3a';x.fillRect(-12,-40,20,5);if(lead){x.strokeStyle='#1c0e22';x.lineWidth=1;x.beginPath();x.moveTo(38,-44);x.quadraticCurveTo(46,-30,52,-28);x.stroke()}x.restore()}
+function walker(px,py,s,ph){x.save();x.translate(px,py);x.scale(s,s);x.fillStyle='#1c0e22';x.beginPath();x.arc(0,-38,4,0,7);x.fill();x.beginPath();x.moveTo(-5,-34);x.lineTo(5,-34);x.lineTo(8,-12);x.lineTo(-8,-12);x.fill();const a=Math.sin(ph)*.5;x.save();x.translate(-2,-12);x.rotate(a);x.fillRect(-1.2,0,2.4,12);x.restore();x.save();x.translate(2,-12);x.rotate(-a);x.fillRect(-1.2,0,2.4,12);x.restore();
+// lantern
+x.strokeStyle='#1c0e22';x.lineWidth=1;x.beginPath();x.moveTo(6,-28);x.lineTo(12,-20);x.stroke();x.restore();const lx=px+12*s,ly=py-18*s;const fl=.85+.15*Math.sin(performance.now()*.02)*Math.sin(performance.now()*.007);const g=x.createRadialGradient(lx,ly,0,lx,ly,60*s);g.addColorStop(0,`rgba(255,200,110,${.6*fl})`);g.addColorStop(1,'rgba(255,200,110,0)');x.fillStyle=g;x.fillRect(lx-60*s,ly-60*s,120*s,120*s);x.fillStyle='#ffd88a';x.fillRect(lx-2*s,ly-3*s,4*s,6*s)}
+let last=performance.now();
+function f(now){const dt=Math.min(50,now-last);last=now;const t=now/1000;mx+=(tmx-mx)*.08;my+=(tmy-my)*.08;gust+=((hold&&!dragM?1:0)-gust)*.03;walk+=dt*.0016*(1-gust*.5);dist=Math.max(0,11-walk*.04);
+x.clearRect(0,0,W,H);
+for(const s of stars){x.globalAlpha=.4+.6*Math.abs(Math.sin(t*.8+s.p));x.fillStyle='#fff';x.fillRect(s.x,s.y,s.r,s.r)}x.globalAlpha=1;
+// moon
+const [MX,MY]=moonPos(),MR=Math.min(W,H)*.075;const mg=x.createRadialGradient(MX,MY,MR*.8,MX,MY,MR*4);mg.addColorStop(0,'rgba(255,241,201,.28)');mg.addColorStop(1,'rgba(255,241,201,0)');x.fillStyle=mg;x.fillRect(MX-MR*4,MY-MR*4,MR*8,MR*8);
+x.fillStyle='#fff1c9';x.beginPath();x.arc(MX,MY,MR,0,7);x.fill();x.fillStyle='rgba(30,31,85,.92)';x.beginPath();x.arc(MX-MR*.38,MY-MR*.12,MR*.92,0,7);x.fill();
+// shooting stars
+for(let i=shots.length-1;i>=0;i--){const s=shots[i];s.x-=14*dpr;s.y+=7*dpr;s.l-=.025;if(s.l<=0){shots.splice(i,1);continue}const g=x.createLinearGradient(s.x,s.y,s.x+160*dpr,s.y-80*dpr);g.addColorStop(0,`rgba(255,255,255,${s.l})`);g.addColorStop(1,'rgba(255,255,255,0)');x.strokeStyle=g;x.lineWidth=2*dpr;x.beginPath();x.moveTo(s.x,s.y);x.lineTo(s.x+160*dpr,s.y-80*dpr);x.stroke()}
+// dunes, each lit on the moon side
+const moonSide=mx;D.forEach((d,k)=>{const off=walk*d[5]*.15;x.beginPath();x.moveTo(0,H);for(let X=0;X<=W;X+=8*dpr)x.lineTo(X,dy(k,X,off));x.lineTo(W,H);x.closePath();const g=x.createLinearGradient(moonSide*W,H*(d[0]-d[1]),(1-moonSide)*W,H);g.addColorStop(0,d[3]);g.addColorStop(.7,d[4]);x.fillStyle=g;x.fill();
+// ripples
+x.strokeStyle='rgba(255,230,200,.08)';x.lineWidth=dpr;x.beginPath();for(let r=1;r<5;r++){for(let X=0;X<=W;X+=12*dpr){const y=dy(k,X,off)+r*H*.02+Math.sin(X*.02/dpr+r)*2*dpr;X?x.lineTo(X,y):x.moveTo(X,y)}}x.stroke();
+if(k===1){// caravan on the second ridge
+const base=((W*.62+walk*28*dpr)%(W*1.5))-W*.2;const s=Math.min(W,H)/430;for(let i=0;i<4;i++){const px=base-i*70*s;const py=dy(1,px,off);if(i===0)walker(px+40*s,py,s,walk*14);camel(px-30*s,py,s,walk*14+i*.9,i===0);
+if(Math.random()<.1)prints.push({x:px-30*s,y:py+1,a:1})}
+for(let i=prints.length-1;i>=0;i--){const p=prints[i];p.a-=.003+gust*.02;if(p.a<=0){prints.splice(i,1);continue}x.fillStyle=`rgba(40,20,40,${p.a*.3})`;x.fillRect(p.x,p.y,3*s,1.4*s)}}});
+// blowing sand
+if(gust>.05||Math.random()<.2)for(let i=0;i<Math.round(gust*20)+1;i++)sand.push({x:-10,y:H*(.5+Math.random()*.5),v:(6+Math.random()*8)*dpr,l:1});
+x.fillStyle='rgba(255,220,180,.5)';for(let i=sand.length-1;i>=0;i--){const p=sand[i];p.x+=p.v*(.4+gust);p.y+=Math.sin(p.x*.01)*dpr;p.l-=.008;if(p.x>W||p.l<=0){sand.splice(i,1);continue}x.globalAlpha=p.l*(.2+gust*.6);x.fillRect(p.x,p.y,(4+gust*14)*dpr,dpr)}x.globalAlpha=1;
+if(sand.length>600)sand.splice(0,100);
+document.getElementById('km').textContent=dist.toFixed(1);const mins=23*60+40+Math.floor(walk*1.4);document.getElementById('hr').textContent=String(Math.floor(mins/60)%24).padStart(2,'0')+':'+String(mins%60).padStart(2,'0');
+requestAnimationFrame(f)}requestAnimationFrame(f);
 </script></body></html>
