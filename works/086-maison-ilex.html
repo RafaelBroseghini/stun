@@ -1,26 +1,93 @@
 <!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Nuit d'Ambre</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&family=Jost:wght@300;500&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{min-height:100%}body{background:#e9cfc4;color:#4a1420;font-family:Jost,sans-serif;overflow-x:hidden}
-nav{display:flex;justify-content:space-between;padding:22px 5vw;font-size:12px;letter-spacing:.3em;text-transform:uppercase}nav b{font:italic 400 22px 'Bodoni Moda',serif;letter-spacing:.05em;text-transform:none}
-.h{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;min-height:calc(100vh - 70px);padding:0 5vw;gap:4vw}
-.bt{position:relative;height:min(74vh,90vw);aspect-ratio:.62;margin:auto}
-.cap{position:absolute;left:30%;right:30%;top:0;height:22%;background:linear-gradient(90deg,#2a0a10,#6b2030 30%,#3a0e16 60%,#1a0508);border-radius:6px 6px 2px 2px}
-.cap::after{content:"";position:absolute;left:10%;top:6%;width:14%;height:88%;background:linear-gradient(rgba(255,255,255,.35),transparent);border-radius:4px}
-.neck{position:absolute;left:40%;right:40%;top:21%;height:6%;background:linear-gradient(90deg,#b88a4a,#f3d9a0,#9a6a30)}
-.glass{position:absolute;left:0;right:0;top:26%;bottom:0;border-radius:24px 24px 30px 30px;background:linear-gradient(90deg,rgba(255,255,255,.35),rgba(255,255,255,.08) 20%,rgba(255,255,255,.02) 60%,rgba(255,255,255,.28));box-shadow:inset 0 0 0 2px rgba(255,255,255,.5),0 40px 60px -20px rgba(74,20,32,.5);overflow:hidden;backdrop-filter:blur(2px)}
-.liq{position:absolute;left:5%;right:5%;bottom:4%;height:78%;border-radius:18px 18px 24px 24px;background:linear-gradient(#e89a3a,#c0561c 60%,#8a2a10);opacity:.92;animation:sl 6s ease-in-out infinite alternate}@keyframes sl{to{transform:skewY(-1.2deg)}}
-.liq::before{content:"";position:absolute;left:0;right:0;top:0;height:6%;background:linear-gradient(#f8c27a,transparent);border-radius:50%}
-.lbl{position:absolute;left:18%;right:18%;top:44%;padding:8% 0;background:#f4e6d6;text-align:center;border:1px solid #b88a4a}.lbl b{display:block;font:italic 400 clamp(16px,2vw,26px) 'Bodoni Moda',serif}.lbl small{font-size:9px;letter-spacing:.3em}
-.shine{position:absolute;left:8%;top:5%;width:10%;height:80%;background:linear-gradient(rgba(255,255,255,.7),rgba(255,255,255,0));border-radius:30px;filter:blur(2px)}
-.tx h1{font:400 clamp(48px,7.5vw,120px)/.88 'Bodoni Moda',serif;letter-spacing:-.02em}.tx h1 em{display:block;font-style:italic;padding-left:.6em}
-.tx p{font-weight:300;font-size:17px;line-height:1.6;max-width:40ch;margin:3vh 0}.notes{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid #4a142055;margin:3vh 0}.notes div{padding:14px 10px 0 0;font-size:13px;line-height:1.6}.notes b{display:block;font-weight:500;font-size:10px;letter-spacing:.3em;text-transform:uppercase;opacity:.65;margin-bottom:4px}
-.buy{display:flex;align-items:center;gap:22px;flex-wrap:wrap}.buy button{background:#4a1420;color:#f4e6d6;border:0;padding:16px 34px;font:500 12px Jost;letter-spacing:.3em;text-transform:uppercase;cursor:pointer;transition:.3s}.buy button:hover{background:#7a2030}.buy span{font:400 26px 'Bodoni Moda',serif}
-.sz{display:flex;gap:8px}.sz button{background:none;color:#4a1420;border:1px solid #4a1420;padding:10px 14px;letter-spacing:.1em}.sz button.on{background:#4a1420;color:#f4e6d6}
-@media(max-width:820px){.h{grid-template-columns:1fr;padding-bottom:6vh}.bt{height:60vh}}</style></head><body>
-<nav><span>Parfums</span><b>Maison Ilex</b><span>Sac (<i id="n" style="font-style:normal">0</i>)</span></nav>
-<section class="h"><div class="bt"><div class="cap"></div><div class="neck"></div><div class="glass"><div class="liq"></div><div class="lbl"><small>MAISON ILEX</small><b>Nuit d'Ambre</b><small>EAU DE PARFUM</small></div><div class="shine"></div></div></div>
-<div class="tx"><h1>Nuit<em>d'Ambre</em></h1><p>Resin warmed on skin at the end of a long dinner. Labdanum and smoked tea, softened with fig leaf and the last of the candle.</p>
-<div class="notes"><div><b>Tête</b>Fig leaf, pink pepper</div><div><b>Cœur</b>Smoked tea, iris</div><div><b>Fond</b>Labdanum, benzoin</div></div>
-<div class="buy"><div class="sz" id="sz"><button data-p="98">30 ml</button><button class="on" data-p="165">50 ml</button><button data-p="240">100 ml</button></div><span id="pr">€165</span><button id="add">Add to bag</button></div></div></section>
-<script>document.querySelectorAll('#sz button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#sz button').forEach(o=>o.classList.toggle('on',o===b));document.getElementById('pr').textContent='€'+b.dataset.p});let n=0;document.getElementById('add').onclick=e=>{document.getElementById('n').textContent=++n;e.target.textContent='Added';setTimeout(()=>e.target.textContent='Add to bag',1400)}</script>
+<style>*{margin:0;box-sizing:border-box}html,body{min-height:100%}
+body{--h1:#e89a3a;--h2:#c0561c;--h3:#8a2a10;--bg:#ecd3c6;background:var(--bg);color:#4a1420;font-family:Jost,sans-serif;overflow-x:hidden;transition:background 1.2s}
+.amb{position:fixed;inset:-20%;pointer-events:none;z-index:0;background:radial-gradient(40% 35% at var(--ax,30%) var(--ay,45%),color-mix(in srgb,var(--h1) 45%,transparent),transparent 70%),radial-gradient(35% 30% at 80% 80%,rgba(255,240,225,.7),transparent 70%);transition:background 1.2s;filter:blur(10px)}
+.wm{position:fixed;left:-2vw;bottom:-6vw;font:italic 400 32vw/1 'Bodoni Moda',serif;color:rgba(74,20,32,.045);pointer-events:none;z-index:0;white-space:nowrap}
+nav{position:relative;z-index:3;display:flex;justify-content:space-between;align-items:center;padding:22px 5vw;font-size:12px;letter-spacing:.3em;text-transform:uppercase}nav b{font:italic 400 24px 'Bodoni Moda',serif;letter-spacing:.05em;text-transform:none}
+#bag{display:inline-block;transition:transform .4s cubic-bezier(.2,.9,.3,1.6)}#bag.bump{transform:scale(1.35)}
+.h{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;min-height:calc(100vh - 70px);padding:0 5vw;gap:4vw}
+.stage{position:relative;height:min(76vh,92vw);perspective:1100px;display:grid;place-items:center}
+.flr{position:absolute;left:18%;right:18%;bottom:2%;height:9%;border-radius:50%;background:radial-gradient(closest-side,rgba(74,20,32,.38),transparent);filter:blur(6px);transition:transform .6s}
+.caus{position:absolute;left:8%;right:8%;bottom:-2%;height:22%;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--h1) 70%,transparent),transparent);mix-blend-mode:multiply;opacity:.55;filter:blur(8px);animation:cs 4s ease-in-out infinite alternate}@keyframes cs{to{transform:scaleX(1.12) translateX(4%);opacity:.75}}
+.bt{position:relative;height:88%;aspect-ratio:.62;transform-style:preserve-3d;cursor:pointer;transform-origin:50% 90%;animation:rise 1.6s cubic-bezier(.2,.8,.2,1) backwards}@keyframes rise{from{opacity:0;translate:0 60px}}
+.sc{position:absolute;inset:0;transform-origin:50% 100%;transition:transform .9s cubic-bezier(.3,1.4,.4,1)}
+.cap{position:absolute;left:29%;right:29%;top:0;height:22%;background:linear-gradient(90deg,#1a0508,#5b1826 18%,#8a3040 32%,#3a0e16 58%,#24070c 82%,#5b1826);border-radius:8px 8px 3px 3px;box-shadow:0 6px 12px -4px rgba(0,0,0,.5)}
+.cap::after{content:"";position:absolute;left:calc(var(--sx,30%) - 7%);top:6%;width:12%;height:88%;background:linear-gradient(rgba(255,255,255,.45),transparent);border-radius:4px;transition:left .2s}
+.cap::before{content:"";position:absolute;left:-3%;right:-3%;bottom:-4%;height:9%;background:linear-gradient(90deg,#8a6a30,#f8e0a8,#b88a4a,#f3d9a0,#7a5420);border-radius:2px}
+.neck{position:absolute;left:39%;right:39%;top:21.5%;height:5.5%;background:linear-gradient(90deg,#9a6a30,#f3d9a0 40%,#fff4d6 50%,#b88a4a 70%,#7a5420)}
+.glass{position:absolute;left:0;right:0;top:26.5%;bottom:0;border-radius:26px 26px 34px 34px;background:linear-gradient(90deg,rgba(255,255,255,.4),rgba(255,255,255,.08) 18%,rgba(255,255,255,.02) 60%,rgba(255,255,255,.3));box-shadow:inset 0 0 0 2px rgba(255,255,255,.55),inset 0 -24px 30px -10px rgba(255,255,255,.35),0 50px 60px -24px rgba(74,20,32,.55);overflow:hidden}
+.glass canvas{position:absolute;inset:0;width:100%;height:100%}
+.lbl{position:absolute;left:19%;right:19%;top:40%;padding:8% 0;background:#f7ecdf;text-align:center;border:1px solid #b88a4a;box-shadow:0 0 0 4px #f7ecdf,0 0 0 5px #b88a4a55;z-index:2}.lbl b{display:block;font:italic 400 clamp(15px,2vw,26px) 'Bodoni Moda',serif;margin:4px 0}.lbl small{font-size:8px;letter-spacing:.34em}
+.shine{position:absolute;left:var(--sx,10%);top:4%;width:9%;height:84%;background:linear-gradient(rgba(255,255,255,.8),rgba(255,255,255,0));border-radius:30px;filter:blur(2px);z-index:3;transition:left .2s}
+.shine2{position:absolute;right:calc(100% - var(--sx,10%) - 80%);top:8%;width:3%;height:70%;background:rgba(255,255,255,.4);border-radius:30px;z-index:3;filter:blur(1px);transition:right .2s}
+.tx{position:relative}.tx .ey{font-size:11px;letter-spacing:.4em;text-transform:uppercase;opacity:.65;margin-bottom:2vh}
+.tx h1{font:400 clamp(48px,7.5vw,124px)/.9 'Bodoni Moda',serif;letter-spacing:-.02em}.tx h1 span{display:block;overflow:hidden;padding-bottom:.06em}.tx h1 span i{display:inline-block;font-style:inherit;animation:up 1.2s cubic-bezier(.2,.8,.2,1) backwards}.tx h1 em{font-style:italic;padding-left:.6em}.tx h1 span:nth-child(2) i{animation-delay:.15s}@keyframes up{from{transform:translateY(105%)}}
+.tx p{font-weight:300;font-size:17px;line-height:1.65;max-width:40ch;margin:3vh 0;animation:fi 1.4s .5s backwards}@keyframes fi{from{opacity:0;transform:translateY(12px)}}
+.notes{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid #4a142055;margin:3vh 0;animation:fi 1.4s .7s backwards}.notes div{padding:14px 10px 10px 0;font-size:13px;line-height:1.6;cursor:default;position:relative;transition:color .4s}.notes div::before{content:"";position:absolute;left:0;top:-1px;height:2px;width:0;background:#4a1420;transition:width .6s}.notes div:hover::before,.notes div.on::before{width:86%}
+.notes b{display:block;font-weight:500;font-size:10px;letter-spacing:.3em;text-transform:uppercase;opacity:.65;margin-bottom:4px}
+.buy{display:flex;align-items:center;gap:22px;flex-wrap:wrap;animation:fi 1.4s .9s backwards}.cta{position:relative;overflow:hidden;background:#4a1420;color:#f4e6d6;border:0;padding:17px 36px;font:500 12px Jost;letter-spacing:.3em;text-transform:uppercase;cursor:pointer;transition:background .3s}.cta:hover{background:#6b1c2c}.cta::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,230,190,.35) 50%,transparent 70%);transform:translateX(-100%);transition:transform .8s}.cta:hover::after{transform:translateX(100%)}
+.buy .pr{font:400 28px 'Bodoni Moda',serif;min-width:3.4em}
+.sz{display:flex;gap:8px}.sz button{background:none;color:#4a1420;border:1px solid #4a1420;padding:10px 14px;letter-spacing:.1em;font:300 13px Jost;cursor:pointer;transition:.3s}.sz button.on{background:#4a1420;color:#f4e6d6}
+.hint{font-size:11px;letter-spacing:.24em;text-transform:uppercase;opacity:.55;margin-top:3vh}
+#mist{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:4}
+.word{position:fixed;z-index:5;pointer-events:none;font:italic 400 22px 'Bodoni Moda',serif;color:#4a1420;white-space:nowrap}
+.fly{position:fixed;z-index:6;width:18px;height:30px;border-radius:4px 4px 6px 6px;background:linear-gradient(var(--h1),var(--h3));box-shadow:0 0 0 1px #fff8;pointer-events:none}
+@media(max-width:820px){.h{grid-template-columns:1fr;padding-bottom:6vh}.stage{height:58vh}}</style></head><body>
+<div class="amb" id="amb"></div><div class="wm">Ambre</div><canvas id="mist"></canvas>
+<nav><span>Parfums</span><b>Maison Ilex</b><span>Sac (<i id="bag" style="font-style:normal">0</i>)</span></nav>
+<section class="h"><div class="stage" id="stage"><div class="caus"></div><div class="flr" id="flr"></div><div class="bt" id="bt"><div class="sc" id="sc"><div class="cap" id="cap"></div><div class="neck"></div><div class="glass" id="gl"><canvas id="lq"></canvas><div class="lbl"><small>MAISON ILEX</small><b>Nuit d'Ambre</b><small>EAU DE PARFUM</small></div><div class="shine"></div><div class="shine2"></div></div></div></div></div>
+<div class="tx"><div class="ey">Collection Nocturne · Nº 7</div><h1><span><i>Nuit</i></span><span><i><em>d'Ambre</em></i></span></h1><p>Resin warmed on skin at the end of a long dinner. Labdanum and smoked tea, softened with fig leaf and the last of the candle.</p>
+<div class="notes" id="nt"><div data-c="#9cb35a,#6f8a2e,#3e5a1a" data-bg="#e3dcc4" data-w="fig leaf|pink pepper|green sap"><b>Tête</b>Fig leaf, pink pepper</div><div data-c="#b08a6a,#7a5a44,#3e2c22" data-bg="#ddd0c8" data-w="smoked tea|iris|cedar ash"><b>Cœur</b>Smoked tea, iris</div><div data-c="#f0a040,#c0501a,#7a200c" data-bg="#efcfbe" data-w="labdanum|benzoin|warm resin"><b>Fond</b>Labdanum, benzoin</div></div>
+<div class="buy"><div class="sz" id="sz"><button data-p="98" data-s=".8">30 ml</button><button class="on" data-p="165" data-s="1">50 ml</button><button data-p="240" data-s="1.14">100 ml</button></div><span class="pr" id="pr">€165</span><button class="cta" id="add">Add to bag</button></div>
+<div class="hint">Tap the bottle to spritz · hover the notes</div></div></section>
+<script>
+const $=id=>document.getElementById(id),body=document.body;
+// ---------- tilt ----------
+const bt=$('bt'),stage=$('stage');let rx=0,ry=0,vx=0,vy=0,trx=0,try_=0,rz=0,vz=0,tz=0,lastPX=null;
+addEventListener('pointermove',e=>{const r=stage.getBoundingClientRect();const px=(e.clientX-(r.left+r.width/2))/innerWidth,py=(e.clientY-(r.top+r.height/2))/innerHeight;try_=px*38;trx=-py*18;if(lastPX!==null)tz+=Math.max(-6,Math.min(6,(e.clientX-lastPX)*.12));lastPX=e.clientX;$('amb').style.setProperty('--ax',30+px*30+'%');$('amb').style.setProperty('--ay',45+py*30+'%')});
+// ---------- liquid ----------
+const lq=$('lq'),lx=lq.getContext('2d');let LW,LH,level=.8,tlevel=.8;const NW=48,wh=new Float32Array(NW),wv=new Float32Array(NW);let bub=[];
+function lsize(){const r=lq.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2);LW=lq.width=Math.max(2,r.width*d|0);LH=lq.height=Math.max(2,r.height*d|0)}lsize();addEventListener('resize',lsize);
+let col=['#e89a3a','#c0561c','#8a2a10'],tcol=col.slice();const hx=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)),mix=(a,b,t)=>'#'+hx(a).map((v,i)=>Math.round(v+(hx(b)[i]-v)*t).toString(16).padStart(2,'0')).join('');
+function liquid(t){lx.clearRect(0,0,LW,LH);
+for(let i=0;i<NW;i++){const l=wh[(i-1+NW)%NW]*(i>0),r=wh[(i+1)%NW]*(i<NW-1);wv[i]+=((l+r)/2-wh[i])*.3-wh[i]*.01;wv[i]*=.965}for(let i=1;i<NW-1;i++)wv[i]+=((wv[i-1]+wv[i+1])/2-wv[i])*.25;for(let i=1;i<NW-1;i++)wh[i]+=((wh[i-1]+wh[i+1])/2-wh[i])*.12;for(let i=0;i<NW;i++)wh[i]=Math.max(-2.2,Math.min(2.2,wh[i]+wv[i]));
+const ang=-rz*Math.PI/180,base=LH*(1-level*.9)-4,pad=LW*.05;
+lx.save();lx.beginPath();lx.moveTo(pad,LH*.96);const pts=[];for(let i=0;i<NW;i++){const X=pad+(LW-2*pad)*i/(NW-1),Y=base+Math.tan(ang)*(X-LW/2)+wh[i]*LH*.02+Math.sin(t*.002+i*.4)*LH*.003;pts.push([X,Y]);lx.lineTo(X,Y)}lx.lineTo(LW-pad,LH*.96);lx.closePath();
+const g=lx.createLinearGradient(0,base,0,LH);g.addColorStop(0,col[0]);g.addColorStop(.55,col[1]);g.addColorStop(1,col[2]);lx.fillStyle=g;lx.globalAlpha=.92;lx.fill();lx.clip();lx.globalAlpha=1;
+// internal glow and caustic bands
+const rg=lx.createRadialGradient(LW*.35,LH*.55,0,LW*.35,LH*.55,LW*.7);rg.addColorStop(0,'rgba(255,230,170,.35)');rg.addColorStop(1,'rgba(255,230,170,0)');lx.fillStyle=rg;lx.fillRect(0,0,LW,LH);
+lx.globalCompositeOperation='lighter';for(let k=0;k<5;k++){lx.strokeStyle=`rgba(255,220,150,${.05+.04*Math.sin(t*.001+k)})`;lx.lineWidth=LW*.03;lx.beginPath();for(let X=0;X<=LW;X+=LW/20){const Y=base+LH*(.12+k*.15)+Math.sin(X/LW*6+t*.0012*(k%2?1:-1)+k)*LH*.02;X?lx.lineTo(X,Y):lx.moveTo(X,Y)}lx.stroke()}
+if(Math.random()<.08)bub.push({x:pad+Math.random()*(LW-2*pad),y:LH*.95,r:(1+Math.random()*2.5)*LW/300,v:.4+Math.random()*.6});lx.fillStyle='rgba(255,240,210,.55)';bub=bub.filter(b=>{b.y-=b.v*LH/400;b.x+=Math.sin(b.y*.05)*.3;lx.beginPath();lx.arc(b.x,b.y,b.r,0,7);lx.fill();return b.y>base+Math.tan(ang)*(b.x-LW/2)+4});
+lx.globalCompositeOperation='source-over';lx.restore();
+lx.strokeStyle='rgba(255,236,200,.85)';lx.lineWidth=Math.max(1.5,LW/160);lx.beginPath();pts.forEach(([X,Y],i)=>i?lx.lineTo(X,Y):lx.moveTo(X,Y));lx.stroke();
+lx.fillStyle='rgba(255,236,200,.18)';lx.beginPath();pts.forEach(([X,Y],i)=>i?lx.lineTo(X,Y-LH*.012):lx.moveTo(X,Y-LH*.012));for(let i=pts.length-1;i>=0;i--)lx.lineTo(pts[i][0],pts[i][1]);lx.fill()}
+function kick(a){const k=1+Math.random()*2|0,p=Math.random()*6;for(let i=0;i<NW;i++)wv[i]+=a*Math.cos(Math.PI*k*i/(NW-1)+p)}
+// ---------- mist & spritz ----------
+const ms=$('mist'),mx=ms.getContext('2d');let MW,MH,md=1,mist=[];function msize(){md=Math.min(devicePixelRatio||1,2);MW=ms.width=innerWidth*md;MH=ms.height=innerHeight*md}msize();addEventListener('resize',msize);
+let ac;function A(){if(!ac)try{ac=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}return ac}
+function pssh(){const a=A();if(!a)return;const t=a.currentTime,b=a.createBuffer(1,a.sampleRate*.5,a.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,1.5)*Math.min(1,i/400);const s=a.createBufferSource(),f=a.createBiquadFilter(),g=a.createGain();s.buffer=b;f.type='highpass';f.frequency.value=3500;g.gain.value=.22;s.connect(f).connect(g).connect(a.destination);s.start(t)}
+function ting(f0){const a=A();if(!a)return;const t=a.currentTime;[1,2.76,5.4].forEach((m,i)=>{const o=a.createOscillator(),g=a.createGain();o.frequency.value=f0*m;g.gain.setValueAtTime(.05/(i+1),t);g.gain.exponentialRampToValueAtTime(.0001,t+1.2/(i+1));o.connect(g).connect(a.destination);o.start(t);o.stop(t+1.3)})}
+let words=['labdanum','smoked tea','fig leaf','benzoin','iris','pink pepper','candle smoke'];
+function spritz(){const r=$('cap').getBoundingClientRect(),sx=r.left+r.width*.5,sy=r.top+r.height*.12;const dir=sx<innerWidth/2?1:1;
+for(let i=0;i<220;i++){const a=-.5+(Math.random()-.5)*.9,s=2+Math.random()*9;mist.push({x:sx*md,y:sy*md,vx:Math.cos(a)*s*md*dir,vy:Math.sin(a)*s*md-1*md,l:1,r:(1+Math.random()*3)*md,dl:.006+Math.random()*.01})}pssh();
+tz+=4;kick(.5);
+for(let k=0;k<3;k++){const w=document.createElement('div');w.className='word';w.textContent=words[(Math.random()*words.length)|0];w.style.left=sx+'px';w.style.top=sy+'px';body.appendChild(w);const ex=60+Math.random()*220,ey=-40-Math.random()*160;w.animate([{opacity:0,transform:'translate(0,0) scale(.6)',filter:'blur(6px)'},{opacity:.85,filter:'blur(0)',offset:.3},{opacity:0,transform:`translate(${ex}px,${ey}px) scale(1.15)`,filter:'blur(4px)'}],{duration:2600+k*500,delay:k*200,easing:'cubic-bezier(.2,.7,.3,1)',fill:'both'}).onfinish=()=>w.remove()}}
+bt.addEventListener('click',spritz);addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();spritz()}});
+// ---------- notes tint the juice ----------
+const NT=[...document.querySelectorAll('#nt div')];const base0={c:['#e89a3a','#c0561c','#8a2a10'],bg:'#ecd3c6'};
+NT.forEach(n=>{n.onmouseenter=()=>{tcol=n.dataset.c.split(',');body.style.setProperty('--bg',n.dataset.bg);body.style.setProperty('--h1',tcol[0]);words=n.dataset.w.split('|');NT.forEach(o=>o.classList.toggle('on',o===n));kick(.3)};n.onmouseleave=()=>{tcol=base0.c.slice();body.style.setProperty('--bg',base0.bg);body.style.setProperty('--h1',base0.c[0]);NT.forEach(o=>o.classList.remove('on'))}});
+// ---------- sizes, price, bag ----------
+let price=165,shown=165,sc=1;document.querySelectorAll('#sz button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#sz button').forEach(o=>o.classList.toggle('on',o===b));price=+b.dataset.p;sc=+b.dataset.s;$('sc').style.transform=`scale(${sc})`;$('flr').style.transform=`scaleX(${sc})`;tlevel=.8;kick(.6);ting(sc>1?520:sc<1?880:660)});
+let n=0;$('add').onclick=e=>{const r=$('gl').getBoundingClientRect(),to=$('bag').getBoundingClientRect();const f=document.createElement('div');f.className='fly';body.appendChild(f);const x0=r.left+r.width/2,y0=r.top+r.height/2,x1=to.left+to.width/2,y1=to.top+to.height/2;
+f.animate([{left:x0+'px',top:y0+'px',transform:'scale(2.4) rotate(0)'},{left:(x0+x1)/2+'px',top:Math.min(y0,y1)-120+'px',transform:'scale(1.6) rotate(200deg)',offset:.5},{left:x1+'px',top:y1+'px',transform:'scale(.4) rotate(360deg)',opacity:.6}],{duration:900,easing:'cubic-bezier(.5,0,.3,1)'}).onfinish=()=>{f.remove();$('bag').textContent=++n;$('bag').classList.add('bump');setTimeout(()=>$('bag').classList.remove('bump'),300);ting(990)};
+e.target.textContent='Added — merci';setTimeout(()=>e.target.textContent='Add to bag',1600)};
+// ---------- loop ----------
+function f(t){vx+=(trx-rx)*.06;vy+=(try_-ry)*.06;vx*=.82;vy*=.82;rx+=vx;ry+=vy;tz*=.9;vz+=(tz-rz)*.08;vz*=.86;const prz=rz;rz+=vz;
+const dz=rz-prz;if(Math.abs(dz)>.02)for(let i=0;i<NW;i++)wv[i]+=Math.max(-.3,Math.min(.3,dz))*(i/NW-.5)*.4;
+bt.style.transform=`rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg)`;const sx=(10-ry*1.1)+'%';bt.style.setProperty('--sx',sx);
+col=col.map((c,i)=>mix(c,tcol[i],.05));level+=(tlevel-level)*.05;liquid(t);if(Math.abs(price-shown)>.4){shown+=(price-shown)*.14;$('pr').textContent='€'+Math.round(shown)}else if(shown!==price){shown=price;$('pr').textContent='€'+price}
+mx.clearRect(0,0,MW,MH);mist=mist.filter(p=>{p.x+=p.vx;p.y+=p.vy;p.vx*=.95;p.vy=p.vy*.95-.02*md;p.l-=p.dl;if(p.l<=0)return false;mx.fillStyle=`rgba(255,${226+20*p.l|0},${200*p.l|0},${p.l*.5})`;mx.beginPath();mx.arc(p.x,p.y,p.r*(2-p.l),0,7);mx.fill();return true});
+requestAnimationFrame(f)}requestAnimationFrame(f);
+</script>
 </body></html>
