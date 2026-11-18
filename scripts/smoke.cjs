@@ -29,6 +29,10 @@ function checkStructure(works) {
     else if (t[1] !== w.title) fail(where, `title "${t[1]}" does not match manifest "${w.title}"`);
     if (/<img\b/i.test(html)) fail(where, 'studies must not use bitmap <img> tags');
   }
+  const index = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+  for (const tag of ['twitter:card', 'twitter:image', 'og:image', 'og:title', 'og:description'])
+    if (!index.includes(`"${tag}"`)) fail('index.html', `missing ${tag} meta tag`);
+  if (!fs.existsSync(path.join(ROOT, 'social-card.jpg'))) fail('social-card.jpg', 'missing (run npm run card)');
   const onDisk = fs.readdirSync(path.join(ROOT, 'works')).filter(f => /^\d{3}-.*\.html$/.test(f));
   for (const f of onDisk) if (!works.some(w => w.file === `works/${f}`)) fail(`works/${f}`, 'not listed in manifest');
 }

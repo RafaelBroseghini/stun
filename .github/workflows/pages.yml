@@ -27,7 +27,7 @@ jobs:
       - name: Assemble site
         run: |
           mkdir -p _site
-          cp -r index.html works thumbs README.md _site/
+          cp -r index.html social-card.jpg works thumbs README.md _site/
           touch _site/.nojekyll
 
       - uses: actions/configure-pages@v5
