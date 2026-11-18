@@ -1,26 +1,62 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Gel Pen Spirograph</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#ffd6e0;font-family:Fredoka,sans-serif;color:#5b2245;display:grid;grid-template-columns:minmax(0,1fr) 260px}
-.st{position:relative}canvas{position:absolute;inset:0;width:100%;height:100%}
-aside{background:#fff4f7;padding:26px 22px;display:flex;flex-direction:column;gap:18px;box-shadow:-10px 0 30px rgba(91,34,69,.08)}
-h1{font-size:30px;font-weight:600;line-height:1}label{display:grid;gap:6px;font-size:13px}label span{display:flex;justify-content:space-between}input[type=range]{accent-color:#e0457b}
-.pens{display:flex;gap:8px;flex-wrap:wrap}.pens button{width:30px;height:30px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px #e8b7c8;cursor:pointer}.pens button.on{box-shadow:0 0 0 3px #5b2245}
-.act{display:flex;gap:8px}.act button{flex:1;padding:10px;border-radius:12px;border:0;font:600 14px Fredoka,sans-serif;cursor:pointer;background:#5b2245;color:#fff}.act button+button{background:#ffd6e0;color:#5b2245}
-@media(max-width:700px){body{grid-template-columns:1fr;grid-template-rows:1fr auto}aside{padding:12px;gap:8px}h1{display:none}}</style></head><body>
-<div class="st"><canvas id="c"></canvas><canvas id="g"></canvas></div>
-<aside><h1>Spiro&shy;graph</h1><label><span>Fixed ring R <b id="vR">96</b></span><input type="range" id="R" min="40" max="150" value="96"></label><label><span>Rolling wheel r <b id="vr">35</b></span><input type="range" id="r" min="5" max="95" value="35"></label><label><span>Pen hole d <b id="vd">28</b></span><input type="range" id="d" min="2" max="95" value="28"></label>
-<div class="pens" id="pens"></div><div class="act"><button id="new">New layer</button><button id="clr">Clear</button></div><p style="font-size:12px;opacity:.7">The rolling wheel turns inside the ring; the pen hole traces a hypotrochoid.</p></aside>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}
+body{background:#ffd6e0;font-family:Fredoka,sans-serif;color:#5b2245;display:grid;grid-template-columns:minmax(0,1fr) 270px;user-select:none;-webkit-user-select:none}
+body.dark{background:#1c1030;color:#ffd6f0}body.dark aside{background:#2a1a44}body.dark .paper{background-color:#14091f}
+.st{position:relative;overflow:hidden}
+.paper{position:absolute;inset:0;background:#fff7fa radial-gradient(circle at 1px 1px,rgba(91,34,69,.12) 1px,transparent 1.2px) 0 0/22px 22px;transition:background-color .5s}
+canvas{position:absolute;inset:0;width:100%;height:100%}#g{cursor:grab;touch-action:none}#g:active{cursor:grabbing}
+aside{background:#fff4f7;padding:24px 22px;display:flex;flex-direction:column;gap:16px;box-shadow:-10px 0 30px rgba(91,34,69,.08);overflow:auto;transition:background .5s}
+h1{font-size:30px;font-weight:600;line-height:1}h1 small{display:block;font-size:12px;font-weight:400;opacity:.65;margin-top:6px;letter-spacing:.06em}
+label{display:grid;gap:6px;font-size:13px}label span{display:flex;justify-content:space-between}label b{font-weight:600;font-variant-numeric:tabular-nums}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:3px;background:#ffd6e0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid #e0457b;cursor:grab;box-shadow:0 2px 6px rgba(91,34,69,.25)}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#fff;border:3px solid #e0457b}
+.pens{display:flex;gap:8px;flex-wrap:wrap}.pens button{width:30px;height:30px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px #e8b7c8;cursor:pointer;transition:transform .2s cubic-bezier(.2,.9,.3,1.6)}.pens button:hover{transform:scale(1.15)}.pens button.on{box-shadow:0 0 0 3px #5b2245}
+.pens button.gl{background-image:radial-gradient(circle at 30% 30%,rgba(255,255,255,.9) 0 2px,transparent 3px),radial-gradient(circle at 70% 60%,rgba(255,255,255,.8) 0 1.5px,transparent 2.5px)!important}
+.seg{display:flex;background:#ffd6e0;border-radius:12px;padding:3px}.seg button{flex:1;padding:8px;border:0;background:none;border-radius:10px;font:500 13px Fredoka;color:#5b2245;cursor:pointer}.seg button.on{background:#fff;box-shadow:0 2px 6px rgba(91,34,69,.15)}
+.act{display:grid;grid-template-columns:1fr 1fr;gap:8px}.act button{padding:10px;border-radius:12px;border:0;font:600 14px Fredoka,sans-serif;cursor:pointer;background:#5b2245;color:#fff;transition:transform .15s}.act button:active{transform:scale(.96)}.act button.s{background:#ffd6e0;color:#5b2245}
+.tip{font-size:12px;opacity:.7;line-height:1.5}
+@media(max-width:760px){body{grid-template-columns:1fr;grid-template-rows:1fr auto}aside{padding:12px;gap:8px;max-height:42vh}h1,.tip{display:none}}
+</style></head><body>
+<div class="st" id="st"><div class="paper"></div><canvas id="c"></canvas><canvas id="g"></canvas></div>
+<aside><h1>Spiro&shy;graph<small>gel pens · glitter · dizzy</small></h1>
+<div class="seg" id="mode"><button class="on" data-m="1">Inside</button><button data-m="-1">Outside</button></div>
+<label><span>Fixed ring R <b id="vR">96</b></span><input type="range" id="R" min="40" max="150" value="96"></label><label><span>Rolling wheel r <b id="vr">35</b></span><input type="range" id="r" min="5" max="95" value="35"></label><label><span>Pen hole d <b id="vd">28</b></span><input type="range" id="d" min="2" max="95" value="28"></label><label><span>Speed <b id="vs">1×</b></span><input type="range" id="s" min="0" max="8" value="3"></label>
+<div class="pens" id="pens"></div><div class="act"><button id="new">Surprise</button><button id="clr" class="s">Clear</button><button id="save" class="s">Save PNG</button><button id="dk" class="s">Night</button></div>
+<p class="tip">Drag the wheel around the ring to draw by hand, or let it spin. Glitter pens sparkle; layer a few for the full binder-doodle effect.</p></aside>
 <script>
-const c=document.getElementById('c'),x=c.getContext('2d'),g=document.getElementById('g'),y=g.getContext('2d');const dpr=Math.min(devicePixelRatio,2);let W,H,t=0,lx=null,ly=null;
-const pens=['#e0457b','#7b5cff','#1fb59b','#ff8a3d','#2d7ff9','#5b2245'];let pen=pens[0];const pe=document.getElementById('pens');
-pens.forEach((p,i)=>{const b=document.createElement('button');b.style.background=p;b.className=i?'':'on';b.onclick=()=>{pen=p;[...pe.children].forEach(o=>o.classList.remove('on'));b.classList.add('on');lx=null};pe.appendChild(b)});
-function size(){const r=c.getBoundingClientRect();W=c.width=g.width=r.width*dpr;H=c.height=g.height=r.height*dpr;lx=null}size();addEventListener('resize',size);
-const v=id=>+document.getElementById(id).value;['R','r','d'].forEach(id=>document.getElementById(id).oninput=()=>{document.getElementById('v'+id).textContent=v(id);t=0;lx=null});
-document.getElementById('clr').onclick=()=>{x.clearRect(0,0,W,H);t=0;lx=null};
-document.getElementById('new').onclick=()=>{['R','r','d'].forEach(id=>{const e=document.getElementById(id);e.value=+e.min+Math.random()*(e.max-e.min)|0;document.getElementById('v'+id).textContent=e.value});const b=pe.children[Math.random()*pens.length|0];b.click();t=0};
-function f(){const R=v('R'),r=Math.min(v('r'),R-3),d=v('d'),S=Math.min(W,H)/(2*(R+5))*.92/1,cx=W/2,cy=H/2;
-for(let k=0;k<14;k++){t+=.02;const px=cx+((R-r)*Math.cos(t)+d*Math.cos((R-r)/r*t))*S,py=cy+((R-r)*Math.sin(t)-d*Math.sin((R-r)/r*t))*S;if(lx!==null){x.strokeStyle=pen;x.globalAlpha=.85;x.lineWidth=1.6*dpr;x.lineCap='round';x.beginPath();x.moveTo(lx,ly);x.lineTo(px,py);x.stroke()}lx=px;ly=py}
-y.clearRect(0,0,W,H);y.strokeStyle='rgba(91,34,69,.25)';y.lineWidth=2*dpr;y.beginPath();y.arc(cx,cy,R*S,0,7);y.stroke();const wx=cx+(R-r)*Math.cos(t)*S,wy=cy+(R-r)*Math.sin(t)*S;y.fillStyle='rgba(255,255,255,.35)';y.beginPath();y.arc(wx,wy,r*S,0,7);y.fill();y.stroke();
-y.fillStyle=pen;y.beginPath();y.arc(lx,ly,4*dpr,0,7);y.fill();y.strokeStyle='rgba(91,34,69,.35)';y.beginPath();y.moveTo(wx,wy);y.lineTo(lx,ly);y.stroke();requestAnimationFrame(f)}
-for(let i=0;i<3;i++){t=0;lx=null;const R=v('R');for(let k=0;k<3000;k++){t+=.02;const r=[35,52,23][i],d=[28,40,20][i],S=Math.min(W,H)/(2*(R+5))*.92;const px=W/2+((R-r)*Math.cos(t)+d*Math.cos((R-r)/r*t))*S,py=H/2+((R-r)*Math.sin(t)-d*Math.sin((R-r)/r*t))*S;if(lx!==null){x.strokeStyle=pens[i+1];x.globalAlpha=.6;x.lineWidth=1.2*dpr;x.beginPath();x.moveTo(lx,ly);x.lineTo(px,py);x.stroke()}lx=px;ly=py}}t=0;lx=null;f();
+const c=document.getElementById('c'),x=c.getContext('2d'),g=document.getElementById('g'),y=g.getContext('2d');const dpr=Math.min(devicePixelRatio||1,2);let W,H,t=0,lx=null,ly=null,mode=1,dark=false;
+const pens=[['#e0457b',0],['#7b5cff',0],['#1fb59b',0],['#ff8a3d',0],['#2d7ff9',0],['#ffd23d',1],['#ff5ad8',1],['#5bf0ff',1]];let pen=pens[0];const pe=document.getElementById('pens');
+pens.forEach((p,i)=>{const b=document.createElement('button');b.style.background=p[0];b.className=(i?'':'on')+(p[1]?' gl':'');b.setAttribute('aria-label',(p[1]?'Glitter ':'Gel ')+'pen '+(i+1));b.onclick=()=>{pen=p;[...pe.children].forEach(o=>o.classList.remove('on'));b.classList.add('on');lx=null};pe.appendChild(b)});
+function size(){const r=c.getBoundingClientRect();const img=W?x.getImageData(0,0,W,H):null;W=c.width=g.width=r.width*dpr;H=c.height=g.height=r.height*dpr;if(img)x.putImageData(img,0,0);lx=null}size();addEventListener('resize',size);
+const v=id=>+document.getElementById(id).value;['R','r','d'].forEach(id=>document.getElementById(id).oninput=()=>{document.getElementById('v'+id).textContent=v(id);lx=null});
+document.getElementById('s').oninput=()=>document.getElementById('vs').textContent=['pause','¼×','½×','1×','2×','3×','5×','8×','12×'][v('s')];
+const SP=[0,.25,.5,1,2,3,5,8,12];
+document.querySelectorAll('#mode button').forEach(b=>b.onclick=()=>{mode=+b.dataset.m;document.querySelectorAll('#mode button').forEach(o=>o.classList.toggle('on',o===b));lx=null});
+document.getElementById('clr').onclick=()=>{x.clearRect(0,0,W,H);lx=null;sparks.length=0};
+document.getElementById('new').onclick=()=>{['R','r','d'].forEach(id=>{const e=document.getElementById(id);e.value=+e.min+Math.random()*(e.max-e.min)|0;document.getElementById('v'+id).textContent=e.value});pe.children[Math.random()*pens.length|0].click()};
+document.getElementById('save').onclick=()=>{const o=document.createElement('canvas');o.width=W;o.height=H;const ox=o.getContext('2d');ox.fillStyle=dark?'#14091f':'#fff7fa';ox.fillRect(0,0,W,H);ox.drawImage(c,0,0);const a=document.createElement('a');a.download='spirograph.png';a.href=o.toDataURL('image/png');a.click()};
+document.getElementById('dk').onclick=()=>{dark=!dark;document.body.classList.toggle('dark',dark);document.getElementById('dk').textContent=dark?'Day':'Night'};
+const geo=()=>{const R=v('R'),r=Math.min(v('r'),mode>0?R-3:200),d=v('d'),S=Math.min(W,H)/(2*(mode>0?R+5:R+2*r+d+5))*.92;return{R,r,d,S}};
+function pt(T,G){const {R,r,d,S}=G,cx=W/2,cy=H/2;if(mode>0)return[cx+((R-r)*Math.cos(T)+d*Math.cos((R-r)/r*T))*S,cy+((R-r)*Math.sin(T)-d*Math.sin((R-r)/r*T))*S];return[cx+((R+r)*Math.cos(T)-d*Math.cos((R+r)/r*T))*S,cy+((R+r)*Math.sin(T)-d*Math.sin((R+r)/r*T))*S]}
+const sparks=[];
+function ink(px,py){if(lx!==null){x.strokeStyle=pen[0];x.globalAlpha=pen[1]?.7:.85;x.lineWidth=(pen[1]?2.2:1.6)*dpr;x.lineCap='round';x.beginPath();x.moveTo(lx,ly);x.lineTo(px,py);x.stroke();if(pen[1]){x.globalAlpha=.9;x.fillStyle='#fff';if(Math.random()<.35)x.fillRect(px+(Math.random()-.5)*3*dpr,py+(Math.random()-.5)*3*dpr,dpr,dpr);if(Math.random()<.08)sparks.push({x:px,y:py,a:1})}x.globalAlpha=1}lx=px;ly=py}
+let drag=false,da=0;const ang=e=>{const r=g.getBoundingClientRect();return Math.atan2((e.clientY-r.top)*dpr-H/2,(e.clientX-r.left)*dpr-W/2)};
+g.addEventListener('pointerdown',e=>{g.setPointerCapture(e.pointerId);drag=true;da=ang(e)});g.addEventListener('pointerup',()=>drag=false);
+g.addEventListener('pointermove',e=>{if(!drag)return;const a=ang(e);let d=a-da;if(d>Math.PI)d-=6.283;if(d<-Math.PI)d+=6.283;da=a;const G=geo();const n=Math.ceil(Math.abs(d)/.01);for(let i=0;i<n;i++){t+=d/n;const [px,py]=pt(t,G);ink(px,py)}});
+addEventListener('keydown',e=>{if(e.key===' '){e.preventDefault();document.getElementById('new').click()}if(e.key==='c'||e.key==='C')document.getElementById('clr').click()});
+function gearRing(cx,cy,R,teeth,inner){y.beginPath();for(let i=0;i<=teeth*2;i++){const a=i/(teeth*2)*6.283,rr=R+(i%2?(inner?-1:1)*3*dpr:0);i?y.lineTo(cx+Math.cos(a)*rr,cy+Math.sin(a)*rr):y.moveTo(cx+Math.cos(a)*rr,cy+Math.sin(a)*rr)}y.closePath()}
+function f(){const G=geo(),{R,r,S}=G;if(!drag){const sp=SP[v('s')];const n=Math.ceil(sp*14);for(let k=0;k<n;k++){t+=.02*sp/(sp?sp:1)*(sp<1?sp:1);const [px,py]=pt(t,G);ink(px,py)}}
+y.clearRect(0,0,W,H);const cx=W/2,cy=H/2;y.strokeStyle=dark?'rgba(255,214,240,.35)':'rgba(91,34,69,.28)';y.lineWidth=1.5*dpr;y.fillStyle=dark?'rgba(255,255,255,.04)':'rgba(255,255,255,.25)';
+gearRing(cx,cy,R*S,Math.round(R*.8),mode>0);y.stroke();
+const wr=mode>0?(R-r):(R+r),wx=cx+wr*Math.cos(t)*S,wy=cy+wr*Math.sin(t)*S;y.save();y.translate(wx,wy);y.rotate(mode>0?-(R-r)/r*t:(R+r)/r*t);gearRing(0,0,r*S,Math.max(6,Math.round(r*.8)),false);y.fill();y.stroke();
+y.fillStyle=dark?'rgba(255,214,240,.25)':'rgba(91,34,69,.18)';for(let k=1;k<5;k++){y.beginPath();y.arc(r*S*k/5,0,2*dpr,0,7);y.fill()}y.restore();
+y.fillStyle=pen[0];y.beginPath();y.arc(lx??wx,ly??wy,5*dpr,0,7);y.fill();y.strokeStyle='#fff';y.lineWidth=2*dpr;y.stroke();
+for(let i=sparks.length-1;i>=0;i--){const s=sparks[i];s.a-=.02;if(s.a<=0){sparks.splice(i,1);continue}y.save();y.translate(s.x,s.y);y.rotate(s.a*3);y.fillStyle=`rgba(255,255,255,${s.a})`;const k=(4+4*s.a)*dpr;y.fillRect(-k,-dpr*.5,k*2,dpr);y.fillRect(-dpr*.5,-k,dpr,k*2);y.restore()}
+requestAnimationFrame(f)}
+// opening composition
+(function(){const pre=[[96,35,28,1],[96,52,40,2],[96,23,20,5]];pre.forEach(([R,r,d,p])=>{const keep={R:v('R'),r:v('r'),d:v('d')};document.getElementById('R').value=R;document.getElementById('r').value=r;document.getElementById('d').value=d;pen=pens[p];lx=null;const G=geo();for(let T=0;T<60;T+=.02){const [px,py]=pt(T,G);ink(px,py)}});document.getElementById('R').value=96;document.getElementById('r').value=35;document.getElementById('d').value=28;pen=pens[0];lx=null;t=0})();
+f();
 </script></body></html>
