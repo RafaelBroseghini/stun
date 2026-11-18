@@ -1,0 +1,25 @@
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bauhaus Tiles</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;700&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#e9e4d8;display:grid;grid-template-columns:minmax(0,1fr) auto;font-family:'Josefin Sans',Futura,sans-serif}
+.g{display:grid;grid-template-columns:repeat(var(--c),1fr);grid-auto-rows:1fr;height:100vh;gap:0}
+.t{position:relative;overflow:hidden;cursor:pointer}.t>div{position:absolute;transition:all .9s cubic-bezier(.7,0,.2,1)}
+.side{width:min(30vw,340px);padding:5vh 3vw;display:flex;flex-direction:column;justify-content:space-between;background:#1b1b1b;color:#e9e4d8}
+h1{font-weight:700;font-size:clamp(34px,5vw,74px);line-height:.85;letter-spacing:-.02em}h1 em{font-style:normal;color:#f4b400}
+.side p{font-weight:300;font-size:14px;line-height:1.5;opacity:.8}.sw{display:flex;gap:8px}.sw i{width:26px;height:26px;border-radius:50%}
+@media(max-width:700px){body{grid-template-columns:1fr;grid-template-rows:1fr auto}.side{width:auto;flex-direction:row;align-items:end;padding:16px}.g{height:auto}h1{font-size:34px}.side p{display:none}}</style></head><body>
+<div class="g" id="g"></div><aside class="side"><h1>form<br>folgt<br><em>funk&shy;tion</em></h1><p>Twenty-four tiles, five colours, four shapes. Each tile rearranges itself every few seconds; click any tile to rebuild it now.</p><div class="sw"><i style="background:#d7261e"></i><i style="background:#f4b400"></i><i style="background:#1f4e9c"></i><i style="background:#1b1b1b;border:1px solid #555"></i></div></aside>
+<script>
+const C=['#d7261e','#f4b400','#1f4e9c','#1b1b1b','#e9e4d8'],g=document.getElementById('g');const cols=innerWidth<700?4:6;g.style.setProperty('--c',cols);
+const r=a=>a[Math.random()*a.length|0];
+function paint(t){const bg=r(C);let fg;do fg=r(C);while(fg===bg);t.style.background=bg;const s=t.firstChild,k=r(['q','h','c','tri','bar','ring']),rot=r([0,90,180,270]);
+const st={width:'100%',height:'100%',left:'0',top:'0',borderRadius:'0',background:fg,clipPath:'none',transform:`rotate(${rot}deg)`,border:'0',boxSizing:'border-box'};
+if(k==='q'){st.width='200%';st.height='200%';st.borderRadius='50%';st.left='-100%';st.top='-100%';st.transform='rotate(0)'; const p=r([[ '-100%','-100%'],['0','-100%'],['0','0'],['-100%','0']]);st.left=p[0];st.top=p[1]}
+if(k==='h'){st.borderRadius='50% 50% 0 0/100% 100% 0 0';st.height='50%';st.top='50%'}
+if(k==='c'){st.width=st.height='70%';st.left=st.top='15%';st.borderRadius='50%'}
+if(k==='tri'){st.clipPath='polygon(0 0,100% 100%,0 100%)'}
+if(k==='bar'){st.width='34%';st.left='33%'}
+if(k==='ring'){st.width=st.height='80%';st.left=st.top='10%';st.borderRadius='50%';st.background='transparent';st.border=`min(4vw,28px) solid ${fg}`}
+Object.assign(s.style,st)}
+for(let i=0;i<cols*4;i++){const t=document.createElement('div');t.className='t';t.appendChild(document.createElement('div'));g.appendChild(t);paint(t);t.onclick=()=>paint(t)}
+setInterval(()=>{const ts=g.children;for(let i=0;i<3;i++)paint(ts[Math.random()*ts.length|0])},1400);
+</script></body></html>

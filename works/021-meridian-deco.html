@@ -1,0 +1,24 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>The Meridian Express</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Limelight&family=Poiret+One&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#0b1826;display:grid;place-items:center;font-family:'Poiret One',sans-serif}
+.p{--g:#d8b25a;position:relative;height:min(95vh,140vw);aspect-ratio:.68;background:#10283d;overflow:hidden;border:2px solid var(--g);outline:8px solid #0b1826;box-shadow:0 0 0 10px var(--g),0 30px 80px #000}
+.rays{position:absolute;left:50%;top:58%;width:220%;aspect-ratio:1;transform:translate(-50%,-50%);background:repeating-conic-gradient(from -90deg,rgba(216,178,90,.22) 0 3deg,transparent 3deg 9deg);-webkit-mask:linear-gradient(#000 50%,transparent 50%);mask:linear-gradient(#000 50%,transparent 50%);animation:sp 60s linear infinite}@keyframes sp{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.sun{position:absolute;left:50%;top:58%;width:48%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,#f3d58e,#d8b25a 60%,#a5782a);-webkit-mask:linear-gradient(#000 50%,transparent 50%);mask:linear-gradient(#000 50%,transparent 50%)}
+.sun::after{content:"";position:absolute;inset:8%;border-radius:50%;border:2px solid #10283d}
+svg{position:absolute;left:0;bottom:0;width:100%;height:62%}
+.t{position:absolute;top:4%;left:0;right:0;text-align:center;color:var(--g)}.t small{font-size:min(1.9vh,2.8vw);letter-spacing:.6em;display:block}
+.t h1{font-family:Limelight,serif;font-weight:400;font-size:min(8.5vh,12.5vw);line-height:.95;margin:2% 0;background:linear-gradient(100deg,#a5782a 20%,#fff3c4 40%,#d8b25a 50%,#a5782a 70%);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sh 6s linear infinite}@keyframes sh{to{background-position:-300% 0}}
+.b{position:absolute;left:6%;right:6%;bottom:4%;display:flex;justify-content:space-between;align-items:center;color:#f3e3b8;font-size:min(2.1vh,3vw);letter-spacing:.3em;border-top:1px solid var(--g);padding-top:3%}
+.fan{width:14%;aspect-ratio:2;background:repeating-conic-gradient(from -90deg at 50% 100%,var(--g) 0 2deg,transparent 2deg 15deg);-webkit-mask:radial-gradient(circle at 50% 100%,#000 70%,transparent 71%);mask:radial-gradient(circle at 50% 100%,#000 70%,transparent 71%)}</style></head><body>
+<div class="p"><div class="rays"></div><div class="sun"></div>
+<svg viewBox="0 0 300 300" preserveAspectRatio="xMidYMax slice"><defs><linearGradient id="bd" x1="0" x2="1"><stop offset="0" stop-color="#0d2134"/><stop offset=".5" stop-color="#1b3f5c"/><stop offset="1" stop-color="#0d2134"/></linearGradient></defs>
+<g fill="url(#bd)" stroke="#d8b25a" stroke-width=".8">
+<path d="M20 300V170h14v-12h10v12h14v130z"/><path d="M240 300V160h12v-14h16v14h12v140z"/><path d="M60 300V140h10v-16h8v-12h6v-20h2v20h6v12h8v16h10v160z"/><path d="M196 300V130h10v-14h10v-10h4v-26h2v26h4v10h10v14h10v170z"/>
+<path d="M112 300V96h12V76h8V52h6V18h2v-8h2v8h2v34h6v24h8v20h12v204z"/></g>
+<g stroke="#d8b25a" stroke-width=".5" opacity=".7">
+<path d="M150 40v260M140 80v220M160 80v220M130 100v200M170 100v200"/></g>
+<g fill="#f3d58e" opacity=".85"><rect x="68" y="160" width="3" height="4"/><rect x="74" y="190" width="3" height="4"/><rect x="204" y="150" width="3" height="4"/><rect x="214" y="200" width="3" height="4"/><rect x="246" y="190" width="3" height="4"/><rect x="26" y="210" width="3" height="4"/></g>
+<rect x="0" y="282" width="300" height="18" fill="#0b1826"/><path d="M0 282h300" stroke="#d8b25a"/><g fill="#d8b25a"><rect x="30" y="286" width="90" height="8" rx="4"/><rect x="122" y="286" width="40" height="8" rx="2"/><rect x="164" y="286" width="40" height="8" rx="2"/></g></svg>
+<div class="t"><small>Nord-Atlantic Railways</small><h1>The<br>Meridian<br>Express</h1><small>Paris · Vienne · Istanbul</small></div>
+<div class="b"><span>MCMXXIX</span><div class="fan"></div><span>Nightly 21h</span></div></div>
+</body></html>

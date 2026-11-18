@@ -1,0 +1,16 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mostly Empty Space</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Mono&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#ece8ff}canvas{display:block;width:100%;height:100%}
+p{position:fixed;left:24px;bottom:22px;font:12px 'DM Mono',monospace;color:#3a2c8c;letter-spacing:.08em}</style></head><body><canvas id="c"></canvas><p>99.9999999% of an atom is empty space — move your cursor through it</p>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio,2);let W,H,ps=[],wi=0,m={x:-9e9,y:-9e9};
+const words=['MATTER','IS','MOSTLY','EMPTY','SPACE'];
+function targets(w){const o=document.createElement('canvas');o.width=W;o.height=H;const g=o.getContext('2d');let fs=Math.min(H*.42,W*1.5/w.length);g.font=`${fs}px "Archivo Black",Impact,sans-serif`;g.textAlign='center';g.textBaseline='middle';g.fillText(w,W/2,H/2);const d=g.getImageData(0,0,W,H).data,t=[],st=Math.max(4,Math.round(5*dpr*(W/1600+.5)));for(let y=0;y<H;y+=st)for(let X=0;X<W;X+=st)if(d[(y*W+X)*4+3]>128)t.push([X,y]);return t.sort(()=>Math.random()-.5)}
+function setWord(){const t=targets(words[wi]);while(ps.length<t.length)ps.push({x:Math.random()*W,y:Math.random()*H,vx:0,vy:0});ps.forEach((p,i)=>{if(i<t.length){p.tx=t[i][0];p.ty=t[i][1];p.free=false}else{p.free=true;p.tx=Math.random()*W;p.ty=Math.random()*H}});wi=(wi+1)%words.length}
+function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr;setWord()}
+size();document.fonts.ready.then(size);setInterval(setWord,3200);addEventListener('resize',size);
+addEventListener('pointermove',e=>{m.x=e.clientX*dpr;m.y=e.clientY*dpr});addEventListener('pointerleave',()=>{m.x=m.y=-9e9});
+function f(){x.fillStyle='rgba(236,232,255,.35)';x.fillRect(0,0,W,H);const R=110*dpr;
+for(const p of ps){let ax=(p.tx-p.x)*.012,ay=(p.ty-p.y)*.012;const dx=p.x-m.x,dy=p.y-m.y,d2=dx*dx+dy*dy;if(d2<R*R){const d=Math.sqrt(d2)||1,f=(1-d/R)*6;ax+=dx/d*f;ay+=dy/d*f}p.vx=(p.vx+ax)*.86;p.vy=(p.vy+ay)*.86;p.x+=p.vx;p.y+=p.vy;
+const sp=Math.min(1,Math.hypot(p.vx,p.vy)/8);x.fillStyle=p.free?'rgba(58,44,140,.18)':`hsl(${250-sp*220},${70+sp*30}%,${28+sp*30}%)`;const r=(p.free?1:1.7)*dpr;x.fillRect(p.x-r,p.y-r,r*2,r*2)}requestAnimationFrame(f)}f();
+</script></body></html>

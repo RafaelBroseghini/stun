@@ -1,0 +1,23 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Rose Window</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#17130f;display:grid;place-items:center;font-family:UnifrakturMaguntia,serif}
+.win{height:min(92vh,150vw);aspect-ratio:.6;max-width:94vw;padding:1.6%;background:linear-gradient(90deg,#4a4038,#7a6c5c,#4a4038);border-radius:50% 50% 0 0/30% 30% 0 0;box-shadow:0 0 0 12px #2a241e,0 40px 80px #000}
+canvas{width:100%;height:100%;display:block;border-radius:50% 50% 0 0/30% 30% 0 0}
+h1{position:fixed;left:4vw;top:4vh;color:#c9a96a;font-weight:400;font-size:clamp(24px,3.2vw,44px);opacity:.85}</style></head><body>
+<h1>Lux in Tenebris</h1><div class="win"><canvas id="c"></canvas></div>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');let W,H,idx,sites,img,edge;const RES=3;let L={x:.3,y:.3},T={x:.3,y:.3};
+const pal=[[180,20,40],[20,60,170],[230,170,30],[30,120,70],[120,30,140],[200,80,20],[40,140,170],[160,20,90]];
+function build(){const r=c.getBoundingClientRect();W=Math.floor(r.width/RES);H=Math.floor(r.height/RES);c.width=W;c.height=H;sites=[];
+for(let i=0;i<150;i++){const y=Math.random()*H,x0=Math.random()*W;sites.push({x:x0,y,c:pal[(Math.random()*pal.length)|0]})}
+const cx=W/2,cy=H*.33,rr=W*.36;for(let k=0;k<16;k++){const a=k/16*Math.PI*2;sites.push({x:cx+Math.cos(a)*rr*.7,y:cy+Math.sin(a)*rr*.7,c:pal[k%2?0:2]});sites.push({x:cx+Math.cos(a+.2)*rr*.35,y:cy+Math.sin(a+.2)*rr*.35,c:pal[1]})}sites.push({x:cx,y:cy,c:[240,200,80]});
+idx=new Int16Array(W*H);for(let y=0;y<H;y++)for(let X=0;X<W;X++){let b=0,bd=1e9;for(let i=0;i<sites.length;i++){const dx=X-sites[i].x,dy=y-sites[i].y,d=dx*dx+dy*dy;if(d<bd){bd=d;b=i}}idx[y*W+X]=b}
+edge=new Uint8Array(W*H);for(let y=1;y<H-1;y++)for(let X=1;X<W-1;X++){const i=y*W+X,v=idx[i];if(idx[i+1]!==v||idx[i+W]!==v||idx[i-1]!==v||idx[i-W]!==v)edge[i]=1}
+for(let y=0;y<H;y++)for(let X=0;X<W;X++){const d=Math.hypot(X-cx,y-cy);if(Math.abs(d-rr)<1.2||Math.abs(d-rr*.5)<1)edge[y*W+X]=1;if(Math.abs(X-W/2)<1&&y>H*.62)edge[y*W+X]=1;if(Math.abs(y-H*.62)<1)edge[y*W+X]=1}
+img=x.createImageData(W,H);for(const s of sites)s.n=Math.random()*.4}
+build();addEventListener('resize',build);addEventListener('pointermove',e=>{T.x=e.clientX/innerWidth;T.y=e.clientY/innerHeight});
+function f(t){L.x+=(T.x-L.x)*.05;L.y+=(T.y-L.y)*.05;const lx=L.x*W,ly=L.y*H,d=img.data;
+for(let y=0;y<H;y++)for(let X=0;X<W;X++){const i=y*W+X,o=i*4;if(edge[i]){d[o]=18;d[o+1]=16;d[o+2]=14;d[o+3]=255;continue}const s=sites[idx[i]];const dist=Math.hypot(X-lx,y-ly)/W;
+const b=.35+1.1*Math.exp(-dist*dist*6)+s.n*.6+Math.sin(t*.001+idx[i])*.05;const gr=((X*13+y*7)%5)*.03;d[o]=Math.min(255,s.c[0]*(b+gr));d[o+1]=Math.min(255,s.c[1]*(b+gr));d[o+2]=Math.min(255,s.c[2]*(b+gr));d[o+3]=255}
+x.putImageData(img,0,0);requestAnimationFrame(f)}requestAnimationFrame(f);
+</script></body></html>

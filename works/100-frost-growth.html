@@ -1,0 +1,18 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Frost Growth</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen&family=Spectral:ital,wght@1,300&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#0a1220}canvas{display:block;width:100%;height:100%;image-rendering:pixelated;cursor:crosshair}
+.t{position:fixed;right:24px;bottom:20px;text-align:right;color:#cfe8ff;font:italic 300 clamp(26px,3.5vw,48px)/1 Spectral,serif}.t small{display:block;font:400 10px Silkscreen,monospace;letter-spacing:.15em;margin-top:10px;opacity:.75;font-style:normal}</style></head><body>
+<canvas id="c"></canvas><div class="t">Frost, growing<small>diffusion-limited aggregation · <span id="n">0</span> crystals · click to seed</small></div>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');let W,H,G,img,u32,seeds,R,cnt=0;
+function init(){const s=.42;W=c.width=Math.floor(innerWidth*s);H=c.height=Math.floor(innerHeight*s);G=new Int32Array(W*H);img=x.createImageData(W,H);u32=new Uint32Array(img.data.buffer);u32.fill(0xff201208);seeds=[];cnt=0;seed(W/2|0,H/2|0);seed(W*.22|0,H*.7|0);seed(W*.8|0,H*.3|0)}
+function col(age){const t=Math.min(1,age/9000);const r=200+55*t,g=232-60*t,b=255-40*t;return 0xff000000|(b<<16)|(g<<8)|r}
+function stick(X,Y){G[Y*W+X]=++cnt;u32[Y*W+X]=col(cnt)}
+function seed(X,Y){seeds.push({x:X,y:Y,r:2});stick(X,Y)}
+init();addEventListener('resize',init);c.addEventListener('click',e=>seed(Math.floor(e.clientX/innerWidth*W),Math.floor(e.clientY/innerHeight*H)));
+function walk(){const s=seeds[Math.random()*seeds.length|0];const a=Math.random()*Math.PI*2;let X=Math.round(s.x+Math.cos(a)*(s.r+4)),Y=Math.round(s.y+Math.sin(a)*(s.r+4));
+for(let k=0;k<1200;k++){X+=(Math.random()*3|0)-1;Y+=(Math.random()*3|0)-1;if(X<1||Y<1||X>=W-1||Y>=H-1)return;const d=Math.hypot(X-s.x,Y-s.y);if(d>s.r+14)return;
+if(G[Y*W+X-1]||G[Y*W+X+1]||G[(Y-1)*W+X]||G[(Y+1)*W+X]){stick(X,Y);if(d>s.r)s.r=d;return}}}
+function f(){for(let i=0;i<5000;i++)walk();x.putImageData(img,0,0);document.getElementById('n').textContent=cnt.toLocaleString('en');requestAnimationFrame(f)}
+for(let i=0;i<120000;i++)walk();f();
+</script></body></html>

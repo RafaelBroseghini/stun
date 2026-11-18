@@ -1,0 +1,24 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Atelier Okto</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&family=Geist:wght@300;600&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{min-height:100%}body{background:#d7d5d0;color:#161616;font-family:Geist,Helvetica,sans-serif;overflow-x:hidden}
+.g{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:0 20px;padding-inline:max(16px,3vw)}.m{font:400 11px/1.6 'Geist Mono',monospace;letter-spacing:.04em;text-transform:uppercase}
+header{border-bottom:1px solid #161616;padding-block:16px}header .m:nth-child(1){grid-column:1/4}header .m:nth-child(2){grid-column:4/8}header .m:nth-child(3){grid-column:8/13;text-align:right}
+.hero{padding-block:6vh 4vh}.hero h1{grid-column:1/13;font-weight:300;font-size:clamp(60px,14vw,230px);line-height:.8;letter-spacing:-.06em}.hero h1 b{font-weight:600;color:#ff4d00}
+.main{border-top:1px solid #161616}.list{grid-column:1/6;padding-block:16px}.view{grid-column:6/13;border-left:1px solid #161616;min-height:62vh;position:relative}
+.row{display:grid;grid-template-columns:3em 1fr auto;gap:10px;padding:14px 0;border-bottom:1px solid #16161633;cursor:pointer;align-items:baseline}.row h3{font-weight:600;font-size:clamp(18px,1.8vw,26px);letter-spacing:-.02em}.row.on h3{color:#ff4d00}.row:hover{background:#cfcdc7}
+svg{position:absolute;inset:6% 6% 12%;width:88%;height:82%}svg *{fill:none;stroke:#161616;stroke-width:1.2;vector-effect:non-scaling-stroke;stroke-linejoin:round}.ac{stroke:#ff4d00;stroke-width:2}
+.cap{position:absolute;left:20px;bottom:16px;right:20px;display:flex;justify-content:space-between}
+@media(max-width:800px){.list,.view{grid-column:1/13}.view{border-left:0;border-top:1px solid #161616;min-height:50vh}header .m:nth-child(2){display:none}header .m:nth-child(3){grid-column:4/13}}</style></head><body>
+<header class="g"><span class="m">Atelier Okto</span><span class="m">Architecture · Landscape · Research</span><span class="m">Porto · Basel — est. 2011</span></header>
+<section class="g hero"><h1>Buildings<br>for slow <b>light</b>.</h1></section>
+<section class="g main"><div class="list" id="l"></div><div class="view"><svg id="s" viewBox="-200 -170 400 300"></svg><div class="cap m"><span id="c1"></span><span id="c2"></span></div></div></section>
+<script>
+const P=[{n:'Casa Tramontana',y:'2024',t:'Residence',m:'Lamego, PT · 210 m² · rammed earth',b:[[0,0,0,120,60,70],[-60,40,0,60,40,40]]},{n:'Quiet Library',y:'2022',t:'Civic',m:'Aarau, CH · 1,840 m² · timber frame',b:[[0,0,0,180,90,40],[0,0,40,120,60,40],[0,0,80,60,30,40]]},{n:'Salt Pavilion',y:'2021',t:'Cultural',m:'Aveiro, PT · 90 m² · lime + steel',b:[[0,0,0,140,140,24],[-20,-20,24,100,100,60]]},{n:'Tower for Swifts',y:'2019',t:'Ecology',m:'Ticino, CH · 14 m tall · brick',b:[[0,0,0,40,40,170]]},{n:'Bath House Vila',y:'2018',t:'Wellness',m:'Gerês, PT · 640 m² · granite',b:[[0,0,0,160,60,30],[60,30,0,60,110,50],[-60,-50,0,50,50,70]]}];
+const s=document.getElementById('s'),NS='http://www.w3.org/2000/svg';const iso=(x,y,z)=>[(x-y)*.866,(x+y)*.5-z];
+function box([ox,oy,oz,w,d,h],ac){const c=[[0,0,0],[w,0,0],[w,d,0],[0,d,0],[0,0,h],[w,0,h],[w,d,h],[0,d,h]].map(([a,b,cc])=>iso(ox+a-w/2,oy+b-d/2,oz+cc));const F=[[4,5,6,7],[1,2,6,5],[2,3,7,6]];
+F.forEach((f,i)=>{const p=document.createElementNS(NS,'polygon');p.setAttribute('points',f.map(k=>c[k].join(',')).join(' '));p.setAttribute('style',`fill:${['#efeeea','#c9c7c1','#b3b0a9'][i]}`);if(ac&&i===0)p.setAttribute('class','ac');s.appendChild(p)});
+for(let k=1;k<6;k++){const l=document.createElementNS(NS,'line');const a=iso(ox-w/2+w*k/6,oy+d/2,oz+4),b=iso(ox-w/2+w*k/6,oy+d/2,oz+h-4);l.setAttribute('x1',a[0]);l.setAttribute('y1',a[1]);l.setAttribute('x2',b[0]);l.setAttribute('y2',b[1]);l.setAttribute('style','stroke-opacity:.35');s.appendChild(l)}}
+function show(i){const p=P[i];s.innerHTML='';const g=document.createElementNS(NS,'path');let d='';for(let k=-6;k<=6;k++){const a=iso(k*30,-180,0),b=iso(k*30,180,0),c=iso(-180,k*30,0),e=iso(180,k*30,0);d+=`M${a}L${b}M${c}L${e}`}g.setAttribute('d',d);g.setAttribute('style','stroke-opacity:.12');s.appendChild(g);
+[...p.b].sort((a,b)=>(a[0]+a[1])-(b[0]+b[1])).forEach((b,k)=>box(b,k===p.b.length-1));document.getElementById('c1').textContent='Fig. '+(i+1)+' — axonometric, 1:500';document.getElementById('c2').textContent=p.m;document.querySelectorAll('.row').forEach((r,k)=>r.classList.toggle('on',k===i))}
+const l=document.getElementById('l');P.forEach((p,i)=>{const r=document.createElement('div');r.className='row';r.innerHTML=`<span class="m">${String(i+1).padStart(2,'0')}</span><h3>${p.n}</h3><span class="m">${p.t} · ${p.y}</span>`;r.onmouseenter=r.onclick=()=>show(i);l.appendChild(r)});show(1);
+</script></body></html>

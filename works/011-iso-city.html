@@ -1,0 +1,26 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Isometric Dusk City</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#1b1036}canvas{display:block;width:100%;height:100%}
+.h{position:fixed;left:24px;top:22px;color:#ffd9a8;font:700 13px 'Space Mono',monospace;letter-spacing:.2em}.h span{display:block;font-weight:400;opacity:.6;margin-top:4px;letter-spacing:.1em}</style></head><body>
+<canvas id="c"></canvas><div class="h">PORT ALBA · 19:52<span>click to rebuild the city</span></div>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio,2);let W,H,city,cars,tw,th,ox,oy;const G=16;
+function build(){city=[];for(let i=0;i<G;i++){city[i]=[];for(let j=0;j<G;j++){const road=i%5===2||j%5===2;const park=!road&&Math.random()<.08;city[i][j]=road?{r:1}:park?{p:1}:{h:(Math.random()**2.2)*9+1,hue:[18,28,210,250,330][Math.random()*5|0],lit:Array.from({length:40},()=>Math.random()<.45)}}}
+cars=Array.from({length:26},()=>{const alongI=Math.random()<.5,lane=[2,7,12][Math.random()*3|0];return{a:alongI,l:lane,t:Math.random()*G,s:(.01+Math.random()*.02)*(Math.random()<.5?1:-1)}})}
+function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr;tw=Math.min(W/(G*1.05),H/(G*.75))*1.0;th=tw/2;ox=W/2;oy=H*.5-G*th/2+tw*.9}
+const P=(i,j,z=0)=>[ox+(i-j)*tw/2,oy+(i+j)*th/2-z*th*.9];
+function poly(pts,f){x.beginPath();x.moveTo(...pts[0]);for(const p of pts.slice(1))x.lineTo(...p);x.closePath();x.fillStyle=f;x.fill()}
+function draw(t){const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#1b1036');g.addColorStop(.55,'#6b2c6e');g.addColorStop(.8,'#f07b5a');g.addColorStop(1,'#ffc58a');x.fillStyle=g;x.fillRect(0,0,W,H);
+x.fillStyle='rgba(255,230,190,.9)';x.beginPath();x.arc(W*.8,H*.2,30*dpr,0,7);x.fill();
+poly([P(0,0),P(G,0),P(G,G),P(0,G)],'#2a1c3a');
+for(let s=0;s<2*G;s++)for(let i=0;i<G;i++){const j=s-i;if(j<0||j>=G)continue;const cl=city[i][j];
+if(cl.r){poly([P(i,j),P(i+1,j),P(i+1,j+1),P(i,j+1)],'#3a2a4a');continue}
+if(cl.p){poly([P(i,j),P(i+1,j),P(i+1,j+1),P(i,j+1)],'#2f5a4a');const [cx,cy]=P(i+.5,j+.5);x.fillStyle='#3f8a5e';x.beginPath();x.arc(cx,cy-th*.4,th*.4,0,7);x.fill();continue}
+const h=cl.h,top=`hsl(${cl.hue},30%,${42}%)`,L=`hsl(${cl.hue},28%,24%)`,R=`hsl(${cl.hue},30%,16%)`;const m=.12;
+const a=[i+m,j+m],b=[i+1-m,j+m],cc=[i+1-m,j+1-m],d=[i+m,j+1-m];
+poly([P(...d),P(...cc),P(...cc,h),P(...d,h)],L);poly([P(...cc),P(...b),P(...b,h),P(...cc,h)],R);poly([P(...a,h),P(...b,h),P(...cc,h),P(...d,h)],top);
+let k=0;for(let fl=.6;fl<h-.4;fl+=.8)for(let wv=.2;wv<.9;wv+=.25){const on=cl.lit[(k++)%40]^(Math.sin(t*.0003+i*7+j*3+k)>.97);x.fillStyle=on?'rgba(255,210,130,.95)':'rgba(20,10,30,.5)';
+const [lx,ly]=P(i+m+(1-2*m)*wv,j+1-m,fl);x.fillRect(lx,ly,tw*.07,-th*.32);const [rx,ry]=P(i+1-m,j+1-m-(1-2*m)*wv,fl);x.fillRect(rx,ry,-tw*.07,-th*.32)}}
+x.globalCompositeOperation='lighter';for(const car of cars){car.t=(car.t+car.s+G)%G;const [px,py]=car.a?P(car.t,car.l+.5):P(car.l+.5,car.t);const rg=x.createRadialGradient(px,py,0,px,py,tw*.25);rg.addColorStop(0,car.s>0?'rgba(255,240,200,1)':'rgba(255,60,60,1)');rg.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=rg;x.fillRect(px-tw*.25,py-tw*.25,tw*.5,tw*.5)}x.globalCompositeOperation='source-over';requestAnimationFrame(draw)}
+build();size();addEventListener('resize',size);c.addEventListener('click',build);requestAnimationFrame(draw);
+</script></body></html>

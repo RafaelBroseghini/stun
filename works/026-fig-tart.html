@@ -1,0 +1,32 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Burnt Honey Fig Tart</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,800&family=Newsreader:ital,wght@0,400;1,400&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{min-height:100%}body{background:#3a1430;color:#f8e3c4;font-family:Newsreader,Georgia,serif;overflow-x:hidden}
+.wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);min-height:100vh}
+.art{position:relative;display:grid;place-items:center;background:#e8a33d;overflow:hidden}
+.plate{width:min(40vw,74vh);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#f4efe6 62%,#e2dccf 63%,#f4efe6 70%,#d9d2c3 71%);box-shadow:30px 40px 60px rgba(80,30,0,.35);display:grid;place-items:center;animation:turn 80s linear infinite}@keyframes turn{to{transform:rotate(360deg)}}
+.tart{width:78%;aspect-ratio:1;border-radius:50%;background:repeating-conic-gradient(#c07a2c 0 4deg,#a35f1c 4deg 8deg);padding:5%;box-shadow:inset 0 0 0 3px #7a3f0f}
+.fill{position:relative;width:100%;height:100%;border-radius:50%;background:radial-gradient(circle at 40% 35%,#f3cf8a,#d9953e 70%,#b46a22)}
+.fig{position:absolute;width:24%;aspect-ratio:1;border-radius:50% 50% 50% 50%/55% 55% 45% 45%;background:radial-gradient(ellipse at 50% 55%,#f6d7b5 0 18%,#d24a5d 19% 45%,#7c1d3f 46% 62%,#4b1236 63%);box-shadow:0 2px 4px rgba(60,10,20,.5)}
+.fig::after{content:"";position:absolute;inset:30%;background:radial-gradient(circle,#f8e3c4 1.5px,transparent 2px) 0 0/6px 6px;border-radius:50%;opacity:.7}
+.leaf{position:absolute;left:8%;top:10%;font:800 13px 'Bricolage Grotesque',sans-serif;letter-spacing:.3em;color:#3a1430;text-transform:uppercase}
+.txt{padding:7vh 5vw;display:flex;flex-direction:column;gap:3.5vh}
+.kick{font:800 12px 'Bricolage Grotesque',sans-serif;letter-spacing:.3em;text-transform:uppercase;color:#e8a33d}
+h1{font:800 clamp(44px,6.5vw,104px)/.85 'Bricolage Grotesque',sans-serif;letter-spacing:-.04em}h1 em{font:italic 400 .7em Newsreader,serif;letter-spacing:0;color:#e8a33d;display:block}
+.lede{font-size:clamp(17px,1.4vw,21px);line-height:1.5;max-width:44ch;color:#f0d2ad}
+.cols{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:4vw}
+h2{font:800 13px 'Bricolage Grotesque',sans-serif;letter-spacing:.25em;text-transform:uppercase;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.srv{display:flex;align-items:center;gap:8px}.srv button{width:24px;height:24px;border-radius:50%;border:1px solid #e8a33d;background:none;color:#e8a33d;cursor:pointer;font:16px/1 sans-serif}
+ul{list-style:none;font-size:16px;line-height:1.4}li{padding:7px 0;border-bottom:1px solid rgba(248,227,196,.15);display:flex;gap:10px;cursor:pointer}li b{font-family:'Bricolage Grotesque',sans-serif;min-width:5.5em;color:#e8a33d;font-variant-numeric:tabular-nums}li.d{opacity:.4;text-decoration:line-through}
+ol{font-size:16px;line-height:1.5;padding-left:1.2em;display:grid;gap:10px}ol li::marker{font:800 14px 'Bricolage Grotesque',sans-serif;color:#e8a33d}ol li{display:list-item;border:0;padding:0;cursor:auto}
+@media(max-width:860px){.wrap{grid-template-columns:1fr}.art{min-height:60vh}.plate{width:70vw}.cols{grid-template-columns:1fr}}</style></head><body>
+<div class="wrap"><div class="art"><span class="leaf">Late Summer · No. 31</span><div class="plate"><div class="tart"><div class="fill" id="fill"></div></div></div></div>
+<div class="txt"><span class="kick">Dessert · 1 h 40 min · Serves <span id="sv2">8</span></span><h1>Burnt honey<em>&amp; black fig tart</em></h1>
+<p class="lede">Honey taken almost too far, until it smells of toasted bread and smoke, then whisked into a brown-butter custard and crowded with halved figs. Bitter, floral, barely sweet.</p>
+<div class="cols"><div><h2>Ingredients <span class="srv"><button id="m" aria-label="fewer servings">−</button><span id="sv">8</span><button id="p" aria-label="more servings">+</button></span></h2><ul id="ing"></ul></div>
+<div><h2>Method</h2><ol><li>Blind-bake the pastry case at 190 °C for 18 minutes, then 6 more without weights.</li><li>Cook the honey in a wide pan until it darkens to mahogany and just begins to smoke. Off the heat, whisk in the butter.</li><li>Whisk eggs, cream and salt; stream in the warm honey butter.</li><li>Pour into the case, press in the figs cut-side up, and bake at 160 °C for 35–40 minutes, until barely set.</li><li>Cool for an hour. Finish with flaky salt and a little thyme.</li></ol></div></div></div></div>
+<script>
+const I=[[200,'g','shortcrust pastry'],[160,'g','wildflower honey'],[90,'g','unsalted butter'],[3,'','large eggs'],[240,'ml','double cream'],[10,'','ripe black figs'],[1,'tsp','flaky sea salt'],[4,'','sprigs of thyme']];let sv=8;
+function draw(){const ul=document.getElementById('ing');ul.innerHTML='';I.forEach(([q,u,n])=>{const v=q*sv/8;const li=document.createElement('li');li.innerHTML=`<b>${(Math.round(v*10)/10)} ${u}</b>${n}`;li.onclick=()=>li.classList.toggle('d');ul.appendChild(li)});document.getElementById('sv').textContent=sv;document.getElementById('sv2').textContent=sv}
+document.getElementById('m').onclick=()=>{sv=Math.max(2,sv-2);draw()};document.getElementById('p').onclick=()=>{sv=Math.min(24,sv+2);draw()};draw();
+const f=document.getElementById('fill');const pos=[[50,50],[50,18],[78,33],[78,67],[50,82],[22,67],[22,33],[35,50],[65,50]];pos.forEach(([a,b],i)=>{const d=document.createElement('i');d.className='fig';d.style.left=`calc(${a}% - 12%)`;d.style.top=`calc(${b}% - 12%)`;d.style.transform=`rotate(${i*47}deg)`;f.appendChild(d)});
+</script></body></html>

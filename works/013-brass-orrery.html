@@ -1,0 +1,27 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>The Brass Orrery</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital@1&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:radial-gradient(circle at 50% 45%,#1d3b30,#0b1a15 70%,#050c0a);display:grid;place-items:center;font-family:Cinzel,serif;color:#d9b46a}
+.o{position:relative;width:min(92vmin,900px);aspect-ratio:1}
+.ring{position:absolute;left:50%;top:50%;border-radius:50%;border:1px solid rgba(217,180,106,.35);transform:translate(-50%,-50%)}
+.arm{position:absolute;left:50%;top:50%;width:0;height:0;animation:spin linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+.arm::before{content:"";position:absolute;left:0;top:-1px;height:2px;width:var(--r);background:linear-gradient(90deg,#8a6a2c,#f4d58d,#8a6a2c)}
+.pl{position:absolute;left:var(--r);top:0;width:var(--s);height:var(--s);margin:calc(var(--s)/-2);border-radius:50%;box-shadow:inset -4px -4px 8px rgba(0,0,0,.6),0 0 0 2px #b8913f,0 0 0 4px #5a4315,0 4px 10px #000}
+.pl b{position:absolute;left:50%;top:calc(100% + 10px);transform:translateX(-50%) rotate(var(--cr,0));font:400 10px Cinzel,serif;letter-spacing:.15em;white-space:nowrap;color:#e8c987}
+.sun{position:absolute;left:50%;top:50%;width:11%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff4c4,#f5b942 40%,#b5651d 80%);box-shadow:0 0 50px #f5b94299,0 0 0 4px #8a6a2c,0 0 0 7px #3a2b0f}
+.tick{position:absolute;inset:3%;border-radius:50%;background:repeating-conic-gradient(rgba(217,180,106,.55) 0 .25deg,transparent .25deg 5deg);-webkit-mask:radial-gradient(closest-side,transparent 96%,#000 96.2%);mask:radial-gradient(closest-side,transparent 96%,#000 96.2%)}
+.tick2{position:absolute;inset:1%;border-radius:50%;border:2px solid #8a6a2c;box-shadow:inset 0 0 0 6px rgba(138,106,44,.25)}
+.zod{position:absolute;inset:0;animation:spin 400s linear infinite reverse}.zod span{position:absolute;left:50%;top:50%;font-size:min(1.6vmin,13px);letter-spacing:.3em;transform-origin:0 0}
+.cap{position:fixed;left:4vw;top:5vh}.cap h1{font-weight:700;font-size:clamp(18px,2.4vw,30px);letter-spacing:.25em}.cap p{font:italic 18px 'Cormorant Garamond',serif;color:#b9a27a;margin-top:6px}
+@media(max-width:700px){.cap{top:2vh}.cap p{font-size:14px}}</style></head><body>
+<div class="cap"><h1>Orrery</h1><p>after the workshop of J. Rowley, c. 1713 — one year passes every 12 seconds</p></div>
+<div class="o" id="o"><div class="tick2"></div><div class="tick"></div><div class="zod" id="z"></div><div class="sun"></div></div>
+<script>
+const o=document.getElementById('o');const P=[['Mercurius',.11,10,'#a8a8a8',.24],['Venus',.16,14,'#e8c27a',.62],['Terra',.22,15,'#3d7cc9',1],['Mars',.28,12,'#c1502e',1.88],['Iuppiter',.35,26,'#d1a36b',11.86],['Saturnus',.42,22,'#e3cf8f',29.4]];
+P.forEach(([n,r,s,c,y],i)=>{const R=r*100+'%';const ring=document.createElement('div');ring.className='ring';ring.style.width=ring.style.height=(r*200)+'%';o.appendChild(ring);
+const a=document.createElement('div');a.className='arm';a.style.setProperty('--r',`calc(${r} * min(92vmin,900px))`);a.style.animationDuration=(12*Math.pow(y,.55))+'s';a.style.animationDelay=-(Math.random()*40)+'s';
+const p=document.createElement('div');p.className='pl';p.style.setProperty('--s',s+'px');p.style.background=`radial-gradient(circle at 35% 35%,#fff8,${c} 45%,#000 120%)`;p.innerHTML='<b>'+n+'</b>';
+if(n==='Saturnus'){p.style.boxShadow+=`,0 0 0 0 transparent`;const ring2=document.createElement('i');ring2.style.cssText='position:absolute;left:-60%;top:35%;width:220%;height:30%;border:2px solid #e3cf8f;border-radius:50%;transform:rotate(-20deg)';p.appendChild(ring2)}
+if(n==='Terra'){const m=document.createElement('i');m.style.cssText='position:absolute;left:50%;top:50%;width:0;height:0;animation:spin 1.6s linear infinite';m.innerHTML='<i style="position:absolute;left:16px;top:-3px;width:6px;height:6px;border-radius:50%;background:#ddd"></i>';p.appendChild(m)}
+a.appendChild(p);o.appendChild(a)});
+const zz=document.getElementById('z');['ARIES','TAURUS','GEMINI','CANCER','LEO','VIRGO','LIBRA','SCORPIO','SAGITTARIUS','CAPRICORNUS','AQUARIUS','PISCES'].forEach((n,i)=>{const s=document.createElement('span');s.textContent=n;s.style.transform=`rotate(${i*30+5}deg) translate(0,calc(min(92vmin,900px) * -.475))`;zz.appendChild(s)});
+</script></body></html>

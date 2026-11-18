@@ -1,0 +1,23 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ARPA Radar</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oxanium:wght@400;700&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#07131f;display:flex;align-items:center;justify-content:center;gap:3vw;font-family:Oxanium,monospace;color:#5fe3ff}
+.scope{position:relative;width:min(84vmin,760px);aspect-ratio:1;border-radius:50%;box-shadow:0 0 0 10px #12273a,0 0 0 12px #2a4a66,0 30px 60px #000;overflow:hidden}canvas{width:100%;height:100%;display:block}
+.side{width:260px;font-size:12px;line-height:1.7;letter-spacing:.06em}.side h1{font-size:22px;letter-spacing:.1em;margin-bottom:10px;color:#fff}.side table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}.side td{padding:3px 4px;border-bottom:1px solid #16334a}.side tr.n td{color:#ff9a3c}
+@media(max-width:820px){.side{display:none}}</style></head><body>
+<div class="scope"><canvas id="c"></canvas></div><div class="side"><h1>ARPA · 6 NM</h1>OWN SHIP 054.0° · 11.2 KN<br>GAIN 72 · SEA 18 · RAIN 04<table id="tb"></table></div>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');let S,R;function size(){S=c.width=c.height=Math.min(c.clientWidth,1000)*Math.min(devicePixelRatio,2);R=S/2}size();addEventListener('resize',size);
+const T=Array.from({length:9},(_,i)=>({id:'T'+(i+1).toString().padStart(2,'0'),r:.2+Math.random()*.75,a:Math.random()*Math.PI*2,vr:(Math.random()-.5)*.0004,va:(Math.random()-.5)*.0008,seen:0,lr:0,la:0}));
+const land=[];for(let a=3.6;a<5.4;a+=.02)land.push([a,.72+Math.sin(a*9)*.06+Math.sin(a*23)*.03]);
+let sw=0,last=performance.now();
+function f(now){const dt=now-last;last=now;const prev=sw;sw=(sw+dt*.0016)%(Math.PI*2);
+x.fillStyle='rgba(7,19,31,.06)';x.fillRect(0,0,S,S);x.save();x.translate(R,R);
+x.strokeStyle='rgba(95,227,255,.22)';x.lineWidth=1;for(let k=1;k<=6;k++){x.beginPath();x.arc(0,0,R*k/6.2,0,7);x.stroke()}for(let k=0;k<12;k++){x.beginPath();x.moveTo(0,0);x.lineTo(Math.cos(k*Math.PI/6)*R,Math.sin(k*Math.PI/6)*R);x.stroke()}
+const g=x.createConicGradient?x.createConicGradient(sw-1.2,0,0):null;if(g){g.addColorStop(0,'rgba(95,227,255,0)');g.addColorStop(1.2/(Math.PI*2),'rgba(95,227,255,.35)');g.addColorStop(1.2/(Math.PI*2)+.001,'rgba(95,227,255,0)');x.fillStyle=g;x.beginPath();x.arc(0,0,R,0,7);x.fill()}
+x.strokeStyle='#bff4ff';x.lineWidth=2;x.beginPath();x.moveTo(0,0);x.lineTo(Math.cos(sw)*R,Math.sin(sw)*R);x.stroke();
+const inSweep=a=>{a=(a+Math.PI*2)%(Math.PI*2);return prev<=sw?(a>=prev&&a<sw):(a>=prev||a<sw)};
+for(const [a,r] of land)if(inSweep(a)){x.fillStyle='rgba(120,240,255,.55)';for(let k=0;k<5;k++){const rr=(r+k*.03)*R;x.fillRect(Math.cos(a)*rr,Math.sin(a)*rr,4,4)}}
+for(const t of T){t.r=Math.max(.1,Math.min(.95,t.r+t.vr*dt*.05));t.a+=t.va*dt*.05;if(inSweep(t.a)){t.seen=now;t.lr=t.r;t.la=t.a;x.fillStyle='#ff9a3c';x.beginPath();x.arc(Math.cos(t.a)*t.r*R,Math.sin(t.a)*t.r*R,6,0,7);x.fill();x.strokeStyle='#ff9a3c';x.strokeRect(Math.cos(t.a)*t.r*R-12,Math.sin(t.a)*t.r*R-12,24,24);x.font=`${12*S/700}px Oxanium`;x.fillText(t.id,Math.cos(t.a)*t.r*R+16,Math.sin(t.a)*t.r*R-12)}}
+x.fillStyle='#fff';x.beginPath();x.moveTo(0,-10);x.lineTo(6,8);x.lineTo(-6,8);x.fill();x.restore();requestAnimationFrame(f)}requestAnimationFrame(f);
+setInterval(()=>{document.getElementById('tb').innerHTML='<tr><td>ID</td><td>BRG</td><td>RNG</td><td>CPA</td></tr>'+T.map(t=>{const brg=((t.a*180/Math.PI+90+360)%360).toFixed(0).padStart(3,'0');const rng=(t.r*6).toFixed(2);const cpa=(t.r*6*Math.abs(Math.sin(t.a))).toFixed(1);return `<tr class="${cpa<1?'n':''}"><td>${t.id}</td><td>${brg}°</td><td>${rng}</td><td>${cpa}</td></tr>`}).join('')},800);
+</script></body></html>

@@ -1,0 +1,18 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Neoplastic Composer</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#d9d4c7;display:flex;align-items:center;justify-content:center;gap:4vw;font-family:'Work Sans',sans-serif;color:#111}
+.cv{position:relative;height:min(86vh,80vw);aspect-ratio:1;background:#111;box-shadow:0 2px 0 #fff8,0 40px 60px -20px rgba(0,0,0,.45);cursor:pointer;outline:14px solid #f6f3ea}
+.cv div{position:absolute;transition:all .7s cubic-bezier(.6,0,.2,1)}
+.lab{width:220px;font-size:13px;line-height:1.5}.lab h1{font-size:28px;line-height:1;margin-bottom:14px}.lab .n{font-weight:700;font-size:14px;border-top:2px solid #111;padding-top:10px;margin-top:18px}
+@media(max-width:800px){body{flex-direction:column}.lab{width:80vw}.lab p{display:none}}</style></head><body>
+<div class="cv" id="cv" title="click to compose again"></div><div class="lab"><h1 id="t">Composition No. 1</h1><p>Oil on canvas (simulated). Recursive division of the plane by horizontal and vertical lines, with primary colours placed in roughly one cell in five.</p><div class="n" id="n"></div><p style="margin-top:10px;opacity:.6">Click the canvas to compose again.</p></div>
+<script>
+const cv=document.getElementById('cv');let k=0;const L=1.1;
+function split(r,d,out){if(d>4||(d>1&&Math.random()<.28)||r.w<14||r.h<14){out.push(r);return}const v=r.w>r.h?Math.random()<.8:Math.random()<.2;const f=.3+Math.random()*.4;
+if(v){const a=r.w*f;split({x:r.x,y:r.y,w:a-L/2,h:r.h},d+1,out);split({x:r.x+a+L/2,y:r.y,w:r.w-a-L/2,h:r.h},d+1,out)}else{const a=r.h*f;split({x:r.x,y:r.y,w:r.w,h:a-L/2},d+1,out);split({x:r.x,y:r.y+a+L/2,w:r.w,h:r.h-a-L/2},d+1,out)}}
+function compose(){const out=[];split({x:L,y:L,w:100-2*L,h:100-2*L},0,out);const els=[...cv.children];const cols={r:0,b:0,y:0};
+out.forEach((r,i)=>{let e=els[i];if(!e){e=document.createElement('div');e.style.cssText='left:50%;top:50%;width:0;height:0';cv.appendChild(e)}const q=Math.random();const c=q<.1?'#d6261d':q<.17?'#1d3f9a':q<.23?'#f2c71b':q<.26?'#111':'#f6f3ea';if(c==='#d6261d')cols.r++;if(c==='#1d3f9a')cols.b++;if(c==='#f2c71b')cols.y++;
+requestAnimationFrame(()=>Object.assign(e.style,{left:r.x+'%',top:r.y+'%',width:r.w+'%',height:r.h+'%',background:c,opacity:1}))});
+els.slice(out.length).forEach(e=>Object.assign(e.style,{width:0,height:0,opacity:0}));k++;document.getElementById('t').textContent='Composition No. '+k;document.getElementById('n').textContent=`${out.length} planes · ${cols.r} red · ${cols.b} blue · ${cols.y} yellow`}
+cv.onclick=compose;compose();
+</script></body></html>

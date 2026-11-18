@@ -1,0 +1,50 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Kiln OS 97</title>
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#0f7c7c url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='2' height='2' fill='%23118a8a'/%3E%3C/svg%3E");font:12px/1.3 Tahoma,Verdana,"Segoe UI",sans-serif;color:#000;user-select:none}
+.ic{position:absolute;width:76px;text-align:center;color:#fff;cursor:default}.ic i{display:block;width:40px;height:40px;margin:0 auto 4px;image-rendering:pixelated}.ic span{padding:1px 3px}.ic:focus span,.ic:active span{background:#000080;outline:1px dotted #fff}
+.w{position:absolute;background:#c3c3c3;border:2px solid;border-color:#fff #404040 #404040 #fff;box-shadow:1px 1px 0 #000;padding:3px;min-width:200px}
+.tb{background:linear-gradient(90deg,#808080,#b5b5b5);color:#dcdcdc;font-weight:bold;padding:3px 4px;display:flex;align-items:center;gap:6px;cursor:move}.w.on .tb{background:linear-gradient(90deg,#000080,#1084d0);color:#fff}
+.tb b{flex:1}.bt{width:16px;height:14px;background:#c3c3c3;border:2px solid;border-color:#fff #404040 #404040 #fff;font:bold 9px/8px monospace;color:#000;text-align:center;cursor:pointer}
+.mb{display:flex;gap:12px;padding:3px 6px}.mb u{text-decoration:none}.mb u::first-letter{text-decoration:underline}
+.in{border:2px solid;border-color:#808080 #fff #fff #808080;background:#fff}
+textarea{width:100%;height:100%;border:0;resize:none;font:13px/1.4 "Courier New",monospace;padding:6px;outline:0}
+.task{position:fixed;left:0;right:0;bottom:0;height:34px;background:#c3c3c3;border-top:2px solid #fff;display:flex;align-items:center;gap:4px;padding:3px}
+.start{display:flex;align-items:center;gap:5px;font-weight:bold;padding:3px 8px;border:2px solid;border-color:#fff #404040 #404040 #fff;height:26px}
+.start i{width:18px;height:16px;background:conic-gradient(#e33 0 25%,#3b3 0 50%,#36f 0 75%,#fc0 0);border-radius:3px 8px 3px 8px}
+.tk{height:26px;padding:0 10px;min-width:120px;display:flex;align-items:center;border:2px solid;border-color:#fff #404040 #404040 #fff}.tk.on{border-color:#404040 #fff #fff #404040;background:repeating-conic-gradient(#c3c3c3 0 25%,#fff 0 50%) 0 0/2px 2px;font-weight:bold}
+.clk{margin-left:auto;border:1px solid;border-color:#808080 #fff #fff #808080;padding:4px 10px}
+.pal{display:flex;flex-wrap:wrap;width:150px;gap:2px;padding:4px}.pal b{width:16px;height:16px;border:1px solid #000;cursor:pointer}
+.ab{display:flex;gap:14px;padding:14px;align-items:center}.logo{width:64px;height:64px;background:conic-gradient(#e33 0 25%,#3b3 0 50%,#36f 0 75%,#fc0 0);border-radius:8px 24px 8px 24px;transform:skewX(-8deg);box-shadow:3px 3px 0 #000}
+.btn{border:2px solid;border-color:#fff #404040 #404040 #fff;padding:4px 18px;display:inline-block;margin:0 auto 10px;outline:1px solid #000;cursor:pointer}.btn:active{border-color:#404040 #fff #fff #404040}</style></head><body>
+<div class="ic" style="left:14px;top:14px" tabindex="0"><i style="background:linear-gradient(#fff 0 70%,#888 70%);border:2px solid #333;box-shadow:inset 0 -10px #2a6"></i><span>My Kiln</span></div>
+<div class="ic" style="left:14px;top:96px" tabindex="0"><i style="background:radial-gradient(circle at 50% 40%,#9cf 30%,#048 31%,#048 45%,transparent 46%)"></i><span>Netscope</span></div>
+<div class="ic" style="left:14px;top:178px" tabindex="0"><i style="background:linear-gradient(135deg,#ddd 0 40%,#888 40% 45%,#ddd 45%);border:2px solid #555"></i><span>Recycle Bin</span></div>
+<div class="w on" id="w1" style="left:130px;top:40px;width:380px;height:280px"><div class="tb"><b>untitled.txt - Jotter</b><span class="bt">_</span><span class="bt">□</span><span class="bt">x</span></div><div class="mb"><u>File</u><u>Edit</u><u>Search</u><u>Help</u></div><div class="in" style="height:calc(100% - 48px)"><textarea id="ta" spellcheck="false">Dear diary,
+
+Today I installed Kiln OS 97 from 31 floppy disks.
+Only disk 19 was corrupted.
+
+The screensaver is very relaxing. I have watched
+the pipes for 40 minutes.
+
+TODO:
+ - defragment C:\
+ - learn HTML
+ - make a homepage with a guestbook</textarea></div></div>
+<div class="w" id="w2" style="left:540px;top:120px;width:420px;height:330px"><div class="tb"><b>Sketch - [canvas.bmp]</b><span class="bt">_</span><span class="bt">□</span><span class="bt">x</span></div><div class="mb"><u>File</u><u>Edit</u><u>Image</u><u>Colors</u></div><div style="display:flex;gap:4px;height:calc(100% - 48px)"><div class="pal" id="pal"></div><div class="in" style="flex:1"><canvas id="cv" style="width:100%;height:100%;display:block;cursor:crosshair"></canvas></div></div></div>
+<div class="w" id="w3" style="left:260px;top:360px;width:330px"><div class="tb"><b>About Kiln OS</b><span class="bt">x</span></div><div class="ab"><div class="logo"></div><div><b style="font-size:16px">Kiln OS 97</b><br>Version 4.00.950<br>Copyright © 1981–1997<br><br>Physical memory: 16,384 KB<br>Fired at 1,240 °C</div></div><div style="text-align:center"><span class="btn" id="ok">OK</span></div></div>
+<div class="task"><div class="start"><i></i>Start</div><div class="tk on" data-w="w1">Jotter</div><div class="tk" data-w="w2">Sketch</div><div class="tk" data-w="w3">About</div><div class="clk" id="clk"></div></div>
+<script>
+let z=10;const ws=[...document.querySelectorAll('.w')];
+function focusW(w){ws.forEach(o=>o.classList.toggle('on',o===w));w.style.zIndex=++z;document.querySelectorAll('.tk').forEach(t=>t.classList.toggle('on',t.dataset.w===w.id))}
+ws.forEach(w=>{w.addEventListener('pointerdown',()=>focusW(w));const tb=w.querySelector('.tb');tb.addEventListener('pointerdown',e=>{const sx=e.clientX-w.offsetLeft,sy=e.clientY-w.offsetTop;tb.setPointerCapture(e.pointerId);const mv=ev=>{w.style.left=Math.max(-100,ev.clientX-sx)+'px';w.style.top=Math.max(0,ev.clientY-sy)+'px'};tb.addEventListener('pointermove',mv);tb.addEventListener('pointerup',()=>tb.removeEventListener('pointermove',mv),{once:true})});
+w.querySelectorAll('.bt').forEach(b=>{if(b.textContent==='x'||b.textContent==='_')b.onclick=()=>{w.style.display='none'}})});
+document.querySelectorAll('.tk').forEach(t=>t.onclick=()=>{const w=document.getElementById(t.dataset.w);w.style.display='';focusW(w)});
+document.getElementById('ok').onclick=()=>document.getElementById('w3').style.display='none';
+const tick=()=>document.getElementById('clk').textContent=new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});tick();setInterval(tick,5000);
+const cv=document.getElementById('cv'),cx=cv.getContext('2d');let col='#000080';
+const cols=['#000','#808080','#800000','#808000','#008000','#008080','#000080','#800080','#fff','#c0c0c0','#f00','#ff0','#0f0','#0ff','#00f','#f0f'];const pal=document.getElementById('pal');cols.forEach(c=>{const b=document.createElement('b');b.style.background=c;b.onclick=()=>col=c;pal.appendChild(b)});
+function fit(){const r=cv.getBoundingClientRect();cv.width=r.width;cv.height=r.height;cx.fillStyle='#fff';cx.fillRect(0,0,cv.width,cv.height);
+cx.fillStyle='#fc0';cx.beginPath();cx.arc(cv.width*.75,60,30,0,7);cx.fill();cx.fillStyle='#080';cx.fillRect(0,cv.height-50,cv.width,50);cx.fillStyle='#a33';cx.fillRect(60,cv.height-120,90,70);cx.fillStyle='#600';cx.beginPath();cx.moveTo(50,cv.height-120);cx.lineTo(105,cv.height-170);cx.lineTo(160,cv.height-120);cx.fill();cx.font='16px "Comic Sans MS",cursive';cx.fillStyle='#000';cx.fillText('my house :)',170,cv.height-130)}
+fit();let dn=false,lx,ly;cv.addEventListener('pointerdown',e=>{dn=true;lx=e.offsetX;ly=e.offsetY});addEventListener('pointerup',()=>dn=false);cv.addEventListener('pointermove',e=>{if(!dn)return;cx.strokeStyle=col;cx.lineWidth=3;cx.lineCap='round';cx.beginPath();cx.moveTo(lx,ly);cx.lineTo(e.offsetX,e.offsetY);cx.stroke();lx=e.offsetX;ly=e.offsetY});
+if(innerWidth<760){ws.forEach((w,i)=>{w.style.left='90px';w.style.width='calc(100vw - 100px)';w.style.top=(20+i*150)+'px'})}
+</script></body></html>

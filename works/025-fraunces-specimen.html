@@ -1,0 +1,24 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fraunces Specimen</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,100..900,0..100,0..1&family=JetBrains+Mono:wght@400&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%}body{background:#f7e9e3;color:#2b0f2a;font-family:Fraunces,Georgia,serif;overflow-x:hidden}
+:root{--w:600;--o:144;--s:50;--k:1}
+.hero{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);min-height:100vh}
+.g{display:grid;place-items:center;background:#2b0f2a;color:#ff8f6b;font-size:min(52vh,38vw);line-height:1;font-variation-settings:"wght" var(--w),"opsz" var(--o),"SOFT" var(--s),"WONK" var(--k);transition:font-variation-settings .3s}
+.r{padding:5vh 4vw;display:flex;flex-direction:column;gap:3vh;min-width:0}
+.mono{font:11px/1.5 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8b4f6b}
+h1{font-size:clamp(40px,6vw,96px);line-height:.9;font-variation-settings:"wght" 900,"opsz" 144,"SOFT" 100,"WONK" 1;letter-spacing:-.02em}
+.ctl{display:grid;gap:12px}.ctl label{display:grid;grid-template-columns:5em 1fr 3em;align-items:center;gap:10px;font:12px 'JetBrains Mono',monospace}
+input[type=range]{accent-color:#c2410c;width:100%}
+.wf p{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variation-settings:"wght" var(--w),"opsz" var(--o),"SOFT" var(--s),"WONK" var(--k)}
+.chars{font-size:clamp(18px,2vw,26px);line-height:1.5;word-break:break-all;font-variation-settings:"wght" var(--w),"opsz" 24,"SOFT" var(--s)}
+@media(max-width:800px){.hero{grid-template-columns:1fr}.g{min-height:55vh;font-size:40vh}}</style></head><body>
+<section class="hero"><div class="g" id="g" contenteditable spellcheck="false">Rg</div>
+<div class="r"><div class="mono">Specimen · Open Font License · 4 axes</div><h1>Fraunces</h1><p style="font-size:18px;line-height:1.5;max-width:42ch">A display, “Old Style” soft-serif inspired by the chunky early-20th-century faces of Windsor and its kin. Drag the axes; type into the big glyphs.</p>
+<div class="ctl"><label>Weight<input id="w" type="range" min="100" max="900" value="600"><span>600</span></label><label>Optical<input id="o" type="range" min="9" max="144" value="144"><span>144</span></label><label>Soft<input id="s" type="range" min="0" max="100" value="50"><span>50</span></label><label>Wonky<input id="k" type="range" min="0" max="1" step="1" value="1"><span>1</span></label></div>
+<div class="wf"><p style="font-size:48px">Quixotic jam</p><p style="font-size:32px">Soft serifs, sharp wit</p><p style="font-size:20px">The five boxing wizards jump quickly over the lazy dog.</p><p style="font-size:13px">Sphinx of black quartz, judge my vow — 0123456789 &amp; ¶ § € £</p></div>
+<div class="chars">AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz &amp;?!</div></div></section>
+<script>
+['w','o','s','k'].forEach(id=>{const i=document.getElementById(id);i.oninput=()=>{document.documentElement.style.setProperty('--'+id,i.value);i.nextElementSibling.textContent=i.value}});
+let t=0;const g=document.getElementById('g');const demo=setInterval(()=>{t+=.05;document.documentElement.style.setProperty('--w',Math.round(500+400*Math.sin(t)));document.documentElement.style.setProperty('--s',Math.round(50+50*Math.cos(t*.7)))},80);
+document.querySelectorAll('input').forEach(i=>i.addEventListener('pointerdown',()=>clearInterval(demo)));g.addEventListener('focus',()=>clearInterval(demo));
+</script></body></html>

@@ -1,0 +1,20 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Thunderhead</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Teko:wght@300;600&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#0c1018}canvas{display:block;width:100%;height:100%;cursor:pointer}
+.t{position:fixed;right:5vw;top:6vh;text-align:right;color:#cfd8e8;font:300 16px Teko,sans-serif;letter-spacing:.3em}.t b{display:block;font-weight:600;font-size:clamp(40px,7vw,110px);letter-spacing:.04em;line-height:.9}</style></head><body>
+<canvas id="c"></canvas><div class="t"><b>THUNDER<br>HEAD</b>CLICK TO CALL DOWN A STRIKE · <span id="n">0</span> s TO THUNDER</div>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio,1.5);let W,H,flash=0,bolts=[],rain=[];
+function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr;rain=Array.from({length:500},()=>[Math.random()*W,Math.random()*H,.6+Math.random()*.6])}size();addEventListener('resize',size);
+const clouds=Array.from({length:40},(_,i)=>({x:Math.random(),y:Math.random()*.25,r:.08+Math.random()*.14,s:.00002+Math.random()*.00004}));
+function bolt(x0,y0,x1,y1,w,d){const seg=[];let px=x0,py=y0;const n=18;for(let i=1;i<=n;i++){const t=i/n;const nx=x0+(x1-x0)*t+(Math.random()-.5)*W*.05*(1-t*.5),ny=y0+(y1-y0)*t;seg.push([px,py,nx,ny,w]);if(d<2&&Math.random()<.18){const b=bolt(nx,ny,nx+(Math.random()-.5)*W*.25,ny+H*(.1+Math.random()*.2),w*.45,d+1);seg.push(...b)}px=nx;py=ny}return seg}
+function strike(X){bolts.push({s:bolt(X??W*(.15+Math.random()*.7),H*.12,(X??W/2)+(Math.random()-.5)*W*.2,H*.86,3.2*dpr,0),l:1});flash=1;document.getElementById('n').textContent=(1+Math.random()*6).toFixed(1)}
+c.addEventListener('click',e=>strike(e.clientX*dpr));setInterval(()=>{if(Math.random()<.5)strike()},2600);
+function f(t){const g=x.createLinearGradient(0,0,0,H);const fl=flash*.6;g.addColorStop(0,`rgb(${20+fl*120},${26+fl*130},${40+fl*160})`);g.addColorStop(1,`rgb(${12+fl*60},${16+fl*70},${24+fl*90})`);x.fillStyle=g;x.fillRect(0,0,W,H);
+for(const cl of clouds){cl.x=(cl.x+cl.s)%1.2;const cx=(cl.x-.1)*W,cy=cl.y*H,r=cl.r*Math.max(W,H);const gg=x.createRadialGradient(cx,cy,0,cx,cy,r);gg.addColorStop(0,`rgba(${50+fl*150},${55+fl*150},${70+fl*160},.55)`);gg.addColorStop(1,'rgba(20,26,40,0)');x.fillStyle=gg;x.fillRect(cx-r,cy-r,r*2,r*2)}
+for(let i=bolts.length-1;i>=0;i--){const b=bolts[i];x.globalCompositeOperation='lighter';x.lineCap='round';for(const [a,bb,cc,d,w] of b.s){x.strokeStyle=`rgba(170,200,255,${b.l*.35})`;x.lineWidth=w*4;x.beginPath();x.moveTo(a,bb);x.lineTo(cc,d);x.stroke();x.strokeStyle=`rgba(255,255,255,${b.l})`;x.lineWidth=w;x.beginPath();x.moveTo(a,bb);x.lineTo(cc,d);x.stroke()}x.globalCompositeOperation='source-over';b.l-=.035+Math.random()*.04;if(b.l<=0)bolts.splice(i,1)}
+flash*=.88;x.fillStyle='#05070b';x.beginPath();x.moveTo(0,H);for(let X=0;X<=W;X+=10)x.lineTo(X,H*.86-Math.sin(X*.003)*H*.03-Math.sin(X*.011)*H*.01);x.lineTo(W,H);x.fill();
+const tx=W*.72,ty=H*.85;x.fillRect(tx-30*dpr,ty-50*dpr,60*dpr,50*dpr);x.beginPath();x.moveTo(tx-40*dpr,ty-50*dpr);x.lineTo(tx,ty-80*dpr);x.lineTo(tx+40*dpr,ty-50*dpr);x.fill();x.fillStyle=`rgba(255,200,110,${.8-flash*.5})`;x.fillRect(tx-14*dpr,ty-36*dpr,12*dpr,14*dpr);
+x.strokeStyle='rgba(170,190,220,.35)';x.lineWidth=dpr;x.beginPath();for(const r of rain){r[1]+=18*r[2]*dpr;r[0]-=3*dpr;if(r[1]>H){r[1]=-20;r[0]=Math.random()*W*1.1}x.moveTo(r[0],r[1]);x.lineTo(r[0]+3*dpr,r[1]-16*dpr*r[2])}x.stroke();requestAnimationFrame(f)}
+strike();requestAnimationFrame(f);
+</script></body></html>

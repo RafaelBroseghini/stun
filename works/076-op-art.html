@@ -1,0 +1,12 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Current</title>
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#f4f1ea}canvas{display:block;width:100%;height:100%}
+.l{position:fixed;right:20px;bottom:16px;background:#f4f1ea;padding:8px 12px;font:600 12px/1.4 Helvetica,Arial,sans-serif;letter-spacing:.12em;color:#111;border:2px solid #111}</style></head><body>
+<canvas id="c"></canvas><div class="l">CURRENT, NO. 4 · EMULSION ON CANVAS · MOVE TO DISTURB</div>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio,2);let W,H,m={x:.5,y:.5},tm={x:.5,y:.5};
+function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr}size();addEventListener('resize',size);addEventListener('pointermove',e=>{tm.x=e.clientX/innerWidth;tm.y=e.clientY/innerHeight});
+function f(t){t*=.001;m.x+=(tm.x-m.x)*.05;m.y+=(tm.y-m.y)*.05;x.fillStyle='#f4f1ea';x.fillRect(0,0,W,H);x.fillStyle='#111';const n=Math.floor(H/(11*dpr)),step=H/n,mx=m.x*W,my=m.y*H,R=Math.min(W,H)*.35;
+for(let k=0;k<n;k+=2){x.beginPath();const pts=[];for(let X=0;X<=W;X+=6*dpr){const y=k*step;const dx=X-mx,dy=y-my,d=Math.hypot(dx,dy),b=Math.exp(-(d*d)/(R*R))*R*.35;const w=Math.sin(X/W*Math.PI*3+t+k*.02)*step*2.2*Math.sin(t*.3+X/W*2);pts.push([X,y+w+(dy/(d+1))*b])}
+const pts2=[];for(let X=W;X>=0;X-=6*dpr){const y=(k+1)*step;const dx=X-mx,dy=y-my,d=Math.hypot(dx,dy),b=Math.exp(-(d*d)/(R*R))*R*.35;const w=Math.sin(X/W*Math.PI*3+t+(k+1)*.02)*step*2.2*Math.sin(t*.3+X/W*2);const th=1+Math.sin(X/W*Math.PI*2+k*.15+t*.7)*.55;pts2.push([X,y+w+(dy/(d+1))*b-(1-th)*step*.6])}
+pts.forEach((p,i)=>i?x.lineTo(...p):x.moveTo(...p));pts2.forEach(p=>x.lineTo(...p));x.closePath();x.fill()}requestAnimationFrame(f)}requestAnimationFrame(f);
+</script></body></html>

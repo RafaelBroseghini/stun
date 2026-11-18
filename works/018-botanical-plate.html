@@ -1,0 +1,22 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Flora Imaginaria</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#3b4a3f;display:grid;place-items:center;font-family:'IM Fell English',Georgia,serif}
+.plate{position:relative;height:min(94vh,135vw);aspect-ratio:.72;background:#dfe3d2;box-shadow:0 30px 60px rgba(0,0,0,.45);padding:5%;display:flex;flex-direction:column}
+.plate::before{content:"";position:absolute;inset:3%;border:1px solid #6b6a52;pointer-events:none}.plate::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse,transparent 60%,rgba(120,100,50,.25));pointer-events:none}
+.top{display:flex;justify-content:space-between;font-family:'IM Fell English SC',serif;color:#4b4a36;font-size:min(1.8vh,2.6vw);letter-spacing:.15em;padding:0 2%}
+canvas{flex:1;width:100%;min-height:0}.cap{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;color:#3a3a2a;font-size:min(1.7vh,2.4vw);font-style:italic;gap:2%}
+.cap b{display:block;font-style:normal;font-family:'IM Fell English SC',serif;font-weight:400;font-size:1.2em}h1{text-align:center;font-family:'IM Fell English SC',serif;font-weight:400;font-size:min(3.4vh,5vw);color:#2f3324;letter-spacing:.1em;margin:1% 0}</style></head><body>
+<div class="plate"><div class="top"><span>Tab. XLII</span><span>Flora Imaginaria</span><span>Vol. III</span></div><h1>Herbæ Recursivæ</h1><canvas id="c"></canvas>
+<div class="cap"><div><b>1.</b>Filix lindenmayeri</div><div><b>2.</b>Arbor fractalis</div><div><b>3.</b>Herba ramosa</div></div></div>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio,2);
+const sys=[{ax:'X',r:{X:'F+[[X]-X]-F[-FX]+X',F:'FF'},a:25,n:5,col:'#3f5a2e',leaf:'#6b8a3a'},{ax:'F',r:{F:'FF-[-F+F+F]+[+F-F-F]'},a:22,n:4,col:'#5a3e24',leaf:'#7a9a4a'},{ax:'X',r:{X:'F[+X]F[-X]+X',F:'FF'},a:20,n:6,col:'#46552c',leaf:'#a3452e'}];
+function expand(s){let str=s.ax;for(let i=0;i<s.n;i++)str=[...str].map(ch=>s.r[ch]||ch).join('');return str}
+const strs=sys.map(expand);let prog=0;
+function draw(){const W=c.width=c.clientWidth*dpr,H=c.height=c.clientHeight*dpr;x.clearRect(0,0,W,H);
+sys.forEach((s,k)=>{const str=strs[k];const len=H/(k===1?60:k===0?95:110);let px=W*(k*.33+.17),py=H*.98,ang=-90+(k-1)*4;const st=[];let drawn=0;const lim=str.length*Math.min(1,prog);
+x.lineCap='round';for(let i=0;i<lim;i++){const ch=str[i];if(ch==='F'){const nx=px+Math.cos(ang*Math.PI/180)*len,ny=py+Math.sin(ang*Math.PI/180)*len;x.strokeStyle=s.col;x.lineWidth=Math.max(.6,(3.2-st.length*.55))*dpr;x.beginPath();x.moveTo(px,py);x.lineTo(nx,ny);x.stroke();px=nx;py=ny}
+else if(ch==='+')ang+=s.a+Math.sin(i)*3;else if(ch==='-')ang-=s.a+Math.cos(i)*3;else if(ch==='[')st.push([px,py,ang]);else if(ch===']'){if(st.length>2){x.fillStyle=s.leaf;x.globalAlpha=.75;x.beginPath();x.ellipse(px,py,len*1.4,len*.6,ang*Math.PI/180,0,7);x.fill();x.globalAlpha=1}[px,py,ang]=st.pop()}}
+x.font=`italic ${14*dpr}px "IM Fell English",serif`;x.fillStyle='#4b4a36';x.textAlign='center';x.fillText(k+1+'.',W*(k*.33+.17),H*.06)})}
+function f(){prog+=.004;draw();if(prog<1.05)requestAnimationFrame(f)}f();addEventListener('resize',draw);c.addEventListener('click',()=>{prog=0;f()});
+</script></body></html>

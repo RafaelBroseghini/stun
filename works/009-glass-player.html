@@ -1,0 +1,28 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Low Tide Signals</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#120c2a;font-family:Manrope,system-ui,sans-serif;color:#fff;display:grid;place-items:center}
+.b{position:fixed;border-radius:50%;filter:blur(60px);opacity:.85;animation:fl 14s ease-in-out infinite alternate}
+.b1{width:55vmax;height:55vmax;background:#ff3d7f;left:-10vmax;top:-15vmax}.b2{width:45vmax;height:45vmax;background:#3d5aff;right:-12vmax;top:10vmax;animation-delay:-4s}.b3{width:40vmax;height:40vmax;background:#00e0b0;left:20vmax;bottom:-20vmax;animation-delay:-8s}.b4{width:25vmax;height:25vmax;background:#ffb13d;right:20vmax;bottom:-5vmax;animation-duration:10s}
+@keyframes fl{to{transform:translate(8vmax,6vmax) scale(1.15)}}
+.card{position:relative;width:min(380px,90vw);padding:22px;border-radius:32px;background:rgba(255,255,255,.12);backdrop-filter:blur(30px) saturate(160%);-webkit-backdrop-filter:blur(30px) saturate(160%);border:1px solid rgba(255,255,255,.28);box-shadow:0 30px 80px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.4)}
+.art{aspect-ratio:1;border-radius:22px;overflow:hidden;position:relative;background:radial-gradient(circle at 70% 30%,#ffd36e 0 12%,transparent 13%),linear-gradient(#ff7a59 0 46%,#2b2d8a 46% 100%);box-shadow:0 20px 40px rgba(0,0,0,.3)}
+.art::before{content:"";position:absolute;inset:46% 0 0;background:repeating-linear-gradient(#2b2d8a 0 6px,#ff9a6e 6px 7px,#2b2d8a 7px 14px);opacity:.7;-webkit-mask:linear-gradient(90deg,transparent 30%,#000 50%,transparent 70%);mask:linear-gradient(90deg,transparent 30%,#000 50%,transparent 70%)}
+.art::after{content:"LOW TIDE\ASIGNALS";white-space:pre;position:absolute;left:16px;bottom:14px;font-weight:800;font-size:13px;letter-spacing:.3em;line-height:1.4}
+.meta{display:flex;justify-content:space-between;align-items:center;margin:20px 4px 14px}.meta h2{font-size:20px;font-weight:800}.meta p{opacity:.7;font-size:14px;margin-top:2px}
+.heart{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.15);cursor:pointer;border:0;color:#fff;font-size:18px}
+.wave{display:flex;align-items:center;gap:3px;height:40px;margin:0 4px}.wave i{flex:1;border-radius:3px;background:rgba(255,255,255,.35);height:20%;transition:height .2s}.wave i.p{background:#fff}
+.time{display:flex;justify-content:space-between;font-size:12px;opacity:.7;margin:8px 4px 16px;font-variant-numeric:tabular-nums}
+.ctl{display:flex;justify-content:space-around;align-items:center}.ctl button{background:none;border:0;color:#fff;cursor:pointer;opacity:.85;font-size:20px}
+.play{width:64px;height:64px;border-radius:50%;background:#fff!important;color:#120c2a!important;opacity:1!important;font-size:22px!important;box-shadow:0 10px 30px rgba(255,255,255,.35)}</style></head><body>
+<i class="b b1"></i><i class="b b2"></i><i class="b b3"></i><i class="b b4"></i>
+<div class="card"><div class="art"></div><div class="meta"><div><h2>Harbour Lights</h2><p>Marisol Vey · Low Tide Signals</p></div><button class="heart" id="h" aria-label="like">♡</button></div>
+<div class="wave" id="w"></div><div class="time"><span id="t1">1:12</span><span>3:48</span></div>
+<div class="ctl"><button aria-label="shuffle">⤮</button><button aria-label="previous">⏮</button><button class="play" id="pl" aria-label="play">❚❚</button><button aria-label="next">⏭</button><button aria-label="repeat">↻</button></div></div>
+<script>
+const w=document.getElementById('w'),N=42,bars=[];for(let i=0;i<N;i++){const b=document.createElement('i');w.appendChild(b);bars.push(b)}
+let pos=72,playing=true;const dur=228;
+const shape=bars.map((_,i)=>.25+.75*Math.abs(Math.sin(i*.7)*Math.cos(i*.23)));
+setInterval(()=>{if(playing)pos=(pos+.25)%dur;const k=pos/dur*N;bars.forEach((b,i)=>{b.classList.toggle('p',i<k);b.style.height=(playing&&Math.abs(i-k)<6?(shape[i]*100*(0.7+Math.random()*.5)):shape[i]*80)+'%'});document.getElementById('t1').textContent=Math.floor(pos/60)+':'+String(Math.floor(pos%60)).padStart(2,'0')},250);
+document.getElementById('pl').onclick=e=>{playing=!playing;e.currentTarget.textContent=playing?'❚❚':'▶'};
+document.getElementById('h').onclick=e=>{const b=e.currentTarget;b.textContent=b.textContent==='♡'?'♥':'♡';b.style.color=b.textContent==='♥'?'#ff3d7f':'#fff'};
+</script></body></html>

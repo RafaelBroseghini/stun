@@ -1,0 +1,13 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Truchet Rivers</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bowlby+One&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#ff6a3d;display:grid;grid-template-columns:repeat(var(--c),1fr);grid-auto-rows:var(--s)}
+.t{position:relative;cursor:pointer;transition:transform .5s cubic-bezier(.6,0,.3,1.4)}.t::before,.t::after{content:"";position:absolute;width:100%;height:100%;border-radius:50%;border:calc(var(--s)*.14) solid #1b1240;box-sizing:border-box}
+.t::before{left:-50%;top:-50%}.t::after{left:50%;top:50%}
+h1{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);font:400 clamp(30px,7vw,110px)/1 'Bowlby One',sans-serif;color:#fff4e0;background:#1b1240;padding:.15em .4em;pointer-events:none;letter-spacing:.02em;box-shadow:10px 10px 0 #fff4e0}</style></head><body>
+<h1>TRUCHET</h1>
+<script>
+const s=Math.max(46,Math.min(innerWidth,innerHeight)/9);const cols=Math.ceil(innerWidth/s),rows=Math.ceil(innerHeight/s)+1;document.body.style.setProperty('--c',cols);document.body.style.setProperty('--s',(innerWidth/cols)+'px');
+const T=[];for(let i=0;i<cols*rows;i++){const t=document.createElement('div');t.className='t';t.style.overflow='hidden';t.r=Math.random()<.5?0:90;t.style.transform=`rotate(${t.r}deg)`;t.onmouseenter=t.onclick=()=>{t.r+=90;t.style.transform=`rotate(${t.r}deg)`};document.body.appendChild(t);T.push(t)}
+setInterval(()=>{for(let k=0;k<4;k++){const t=T[Math.random()*T.length|0];t.r+=90;t.style.transform=`rotate(${t.r}deg)`}},300);
+addEventListener('resize',()=>location.reload());
+</script></body></html>

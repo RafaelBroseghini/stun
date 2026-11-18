@@ -1,0 +1,22 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Karesansui Garden</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;700&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#cfc6b4;touch-action:none}canvas{display:block;width:100%;height:100%;cursor:none}
+.l{position:fixed;left:30px;bottom:26px;font:400 14px 'Zen Old Mincho',serif;color:#4a4236;letter-spacing:.12em}.l b{display:block;font-size:26px;font-weight:700;margin-bottom:4px}
+#cur{position:fixed;width:70px;height:6px;border-radius:3px;background:#6b4a2a;pointer-events:none;transform:translate(-50%,-50%);box-shadow:0 2px 4px #0004}</style></head><body>
+<canvas id="c"></canvas><div id="cur"></div><div class="l"><b>枯山水 · Karesansui</b>Drag to rake the gravel. Double-click to smooth it.</div>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio,2);let W,H,rocks,grain;
+function mkGrain(){grain=document.createElement('canvas');grain.width=grain.height=256;const g=grain.getContext('2d'),d=g.createImageData(256,256);for(let i=0;i<d.data.length;i+=4){const v=200+Math.random()*40;d.data[i]=v;d.data[i+1]=v-8;d.data[i+2]=v-24;d.data[i+3]=255}g.putImageData(d,0,0)}
+function groove(pts,w){for(let k=-2;k<=2;k++){x.lineWidth=3.4*dpr;x.strokeStyle='rgba(80,64,40,.28)';x.beginPath();pts.forEach(([px,py,nx,ny],i)=>{const X=px+nx*k*w+nx*1.2*dpr,Y=py+ny*k*w+ny*1.2*dpr;i?x.lineTo(X,Y):x.moveTo(X,Y)});x.stroke();x.lineWidth=2*dpr;x.strokeStyle='rgba(255,250,235,.55)';x.beginPath();pts.forEach(([px,py,nx,ny],i)=>{const X=px+nx*k*w-nx*1.2*dpr,Y=py+ny*k*w-ny*1.2*dpr;i?x.lineTo(X,Y):x.moveTo(X,Y)});x.stroke()}}
+function smooth(){x.fillStyle=x.createPattern(grain,'repeat');x.fillRect(0,0,W,H);
+for(let y=-20*dpr;y<H+40;y+=60*dpr){const pts=[];for(let X=0;X<=W;X+=8*dpr)pts.push([X,y+Math.sin(X*.004/dpr)*6*dpr,0,1]);groove(pts,11*dpr)}
+rocks.forEach(r=>{x.fillStyle=x.createPattern(grain,'repeat');x.beginPath();x.arc(r.x,r.y,r.r*2.9,0,7);x.fill();for(let k=0;k<4;k++){const R=r.r*1.25+k*r.r*.42,pts=[];for(let a=0;a<=Math.PI*2+.1;a+=.05)pts.push([r.x+Math.cos(a)*R,r.y+Math.sin(a)*R,Math.cos(a),Math.sin(a)]);groove(pts,0)}});
+rocks.forEach(r=>{x.save();x.shadowColor='rgba(40,30,20,.45)';x.shadowBlur=30*dpr;x.shadowOffsetY=12*dpr;const g=x.createRadialGradient(r.x-r.r*.4,r.y-r.r*.5,r.r*.1,r.x,r.y,r.r*1.2);g.addColorStop(0,'#8d877c');g.addColorStop(.6,'#4b4741');g.addColorStop(1,'#26241f');x.fillStyle=g;x.beginPath();for(let a=0;a<Math.PI*2;a+=.3){const rr=r.r*(1+Math.sin(a*3+r.s)*.08+Math.cos(a*5+r.s)*.05);x.lineTo(r.x+Math.cos(a)*rr*1.15,r.y+Math.sin(a)*rr*.85)}x.fill();x.restore();
+x.fillStyle='rgba(90,120,60,.55)';for(let i=0;i<30;i++){const a=Math.random()*7,d=Math.random()*r.r*.7;x.beginPath();x.arc(r.x+Math.cos(a)*d,r.y+r.r*.4+Math.sin(a)*d*.3,Math.random()*4*dpr+1,0,7);x.fill()}})}
+function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr;const m=Math.min(W,H);rocks=[{x:W*.28,y:H*.38,r:m*.09,s:1},{x:W*.66,y:H*.58,r:m*.065,s:3},{x:W*.74,y:H*.27,r:m*.04,s:5}];smooth()}
+mkGrain();size();addEventListener('resize',size);c.addEventListener('dblclick',smooth);
+let last=null,acc=[];const cur=document.getElementById('cur');
+c.addEventListener('pointermove',e=>{cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';if(!last||!e.buttons){return}const X=e.clientX*dpr,Y=e.clientY*dpr,dx=X-last[0],dy=Y-last[1],d=Math.hypot(dx,dy);if(d<4*dpr)return;const nx=-dy/d,ny=dx/d;cur.style.transform=`translate(-50%,-50%) rotate(${Math.atan2(ny,nx)}rad)`;
+x.fillStyle=x.createPattern(grain,'repeat');x.beginPath();x.arc(X,Y,36*dpr,0,7);x.fill();groove([[last[0],last[1],nx,ny],[X,Y,nx,ny]],11*dpr);last=[X,Y]});
+c.addEventListener('pointerdown',e=>{c.setPointerCapture(e.pointerId);last=[e.clientX*dpr,e.clientY*dpr]});c.addEventListener('pointerup',()=>last=null);
+</script></body></html>

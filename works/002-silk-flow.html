@@ -1,0 +1,17 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Silk Flow Field</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@500;800&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#0a0d18;cursor:crosshair}canvas{display:block;width:100%;height:100%}
+.l{position:fixed;right:4vw;top:4vh;text-align:right;color:#f3e7d3;font:800 clamp(30px,6vw,90px)/.9 Syne,system-ui,sans-serif;letter-spacing:-.04em;mix-blend-mode:difference}.l span{display:block;font-weight:500;font-size:12px;letter-spacing:.3em;margin-top:12px;opacity:.7}</style></head><body>
+<canvas id="c"></canvas><div class="l">silk<br>study<span id="s"></span></div>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');let W,H,pts,P,seed,pal;const sc=.0016/Math.min(devicePixelRatio,2)*1.4;const dpr=Math.min(devicePixelRatio,2);
+const fd=t=>t*t*t*(t*(t*6-15)+10),lp=(a,b,t)=>a+t*(b-a),gr=(h,x,y)=>{h&=7;const u=h<4?x:y,v=h<4?y:x;return((h&1)?-u:u)+((h&2)?-2*v:2*v)};
+function N(x,y){let X=Math.floor(x)&255,Y=Math.floor(y)&255;x-=Math.floor(x);y-=Math.floor(y);const u=fd(x),v=fd(y),a=P[X]+Y,b=P[X+1]+Y;return lp(lp(gr(P[a],x,y),gr(P[b],x-1,y),u),lp(gr(P[a+1],x,y-1),gr(P[b+1],x-1,y-1),u),v)}
+const pals=[['#ff6b5b','#ffc857','#3ec9c1','#f3e7d3'],['#e85d9e','#7b6cff','#47e5ff','#fff1c1'],['#ff9f1c','#e71d36','#2ec4b6','#fdfffc'],['#c6f91f','#20e3b2','#2b59c3','#f7f7ff']];
+function init(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr;seed=Math.random()*9999|0;P=new Uint8Array(512);for(let i=0;i<256;i++)P[i]=i;for(let i=255;i>0;i--){const j=Math.random()*(i+1)|0;[P[i],P[j]]=[P[j],P[i]]}for(let i=0;i<256;i++)P[i+256]=P[i];
+pal=pals[Math.random()*pals.length|0];x.fillStyle='#0a0d18';x.fillRect(0,0,W,H);pts=Array.from({length:2600},()=>sp());document.getElementById('s').textContent='seed '+seed+' · click to reseed';if(window.step)for(let i=0;i<260;i++)step()}
+function sp(){return{x:Math.random()*W,y:Math.random()*H,l:80+Math.random()*260,c:pal[Math.random()*pal.length|0]}}
+init();addEventListener('resize',init);c.addEventListener('click',init);
+
+function step(){x.lineWidth=.9*dpr;x.globalAlpha=.07;for(let i=0;i<pts.length;i++){const p=pts[i];const a=N(p.x*sc,p.y*sc)*Math.PI*3.2+N(p.x*sc*4,p.y*sc*4)*.6;const nx=p.x+Math.cos(a)*1.6*dpr,ny=p.y+Math.sin(a)*1.6*dpr;x.strokeStyle=p.c;x.beginPath();x.moveTo(p.x,p.y);x.lineTo(nx,ny);x.stroke();p.x=nx;p.y=ny;if(--p.l<0||p.x<0||p.y<0||p.x>W||p.y>H)pts[i]=sp()}}function f(){step();requestAnimationFrame(f)}for(let i=0;i<260;i++)step();f();
+</script></body></html>

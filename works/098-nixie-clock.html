@@ -1,0 +1,17 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Nixie Clock</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fjalla+One&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#141210 radial-gradient(ellipse at 50% 60%,#2a2018,#0c0a08 70%);display:grid;place-items:center;font-family:'Fjalla One',sans-serif}
+.base{display:flex;gap:clamp(6px,1.2vw,16px);align-items:flex-end;padding:clamp(14px,2vw,26px) clamp(16px,3vw,40px) clamp(20px,3vw,36px);background:linear-gradient(#3a2416,#1f130b);border-radius:12px;box-shadow:0 30px 60px #000,inset 0 2px 0 #5a3a22}
+.tube{position:relative;width:clamp(44px,9vw,110px);aspect-ratio:.52;border-radius:46% 46% 8px 8px/22% 22% 8px 8px;background:linear-gradient(90deg,rgba(255,255,255,.12),rgba(255,255,255,.02) 30%,rgba(255,255,255,.0) 70%,rgba(255,255,255,.1));box-shadow:inset 0 0 0 1px rgba(255,255,255,.18),inset 0 -14px 20px rgba(0,0,0,.5);overflow:hidden}
+.tube::before{content:"";position:absolute;inset:16% 10% 10%;background-image:linear-gradient(rgba(140,120,100,.25) 1px,transparent 1px),linear-gradient(90deg,rgba(140,120,100,.25) 1px,transparent 1px);background-size:6px 6px}
+.tube::after{content:"";position:absolute;left:0;right:0;bottom:0;height:9%;background:linear-gradient(#555,#222)}
+.d{position:absolute;inset:14% 0 10%;display:grid;place-items:center;font-size:clamp(46px,10vw,124px);line-height:1}.d span{grid-area:1/1;color:rgba(120,90,60,.18)}.d span.on{color:#ffb35c;text-shadow:0 0 4px #fff3c0,0 0 10px #ff7a1a,0 0 24px #ff5a00,0 0 50px #ff5a00}
+.col{display:flex;flex-direction:column;gap:clamp(10px,2vw,24px);padding-bottom:clamp(30px,5vw,60px)}.col i{width:clamp(6px,1vw,12px);aspect-ratio:1;border-radius:50%;background:#ffb35c;box-shadow:0 0 10px #ff5a00,0 0 20px #ff5a00;animation:b 1s steps(1) infinite}@keyframes b{50%{opacity:.15}}
+.lbl{position:fixed;bottom:5vh;color:#8a6a4a;letter-spacing:.4em;font-size:12px}</style></head><body>
+<div class="base" id="b"></div><div class="lbl">IN-14 TUBES · 170 V · <span id="tz"></span></div>
+<script>
+const b=document.getElementById('b'),T=[];const order=[1,6,2,7,5,0,4,9,8,3];
+for(let i=0;i<6;i++){if(i===2||i===4){const c=document.createElement('div');c.className='col';c.innerHTML='<i></i><i></i>';b.appendChild(c)}const t=document.createElement('div');t.className='tube';const d=document.createElement('div');d.className='d';order.forEach(n=>{const s=document.createElement('span');s.textContent=n;s.dataset.n=n;d.appendChild(s)});t.appendChild(d);b.appendChild(t);T.push(d)}
+let prev='';function tick(){const n=new Date(),s=[n.getHours(),n.getMinutes(),n.getSeconds()].map(v=>String(v).padStart(2,'0')).join('');s.split('').forEach((ch,i)=>{if(prev[i]===ch)return;const d=T[i];let k=0;const iv=setInterval(()=>{d.querySelectorAll('span').forEach(sp=>sp.classList.toggle('on',sp.dataset.n==(k<6?(Math.random()*10|0):ch)));if(++k>6)clearInterval(iv)},40)});prev=s}
+tick();setInterval(tick,250);document.getElementById('tz').textContent=Intl.DateTimeFormat().resolvedOptions().timeZone.toUpperCase();
+</script></body></html>
