@@ -1,0 +1,22 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Snow Globe</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:radial-gradient(circle at 50% 40%,#3a2147,#140b1c 75%);display:grid;place-items:center;font-family:'Mountains of Christmas',cursive;color:#ffe9c9}
+.g{position:relative;width:min(70vmin,560px);aspect-ratio:1/1.12;cursor:pointer}.g.sh{animation:sh .6s}@keyframes sh{20%{transform:rotate(-8deg) translateX(-10px)}40%{transform:rotate(7deg) translateX(10px)}60%{transform:rotate(-5deg)}80%{transform:rotate(3deg)}}
+canvas{position:absolute;left:0;top:0;width:100%;aspect-ratio:1;border-radius:50%}
+.gl{position:absolute;left:0;top:0;width:100%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.55),rgba(255,255,255,0) 22%),radial-gradient(circle at 70% 80%,rgba(255,255,255,.12),transparent 30%);box-shadow:inset 0 0 30px rgba(255,255,255,.35),inset -10px -20px 40px rgba(120,160,255,.15),0 0 60px rgba(255,200,150,.15);pointer-events:none}
+.base{position:absolute;left:8%;right:8%;bottom:0;height:22%;background:linear-gradient(90deg,#4a1d14,#8a3a22 30%,#b5562e 50%,#6a2a18 80%,#3a140c);clip-path:polygon(8% 0,92% 0,100% 100%,0 100%);border-radius:0 0 12px 12px;display:grid;place-items:center}
+.base span{font-size:clamp(18px,3vw,30px);color:#ffd98a;text-shadow:0 2px 0 #3a140c}.h{position:fixed;bottom:4vh;font-family:system-ui;font-size:12px;letter-spacing:.3em;opacity:.7}</style></head><body>
+<div class="g" id="g"><canvas id="c"></canvas><div class="gl"></div><div class="base"><span>Vinterby · 1927</span></div></div><div class="h">CLICK TO SHAKE</div>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');let S,P=[],swirl=0;function size(){S=c.width=c.height=c.clientWidth*Math.min(devicePixelRatio,2)}size();addEventListener('resize',size);
+for(let i=0;i<420;i++)P.push({x:Math.random(),y:.55+Math.random()*.25,vx:0,vy:0,r:.003+Math.random()*.006});
+document.getElementById('g').onclick=e=>{const g=e.currentTarget;g.classList.remove('sh');void g.offsetWidth;g.classList.add('sh');swirl=1;for(const p of P){p.vx=(Math.random()-.5)*.03;p.vy=-Math.random()*.035}};
+function house(X,Y,w,h,col){x.fillStyle=col;x.fillRect(X,Y-h,w,h);x.fillStyle='#f4f4ff';x.beginPath();x.moveTo(X-w*.12,Y-h);x.lineTo(X+w/2,Y-h-w*.55);x.lineTo(X+w*1.12,Y-h);x.fill();x.fillStyle='#ffd36e';x.fillRect(X+w*.2,Y-h*.65,w*.22,w*.22);x.fillRect(X+w*.58,Y-h*.65,w*.22,w*.22)}
+function tree(X,Y,s){x.fillStyle='#1f5a3a';for(let k=0;k<3;k++){x.beginPath();x.moveTo(X,Y-s*(1-k*.25)-s*.4);x.lineTo(X-s*(.45-k*.08),Y-s*k*.25);x.lineTo(X+s*(.45-k*.08),Y-s*k*.25);x.fill()}x.fillStyle='#fff';x.beginPath();x.arc(X,Y-s*1.4,s*.06,0,7);x.fill()}
+function f(t){x.clearRect(0,0,S,S);x.save();x.beginPath();x.arc(S/2,S/2,S/2-2,0,7);x.clip();const g=x.createLinearGradient(0,0,0,S);g.addColorStop(0,'#1b2a5a');g.addColorStop(.7,'#5a6fb0');x.fillStyle=g;x.fillRect(0,0,S,S);
+x.fillStyle='#fff8e0';x.beginPath();x.arc(S*.72,S*.25,S*.05,0,7);x.fill();x.fillStyle='#eef2ff';x.beginPath();x.ellipse(S/2,S*.86,S*.55,S*.18,0,0,7);x.fill();
+house(S*.3,S*.75,S*.12,S*.1,'#a8323e');house(S*.5,S*.73,S*.14,S*.16,'#2d5d8a');house(S*.68,S*.76,S*.1,S*.08,'#c98a2e');tree(S*.22,S*.78,S*.1);tree(S*.82,S*.78,S*.12);tree(S*.45,S*.79,S*.06);
+x.fillStyle='#fff';swirl*=.985;for(const p of P){p.vx+=(Math.sin(t*.002+p.y*10)*.0006)*swirl;p.vy+=.00012;p.vx*=.985;p.vy*=.985;p.x+=p.vx;p.y+=p.vy;if(p.y>.82+Math.sin(p.x*9)*.02){p.y=.82+Math.sin(p.x*9)*.02;p.vy=0;p.vx*=.5}if(p.x<.05||p.x>.95)p.vx*=-1;
+const dx=p.x-.5,dy=p.y-.5;if(dx*dx+dy*dy>.22){p.x=.5+dx*.97;p.y=.5+dy*.97}x.globalAlpha=.9;x.beginPath();x.arc(p.x*S,p.y*S,p.r*S,0,7);x.fill()}x.globalAlpha=1;x.restore();requestAnimationFrame(f)}
+setTimeout(()=>document.getElementById('g').click(),300);requestAnimationFrame(f);
+</script></body></html>

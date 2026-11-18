@@ -1,0 +1,28 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Skyline Weather</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;400;600&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#c9d6df;font-family:Outfit,system-ui,sans-serif;display:flex;align-items:center;justify-content:center;gap:5vw;transition:background 1s}
+.ph{position:relative;width:min(360px,86vw);height:min(740px,92vh);border-radius:46px;overflow:hidden;box-shadow:0 0 0 10px #111,0 40px 80px rgba(0,0,0,.4);color:#fff;transition:background 1s}
+canvas{position:absolute;inset:0;width:100%;height:100%}.ui{position:relative;height:100%;display:flex;flex-direction:column;padding:56px 26px 26px}
+.city{font-size:26px;font-weight:600}.date{opacity:.8;font-size:14px}.tmp{font-size:118px;font-weight:200;line-height:1;margin-top:auto;letter-spacing:-.04em}.cond{font-size:20px;margin-bottom:22px}
+.days{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;background:rgba(255,255,255,.18);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-radius:22px;padding:14px 8px;text-align:center;font-size:13px}.days b{display:block;font-size:17px;font-weight:600;margin-top:4px}
+.sun{position:absolute;right:-40px;top:80px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,#fff6c9,#ffd45e 50%,rgba(255,180,60,0) 72%);animation:p 4s ease-in-out infinite alternate;transition:opacity 1s}@keyframes p{to{transform:scale(1.08)}}
+.cl{position:absolute;width:220px;height:70px;background:#fff;border-radius:50px;filter:blur(2px);opacity:.92;transition:opacity 1s}.cl::before,.cl::after{content:"";position:absolute;background:inherit;border-radius:50%}.cl::before{width:100px;height:100px;left:30px;top:-50px}.cl::after{width:80px;height:80px;left:110px;top:-35px}
+.c1{top:150px;left:-60px;animation:dr 26s linear infinite}.c2{top:230px;left:120px;transform:scale(.7);animation:dr 34s linear infinite -12s}@keyframes dr{from{translate:-120px 0}to{translate:420px 0}}
+.tabs{display:flex;flex-direction:column;gap:10px}.tabs button{font:600 15px Outfit,sans-serif;padding:14px 22px;border-radius:16px;border:0;background:rgba(255,255,255,.55);cursor:pointer;text-align:left;min-width:180px;display:flex;justify-content:space-between;gap:20px}.tabs button.on{background:#111;color:#fff}
+@media(max-width:700px){body{flex-direction:column-reverse;gap:10px}.tabs{flex-direction:row;flex-wrap:wrap;justify-content:center}.tabs button{min-width:0;padding:8px 12px}.ph{height:78vh}}</style></head><body>
+<div class="ph" id="ph"><canvas id="c"></canvas><div class="sun" id="sun"></div><div class="cl c1" id="c1"></div><div class="cl c2" id="c2"></div>
+<div class="ui"><div class="city" id="city"></div><div class="date" id="date"></div><div class="tmp" id="tmp"></div><div class="cond" id="cond"></div><div class="days" id="days"></div></div></div>
+<div class="tabs" id="tabs"></div>
+<script>
+const C=[{n:'Lisbon',t:24,c:'Clear and bright',k:'sun',bg:'linear-gradient(#3fa7f5,#8fd0ff 60%,#ffe3a6)',page:'#ffe9c2'},{n:'Bergen',t:9,c:'Steady rain',k:'rain',bg:'linear-gradient(#2c3e50,#4b6075 60%,#6d8399)',page:'#aab7c4'},{n:'Sapporo',t:-3,c:'Light snow',k:'snow',bg:'linear-gradient(#8ea7c4,#c3d3e6 70%,#eef3f9)',page:'#e3ebf4'},{n:'Galway',t:14,c:'Drifting cloud',k:'cloud',bg:'linear-gradient(#6f8fb0,#a9c0d6 60%,#dfe8f0)',page:'#c9d6df'}];
+const days=['Thu','Fri','Sat','Sun','Mon'];const tabs=document.getElementById('tabs');let cur=0,mode='sun';
+C.forEach((c,i)=>{const b=document.createElement('button');b.innerHTML=`<span>${c.n}</span><span>${c.t}°</span>`;b.onclick=()=>set(i);tabs.appendChild(b)});
+function set(i){cur=i;const c=C[i];mode=c.k;document.getElementById('ph').style.background=c.bg;document.body.style.background=c.page;document.getElementById('city').textContent=c.n;document.getElementById('tmp').textContent=c.t+'°';document.getElementById('cond').textContent=c.c;
+document.getElementById('date').textContent=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});document.getElementById('days').innerHTML=days.map((d,k)=>`<div>${d}<b>${c.t+Math.round(Math.sin(k*1.7+i)*4)}°</b></div>`).join('');
+document.getElementById('sun').style.opacity=c.k==='sun'?1:c.k==='cloud'?.35:0;['c1','c2'].forEach(id=>document.getElementById(id).style.opacity=c.k==='sun'?.5:c.k==='cloud'?.95:c.k==='rain'?.55:.7);[...tabs.children].forEach((b,k)=>b.classList.toggle('on',k===i))}
+const cv=document.getElementById('c'),x=cv.getContext('2d');let ps=[];function sz(){cv.width=cv.clientWidth;cv.height=cv.clientHeight}sz();addEventListener('resize',sz);
+for(let i=0;i<220;i++)ps.push({x:Math.random()*400,y:Math.random()*800,v:Math.random()});
+function f(){x.clearRect(0,0,cv.width,cv.height);if(mode==='rain'){x.strokeStyle='rgba(210,230,255,.55)';x.lineWidth=1.2;x.beginPath();for(const p of ps){p.y+=10+p.v*8;p.x-=1.5;if(p.y>cv.height){p.y=-20;p.x=Math.random()*cv.width+40}x.moveTo(p.x,p.y);x.lineTo(p.x+2,p.y-14)}x.stroke()}
+if(mode==='snow'){x.fillStyle='rgba(255,255,255,.9)';for(const p of ps){p.y+=.6+p.v*1.4;p.x+=Math.sin(p.y*.02+p.v*9)*.6;if(p.y>cv.height){p.y=-5;p.x=Math.random()*cv.width}x.beginPath();x.arc(p.x,p.y,1+p.v*2.5,0,7);x.fill()}}requestAnimationFrame(f)}
+set(0);f();setInterval(()=>set((cur+1)%C.length),5000);tabs.addEventListener('click',()=>{},{once:true});
+</script></body></html>

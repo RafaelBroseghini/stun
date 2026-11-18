@@ -1,0 +1,12 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Kinetic Type</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#1d1bd0;font-family:Anton,Impact,sans-serif;display:flex;flex-direction:column;justify-content:center;transform:rotate(-6deg) scale(1.15)}
+.r{white-space:nowrap;font-size:16.5vh;line-height:.95;text-transform:uppercase;display:flex}
+.r span{display:inline-block;padding-right:.3em;animation:m var(--d) linear infinite;animation-direction:var(--dir)}
+.r:nth-child(odd) span{color:transparent;-webkit-text-stroke:2px #fff}.r:nth-child(3n) span{color:#ff7ad9;-webkit-text-stroke:0}.r:nth-child(4n) span{color:#fff;-webkit-text-stroke:0}
+.r:hover span{animation-duration:calc(var(--d) / 4)}
+@keyframes m{to{transform:translateX(-100%)}}</style></head><body>
+<script>
+const rows=['Motion is the message','Every letter wants to run','Speed · weight · rhythm','Type in perpetual transit','Read me if you can','Kinetic · restless · loud','The page never sits still'];
+rows.forEach((t,i)=>{const r=document.createElement('div');r.className='r';r.style.setProperty('--d',(10+i*3.3)+'s');r.style.setProperty('--dir',i%2?'reverse':'normal');const s=`<span>${t} —&nbsp;</span>`;r.innerHTML=s.repeat(4);document.body.appendChild(r)});
+</script></body></html>

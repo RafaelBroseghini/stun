@@ -1,0 +1,27 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Beat Garden 16</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;800&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#c8f0dc;font-family:Rubik,sans-serif;color:#0f3b2e;display:grid;place-items:center}
+.m{width:min(980px,96vw);background:#0f3b2e;border-radius:26px;padding:clamp(14px,2.5vw,28px);box-shadow:0 24px 0 #0a2a20,0 40px 60px rgba(15,59,46,.4)}
+.hd{display:flex;align-items:center;gap:16px;margin-bottom:18px;color:#c8f0dc;flex-wrap:wrap}.hd h1{font-weight:800;font-size:clamp(20px,3vw,34px);flex:1;letter-spacing:-.02em}
+.play{width:62px;height:62px;border-radius:50%;border:0;background:#ffcf4a;font-size:22px;cursor:pointer;box-shadow:0 5px 0 #c99a1a;color:#0f3b2e}.play:active{transform:translateY(3px);box-shadow:0 2px 0 #c99a1a}
+.bpm{display:flex;align-items:center;gap:8px;font-weight:500}.bpm input{accent-color:#ffcf4a;width:120px}
+.g{display:grid;grid-template-columns:70px repeat(16,minmax(0,1fr));gap:5px}.lab{color:#c8f0dc;font-weight:500;font-size:12px;display:flex;align-items:center;letter-spacing:.1em}
+.s{aspect-ratio:1;border-radius:8px;background:#1d5a47;border:0;cursor:pointer;transition:transform .08s}.s:nth-child(17n+6),.s:nth-child(17n+7),.s:nth-child(17n+8),.s:nth-child(17n+9),.s:nth-child(17n+14),.s:nth-child(17n+15),.s:nth-child(17n+16),.s:nth-child(17n+17){background:#174d3d}
+.s.on{background:var(--c)!important;box-shadow:0 0 14px var(--c)}.s.cur{outline:3px solid #fff;outline-offset:-3px}.s.hit{transform:scale(.86)}
+.foot{margin-top:14px;color:#7fbfa5;font-size:12px}@media(max-width:620px){.g{grid-template-columns:44px repeat(16,minmax(0,1fr));gap:2px}.s{border-radius:4px}.lab{font-size:9px}}</style></head><body>
+<div class="m"><div class="hd"><button class="play" id="pl" aria-label="play">▶</button><h1>Beat Garden 16</h1><label class="bpm">BPM <input id="bpm" type="range" min="70" max="170" value="104"><b id="bv">104</b></label></div><div class="g" id="g"></div><div class="foot">Synthesised in your browser — no samples. Tap pads to edit the pattern.</div></div>
+<script>
+const T=[['KICK','#ff7a59','x...x.....x.x...'],['SNARE','#ffcf4a','....x.......x...'],['CLAP','#ff5fa2','............x..x'],['HAT','#7fe3ff','x.x.x.x.x.x.xxx.'],['TOM','#b38cff','......x.......x.'],['BELL','#8dffb0','..x.......x.....']];
+const g=document.getElementById('g'),cells=[];T.forEach(([n,c,p],r)=>{const l=document.createElement('div');l.className='lab';l.textContent=n;g.appendChild(l);cells[r]=[];for(let i=0;i<16;i++){const b=document.createElement('button');b.className='s'+(p[i]==='x'?' on':'');b.style.setProperty('--c',c);b.onclick=()=>b.classList.toggle('on');g.appendChild(b);cells[r].push(b)}});
+let A,noise,play=false,step=0,next=0;
+function init(){A=new AudioContext();noise=A.createBuffer(1,A.sampleRate,A.sampleRate);const d=noise.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}
+function env(node,t,a,dcy){const g=A.createGain();g.gain.setValueAtTime(a,t);g.gain.exponentialRampToValueAtTime(.001,t+dcy);node.connect(g);g.connect(A.destination);return g}
+function nz(t,type,f,a,d){const s=A.createBufferSource();s.buffer=noise;const fl=A.createBiquadFilter();fl.type=type;fl.frequency.value=f;s.connect(fl);env(fl,t,a,d);s.start(t);s.stop(t+d)}
+function osc(t,type,f0,f1,a,d){const o=A.createOscillator();o.type=type;o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(f1,t+d);env(o,t,a,d);o.start(t);o.stop(t+d)}
+const V=[t=>osc(t,'sine',150,40,1,.45),t=>{nz(t,'highpass',1200,.5,.18);osc(t,'triangle',220,120,.3,.1)},t=>{[0,.012,.024].forEach(o=>nz(t+o,'bandpass',1500,.5,.12))},t=>nz(t,'highpass',8000,.25,.05),t=>osc(t,'sine',220,90,.6,.3),t=>{osc(t,'square',800,800,.12,.25);osc(t,'square',540,540,.12,.25)}];
+function sched(){while(next<A.currentTime+.1){const s=step;T.forEach((_,r)=>{if(cells[r][s].classList.contains('on'))V[r](next)});const when=(next-A.currentTime)*1000;setTimeout(()=>{cells.forEach((row,r)=>row.forEach((b,i)=>{b.classList.toggle('cur',i===s);if(i===s&&b.classList.contains('on')){b.classList.add('hit');setTimeout(()=>b.classList.remove('hit'),90)}}))},when);
+next+=60/document.getElementById('bpm').value/4;step=(step+1)%16}if(play)setTimeout(sched,25)}
+document.getElementById('pl').onclick=e=>{if(!A)init();play=!play;e.currentTarget.textContent=play?'❚❚':'▶';if(play){A.resume();next=A.currentTime+.05;sched()}};
+document.getElementById('bpm').oninput=e=>document.getElementById('bv').textContent=e.target.value;
+let vs=0;const idle=setInterval(()=>{if(play){clearInterval(idle);return}cells.forEach(row=>row.forEach((b,i)=>b.classList.toggle('cur',i===vs)));vs=(vs+1)%16},230);
+</script></body></html>

@@ -1,0 +1,24 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Phosphor Terminal</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#1a1410;display:grid;place-items:center;font-family:VT323,ui-monospace,monospace}
+.bezel{width:min(94vw,1100px);height:min(90vh,800px);background:linear-gradient(145deg,#3b332a,#1f1a15);border-radius:28px;padding:clamp(14px,3vw,40px);box-shadow:0 40px 80px #000,inset 0 2px 0 #5a4e40}
+.scr{position:relative;width:100%;height:100%;border-radius:40px/30px;background:radial-gradient(ellipse at center,#2a1700 0%,#120900 75%,#050200 100%);overflow:hidden;box-shadow:inset 0 0 80px #000,inset 0 0 12px #000}
+.scr::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(rgba(0,0,0,.35) 0 1px,transparent 1px 3px);pointer-events:none;z-index:2}
+.scr::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 40% 30%,rgba(255,200,120,.08),transparent 60%);pointer-events:none;z-index:3;animation:fl .12s infinite}
+@keyframes fl{50%{opacity:.85}}
+#o{position:absolute;inset:0;padding:4% 5%;color:#ffb000;font-size:clamp(16px,2.3vw,26px);line-height:1.15;white-space:pre-wrap;text-shadow:0 0 4px #ff8c00,0 0 14px rgba(255,140,0,.5);overflow:hidden;z-index:1}
+.cur{display:inline-block;width:.6em;height:1em;background:#ffb000;vertical-align:-.12em;animation:b 1s steps(1) infinite;box-shadow:0 0 8px #ff8c00}@keyframes b{50%{opacity:0}}
+input{position:absolute;opacity:0;pointer-events:none}</style></head><body>
+<div class="bezel"><div class="scr" id="scr"><div id="o"></div></div></div><input id="k" autocomplete="off" aria-label="terminal input">
+<script>
+const o=document.getElementById('o'),k=document.getElementById('k');let buf='',ready=false,line='';
+const boot=["HELIOS-7 ROM BIOS v2.04  (C) 1983 Amber Systems Corp.","","MEMORY TEST ........ 640K OK","DISK 0 ............. 10MB WINCHESTER","CLOCK .............. "+new Date().toTimeString().slice(0,8),"","LOADING KERNEL █████████████████ 100%","",
+"   _  _ ___ _    ___ ___  ___ "," | || | __| |  |_ _/ _ \\/ __|"," | __ | _|| |__ | | (_) \\__ \\"," |_||_|___|____|___\\___/|___/","","Type HELP for a list of commands.",""];
+function render(){o.innerHTML=(buf+(ready?'> '+line:'')).replace(/&/g,'&amp;').replace(/</g,'&lt;')+'<span class="cur"></span>';const ls=o.innerHTML.split('\n');if(o.scrollHeight>o.clientHeight)buf=buf.split('\n').slice(4).join('\n')}
+async function type(s,d=12){for(const ch of s){buf+=ch;render();await new Promise(r=>setTimeout(r,d))}buf+='\n';render()}
+(async()=>{for(const l of boot)await type(l,l.startsWith(' ')?2:10);ready=true;render()})();
+const fort=["The best way to predict the future is to invent it.","There are 10 kinds of people.","Beware of bugs in the above code; I have only proved it correct, not tried it.","A clean disk is a happy disk.","Phosphor fades. Ideas persist."];
+const cmds={help:()=>"HELP DATE FORTUNE DIR CLEAR ECHO <TEXT>",date:()=>new Date().toString().toUpperCase(),fortune:()=>fort[Math.random()*fort.length|0],dir:()=>" README   TXT    1204\n GAMES    <DIR>\n LETTERS  <DIR>\n AUTOEXEC BAT     88",clear:()=>{buf='';return null}};
+document.addEventListener('click',()=>k.focus());k.focus();
+document.addEventListener('keydown',e=>{if(!ready)return;if(e.key==='Enter'){const c=line.trim().toLowerCase(),[w,...r]=c.split(' ');buf+='> '+line+'\n';line='';let out=w==='echo'?r.join(' ').toUpperCase():(cmds[w]?cmds[w]():(c?'BAD COMMAND OR FILE NAME':''));if(out)buf+=out+'\n';render()}else if(e.key==='Backspace'){line=line.slice(0,-1);render()}else if(e.key.length===1){line+=e.key.toUpperCase();render()}});
+</script></body></html>

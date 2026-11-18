@@ -1,0 +1,19 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Wet on Wet</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Italianno&family=Lato:wght@300&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#f7f4ee}canvas{display:block;width:100%;height:100%;cursor:pointer}
+.t{position:fixed;right:5vw;bottom:5vh;text-align:right;color:#4a4458}.t h1{font:400 clamp(50px,8vw,120px)/.8 Italianno,cursive}.t p{font:300 12px Lato,sans-serif;letter-spacing:.3em;text-transform:uppercase;margin-top:8px}</style></head><body>
+<canvas id="c"></canvas><div class="t"><h1>Wet on Wet</h1><p>Click to let a colour bloom</p></div>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio,2);let W,H,Q=[];
+function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr;x.fillStyle='#f7f4ee';x.fillRect(0,0,W,H);const d=x.getImageData(0,0,W,H);for(let i=0;i<d.data.length;i+=4){const n=(Math.random()-.5)*10;d.data[i]+=n;d.data[i+1]+=n;d.data[i+2]+=n}x.putImageData(d,0,0)}
+const g=()=>{let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};
+function deform(p,d,v){const o=[];for(let i=0;i<p.length;i++){const a=p[i],b=p[(i+1)%p.length];o.push(a);const len=Math.hypot(b[0]-a[0],b[1]-a[1]);const m=[(a[0]+b[0])/2+g()*len*v,(a[1]+b[1])/2+g()*len*v];o.push(m)}return d>1?deform(o,d-1,v):o}
+function poly(cx,cy,r,n=10){return Array.from({length:n},(_,i)=>{const a=i/n*Math.PI*2;return[cx+Math.cos(a)*r,cy+Math.sin(a)*r]})}
+const pal=[[214,72,110],[240,160,60],[60,130,190],[110,70,160],[50,150,120],[230,110,80]];
+function bloom(cx,cy,r,col){const base=deform(poly(cx,cy,r),3,.45);for(let l=0;l<36;l++)Q.push({p:deform(base,3,.3),col,a:.022})}
+c.addEventListener('click',e=>bloom(e.clientX*dpr,e.clientY*dpr,(40+Math.random()*90)*dpr,pal[Math.random()*pal.length|0]));
+size();addEventListener('resize',size);
+const start=[[.25,.35,.14,0],[.38,.55,.12,1],[.6,.4,.16,2],[.52,.7,.1,4],[.75,.6,.12,3],[.18,.68,.09,5],[.82,.28,.08,1]];start.forEach(([a,b,r,k])=>bloom(a*innerWidth*dpr,b*innerHeight*dpr,r*Math.min(innerWidth,innerHeight)*dpr*1.4,pal[k]));
+function f(){for(let k=0;k<6&&Q.length;k++){const q=Q.splice(Math.random()*Math.min(Q.length,40)|0,1)[0];x.globalCompositeOperation='multiply';x.fillStyle=`rgba(${q.col.join(',')},${q.a})`;x.beginPath();q.p.forEach((p,i)=>i?x.lineTo(...p):x.moveTo(...p));x.fill();x.globalCompositeOperation='source-over'}requestAnimationFrame(f)}
+for(let i=0;i<120;i++){const q=Q.shift();if(!q)break;x.globalCompositeOperation='multiply';x.fillStyle=`rgba(${q.col.join(',')},${q.a})`;x.beginPath();q.p.forEach((p,i)=>i?x.lineTo(...p):x.moveTo(...p));x.fill()}x.globalCompositeOperation='source-over';f();
+</script></body></html>

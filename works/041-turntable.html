@@ -1,0 +1,27 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Walnut Turntable</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@500&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#d9cbb8;display:grid;place-items:center;font-family:'DM Sans',sans-serif}
+.plinth{position:relative;width:min(92vw,128vh);aspect-ratio:1.33;border-radius:14px;background:linear-gradient(115deg,#5a3418,#7a4a24 20%,#5e381a 40%,#8a5a30 60%,#5a3418 80%);box-shadow:0 40px 80px rgba(60,30,10,.5),inset 0 2px 0 rgba(255,255,255,.2)}
+.plinth::before{content:"";position:absolute;inset:0;border-radius:14px;background:repeating-linear-gradient(100deg,rgba(0,0,0,.06) 0 2px,transparent 2px 9px);opacity:.8}
+.plat{position:absolute;left:6%;top:8%;height:84%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#999 0 1%,#333 1.5% 47%,#c8c8c8 48% 49%,#777 50%);box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.strobe{position:absolute;inset:0;border-radius:50%;background:repeating-conic-gradient(#ddd 0 1.5deg,#888 1.5deg 3deg);-webkit-mask:radial-gradient(closest-side,transparent 96%,#000 96.5%);mask:radial-gradient(closest-side,transparent 96%,#000 96.5%)}
+.rec{position:absolute;inset:3.5%;border-radius:50%;background:radial-gradient(circle,#111 0 2%,transparent 2.2%),radial-gradient(circle,transparent 0 33%,#0d0d0d 33.5% 35%,transparent 35.5%),repeating-radial-gradient(circle,#141414 0 1px,#1d1d1d 1px 2px,#101010 2px 3px);animation:spin 1.8s linear infinite;animation-play-state:paused}
+.rec::before{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 20deg,transparent 0 10%,rgba(255,255,255,.12) 15%,transparent 22% 55%,rgba(255,255,255,.1) 62%,transparent 70%)}
+.lbl{position:absolute;inset:34%;border-radius:50%;background:radial-gradient(circle,#d9cbb8 0 4%,#e14b2a 4.5%);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff3e0;text-align:center}
+.lbl b{font:italic 400 clamp(10px,1.7vw,20px) 'DM Serif Display',serif}.lbl small{font-size:clamp(6px,.8vw,10px);letter-spacing:.2em;margin-top:3px}
+@keyframes spin{to{transform:rotate(360deg)}}.on .rec{animation-play-state:running}
+.arm{position:absolute;right:13%;top:10%;width:4%;aspect-ratio:1;transform-origin:50% 50%;transform:rotate(-14deg);transition:transform 1.6s cubic-bezier(.5,0,.3,1)}
+.arm .piv{position:absolute;inset:-60%;border-radius:50%;background:radial-gradient(circle at 40% 35%,#eee,#777);box-shadow:0 6px 10px rgba(0,0,0,.4)}
+.arm .rod{position:absolute;left:40%;top:50%;width:22%;height:1050%;background:linear-gradient(90deg,#999,#fff,#888);border-radius:4px;transform-origin:top;transform:rotate(22deg);box-shadow:6px 10px 10px rgba(0,0,0,.35)}
+.arm .head{position:absolute;bottom:-6%;left:-150%;width:400%;height:8%;background:#222;border-radius:3px;transform:rotate(-30deg)}
+.on .arm{transform:rotate(14deg)}
+.ctl{position:absolute;right:5%;bottom:9%;display:flex;flex-direction:column;gap:14px;align-items:flex-end}
+.btn{display:flex;gap:8px}.btn button{font:500 12px 'DM Sans';letter-spacing:.15em;padding:10px 14px;border-radius:6px;border:0;background:#2a1a0e;color:#d9cbb8;cursor:pointer;box-shadow:0 3px 0 #120a04}.btn button.on{background:#e14b2a;color:#fff}
+.now{color:#f6e8d4;text-align:right;font-size:12px;letter-spacing:.1em}.now b{display:block;font:400 clamp(16px,2vw,26px) 'DM Serif Display',serif;letter-spacing:0}</style></head><body>
+<div class="plinth on" id="p"><div class="plat"><div class="strobe"></div><div class="rec" id="rec"><div class="lbl"><b>Tidewater</b><small>SIDE A · 33⅓</small></div></div></div>
+<div class="arm"><div class="piv"></div><div class="rod"><div class="head"></div></div></div>
+<div class="ctl"><div class="now"><span>NOW SPINNING</span><b>Ines Calder — Tidewater</b></div><div class="btn"><button class="on" data-s="1.8">33</button><button data-s="1.33">45</button><button id="pl">STOP</button></div></div></div>
+<script>
+const p=document.getElementById('p'),rec=document.getElementById('rec');document.getElementById('pl').onclick=e=>{p.classList.toggle('on');e.target.textContent=p.classList.contains('on')?'STOP':'PLAY'};
+document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{rec.style.animationDuration=b.dataset.s+'s';document.querySelectorAll('[data-s]').forEach(o=>o.classList.toggle('on',o===b))});
+</script></body></html>

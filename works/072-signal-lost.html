@@ -1,0 +1,19 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Signal Lost</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik+Glitch&family=JetBrains+Mono:wght@400;800&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#0a0a0a;display:grid;place-items:center;font-family:'JetBrains Mono',monospace;color:#fff}
+.g{position:relative;font:800 clamp(50px,13vw,200px)/.85 'JetBrains Mono',monospace;letter-spacing:-.06em;text-transform:uppercase;text-align:center}
+.g span{position:absolute;inset:0}.g .r{color:#ff1f4d;mix-blend-mode:screen;animation:gr 2.2s infinite steps(1)}.g .b{color:#1fd6ff;mix-blend-mode:screen;animation:gb 1.7s infinite steps(1)}.g .m{position:relative;color:#fff;mix-blend-mode:screen}
+@keyframes gr{0%{transform:translate(-4px,0);clip-path:inset(0 0 0 0)}10%{transform:translate(8px,-2px);clip-path:inset(20% 0 50% 0)}20%{transform:translate(-2px,1px);clip-path:inset(60% 0 10% 0)}35%{transform:translate(-6px,0);clip-path:inset(0)}60%{transform:translate(12px,3px);clip-path:inset(40% 0 35% 0)}70%{transform:translate(-3px,0);clip-path:inset(0)}}
+@keyframes gb{0%{transform:translate(4px,0)}15%{transform:translate(-10px,2px);clip-path:inset(10% 0 70% 0)}25%{transform:translate(3px,0);clip-path:inset(0)}50%{transform:translate(-5px,-2px);clip-path:inset(70% 0 5% 0)}65%{transform:translate(6px,0);clip-path:inset(0)}}
+.sl{position:absolute;left:-5%;right:-5%;height:8%;background:inherit;animation:sl 3s infinite steps(1)}
+.noise{position:fixed;inset:-50%;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");opacity:.13;animation:nz .3s steps(3) infinite;pointer-events:none}@keyframes nz{33%{transform:translate(-5%,3%)}66%{transform:translate(4%,-6%)}}
+.bar{position:fixed;left:0;right:0;height:14vh;background:linear-gradient(transparent,rgba(255,255,255,.08),transparent);animation:bar 4s linear infinite;pointer-events:none}@keyframes bar{from{top:-15vh}to{top:110vh}}
+.scan{position:fixed;inset:0;background:repeating-linear-gradient(transparent 0 2px,rgba(0,0,0,.35) 2px 4px);pointer-events:none}
+.hud{position:fixed;left:3vw;top:3vh;font-size:13px;letter-spacing:.15em;color:#ddd}.hud b{color:#ff1f4d}.rec{position:fixed;right:3vw;top:3vh;font-size:13px;letter-spacing:.2em}.rec::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;background:#ff1f4d;margin-right:8px;animation:bl 1s steps(1) infinite}@keyframes bl{50%{opacity:0}}
+.ft{position:fixed;bottom:4vh;left:0;right:0;text-align:center;font-size:12px;letter-spacing:.4em;color:#888}
+body:hover .g .r{animation-duration:.4s}body:hover .g .b{animation-duration:.33s}</style></head><body>
+<div class="noise"></div><div class="hud">CH 03 · <b>NO CARRIER</b><br><span id="tc">00:00:00:00</span></div><div class="rec">PLAY</div>
+<div class="g" id="g"><span class="r">Signal<br>Lost</span><span class="b">Signal<br>Lost</span><div class="m">Signal<br>Lost</div></div>
+<div class="bar"></div><div class="scan"></div><div class="ft">PLEASE ADJUST YOUR TRACKING · HOVER TO INTERFERE</div>
+<script>let f=0;setInterval(()=>{f++;const s=Math.floor(f/25),p=n=>String(n).padStart(2,'0');document.getElementById('tc').textContent=`${p(Math.floor(s/3600))}:${p(Math.floor(s/60)%60)}:${p(s%60)}:${p(f%25)}`;const g=document.getElementById('g');g.style.transform=Math.random()<.06?`translateX(${(Math.random()-.5)*30}px) skewX(${(Math.random()-.5)*20}deg)`:'none'},40)</script>
+</body></html>

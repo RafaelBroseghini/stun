@@ -1,0 +1,19 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Soap Film</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;800&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:radial-gradient(ellipse at 30% 20%,#2a3f7a,#151a3a 50%,#0b0d1f);font-family:'Baloo 2',sans-serif}
+.b{position:absolute;border-radius:50%;cursor:pointer;background:radial-gradient(circle at 30% 28%,rgba(255,255,255,.9) 0 4%,rgba(255,255,255,0) 9%),radial-gradient(circle at 68% 74%,rgba(255,255,255,.35) 0 3%,transparent 7%),radial-gradient(circle,transparent 58%,rgba(255,255,255,.08) 66%,rgba(255,255,255,.5) 71%,transparent 72%),conic-gradient(from var(--a),#ff6ad5,#ffd36a,#6affc8,#6ab8ff,#c56aff,#ff6ad5);
+-webkit-mask:radial-gradient(circle,rgba(0,0,0,.05) 50%,rgba(0,0,0,.5) 66%,#000 71%,transparent 71.5%);mask:radial-gradient(circle,rgba(0,0,0,.05) 50%,rgba(0,0,0,.5) 66%,#000 71%,transparent 71.5%);mix-blend-mode:screen;animation:hue 6s linear infinite}
+@keyframes hue{to{filter:hue-rotate(360deg)}}
+.pop{position:absolute;border-radius:50%;border:2px dotted rgba(255,255,255,.8);animation:pp .35s ease-out forwards;pointer-events:none}@keyframes pp{to{transform:scale(1.5);opacity:0}}
+h1{position:fixed;left:5vw;bottom:6vh;color:#fff;font-weight:800;font-size:clamp(40px,7vw,110px);line-height:.8;letter-spacing:-.02em}h1 span{display:block;font-weight:500;font-size:14px;letter-spacing:.3em;opacity:.7;margin-top:16px}
+.cnt{position:fixed;right:5vw;top:5vh;color:#fff;font-weight:800;font-size:18px;letter-spacing:.1em}</style></head><body>
+<h1>soap<br>film<span>thin-film interference, ~300 nm thick · click to pop</span></h1><div class="cnt" id="n">0 popped</div>
+<script>
+let B=[],pops=0;
+function make(){const s=40+Math.random()*180;const e=document.createElement('div');e.className='b';e.style.width=e.style.height=s+'px';e.style.setProperty('--a',Math.random()*360+'deg');document.body.appendChild(e);
+const b={e,s,x:Math.random()*innerWidth,y:innerHeight+s,vx:(Math.random()-.5)*.6,vy:-(.3+Math.random()*.8),ph:Math.random()*7,t:Math.random()*1000};e.onpointerdown=()=>pop(b);B.push(b);return b}
+function pop(b){const p=document.createElement('div');p.className='pop';p.style.cssText=`left:${b.x-b.s/2}px;top:${b.y-b.s/2}px;width:${b.s}px;height:${b.s}px`;document.body.appendChild(p);setTimeout(()=>p.remove(),400);b.e.remove();B=B.filter(o=>o!==b);document.getElementById('n').textContent=(++pops)+' popped'}
+for(let i=0;i<18;i++){const b=make();b.y=Math.random()*innerHeight}
+setInterval(()=>{if(B.length<26)make()},900);
+function f(t){for(const b of B){b.t++;b.x+=b.vx+Math.sin(b.t*.01+b.ph)*.4;b.y+=b.vy;const w=1+Math.sin(b.t*.03+b.ph)*.03;b.e.style.transform=`translate(${b.x-b.s/2}px,${b.y-b.s/2}px) scale(${w},${2-w})`;if(b.y<-b.s){b.e.remove();B=B.filter(o=>o!==b)}}requestAnimationFrame(f)}requestAnimationFrame(f);
+</script></body></html>

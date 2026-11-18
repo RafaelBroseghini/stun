@@ -1,0 +1,22 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Petri Dish Life</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;600&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#0a0e0c;display:grid;place-items:center;font-family:'Azeret Mono',monospace;color:#b9f5d0}
+.dish{position:relative;width:min(88vmin,820px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 40% 35%,#1d2b22,#0e1612 70%);box-shadow:0 0 0 6px rgba(200,255,230,.12),0 0 0 18px rgba(200,255,230,.05),inset 0 0 60px #000,0 30px 80px #000;overflow:hidden;cursor:crosshair}
+.dish::after{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.12),transparent 30%);pointer-events:none}
+canvas{width:100%;height:100%;display:block}
+.lab{position:fixed;left:24px;top:22px;font-size:11px;line-height:1.7;letter-spacing:.1em}.lab b{font-size:15px;color:#fff;font-weight:600;letter-spacing:.2em}
+.sb{position:fixed;right:24px;bottom:24px;font-size:11px;text-align:right}.sb i{display:block;width:120px;height:3px;background:#b9f5d0;margin:6px 0 0 auto}</style></head><body>
+<div class="lab"><b>CULTURE B-23</b><br>Conway agar · B3/S23<br>generation <span id="g">0</span> · colonies <span id="n">0</span><br>click or drag to inoculate</div>
+<div class="dish"><canvas id="c"></canvas></div><div class="sb">200 µm<i></i></div>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');const N=160;c.width=c.height=N*4;let A=new Uint16Array(N*N),B=new Uint16Array(N*N),gen=0;const mask=new Uint8Array(N*N);
+for(let y=0;y<N;y++)for(let X=0;X<N;X++)mask[y*N+X]=Math.hypot(X-N/2+.5,y-N/2+.5)<N/2-1?1:0;
+for(let i=0;i<N*N;i++)if(mask[i]&&Math.random()<.22)A[i]=1;
+function step(){for(let y=0;y<N;y++)for(let X=0;X<N;X++){const i=y*N+X;if(!mask[i]){B[i]=0;continue}let n=0;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){if(!dx&&!dy)continue;const yy=(y+dy+N)%N,xx=(X+dx+N)%N;if(A[yy*N+xx])n++}
+B[i]=A[i]?((n===2||n===3)?Math.min(A[i]+1,999):0):(n===3?1:0)}[A,B]=[B,A];gen++}
+function draw(){x.fillStyle='rgba(14,22,18,.55)';x.fillRect(0,0,N*4,N*4);let cnt=0;for(let i=0;i<N*N;i++){const a=A[i];if(!a)continue;cnt++;const X=(i%N)*4,y=(i/N|0)*4;const h=a<3?150:a<12?120-a*4:60+Math.min(a,200)*.4;
+x.fillStyle=`hsl(${h},90%,${a<2?78:58}%)`;x.beginPath();x.arc(X+2,y+2,a<2?1.6:1.9,0,7);x.fill()}document.getElementById('g').textContent=gen;document.getElementById('n').textContent=cnt}
+let dn=false;function inoc(e){const r=c.getBoundingClientRect(),X=Math.floor((e.clientX-r.left)/r.width*N),y=Math.floor((e.clientY-r.top)/r.height*N);for(let k=0;k<30;k++){const xx=X+((Math.random()-.5)*8|0),yy=y+((Math.random()-.5)*8|0);if(xx>=0&&yy>=0&&xx<N&&yy<N&&mask[yy*N+xx])A[yy*N+xx]=1}}
+c.addEventListener('pointerdown',e=>{dn=true;inoc(e)});addEventListener('pointerup',()=>dn=false);c.addEventListener('pointermove',e=>dn&&inoc(e));
+let last=0;function f(t){if(t-last>70){step();last=t}draw();requestAnimationFrame(f)}requestAnimationFrame(f);
+</script></body></html>

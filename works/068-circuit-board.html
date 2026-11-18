@@ -1,0 +1,23 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mainboard Rev C</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&family=Share+Tech&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#0d3b26}canvas{display:block;width:100%;height:100%;cursor:pointer}</style></head><body>
+<canvas id="c"></canvas>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio,2);let W,H,G,cols,rows,occ,traces,chips,pulses,base;
+function gen(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr;G=14*dpr;cols=Math.floor(W/G);rows=Math.floor(H/G);occ=new Uint8Array(cols*rows);traces=[];chips=[];pulses=[];
+const ok=(i,j)=>i>=0&&j>=0&&i<cols&&j<rows&&!occ[j*cols+i];
+for(let k=0;k<9;k++){const w=4+Math.random()*8|0,h=3+Math.random()*6|0,i=2+Math.random()*(cols-w-4)|0,j=2+Math.random()*(rows-h-4)|0;let free=true;for(let a=i-2;a<i+w+2;a++)for(let b=j-2;b<j+h+2;b++)if(!ok(a,b))free=false;if(!free)continue;for(let a=i-1;a<i+w+1;a++)for(let b=j-1;b<j+h+1;b++)occ[b*cols+a]=2;chips.push({i,j,w,h,l:['MCU','DSP','RAM','PWR','RF','I/O','ADC','FPGA'][k%8]+'-'+(100+Math.random()*900|0)})}
+const D=[[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1],[0,-1],[1,-1]];
+for(let t=0;t<420;t++){let i=Math.random()*cols|0,j=Math.random()*rows|0;if(!ok(i,j))continue;let d=Math.random()*8|0;const pts=[[i,j]];occ[j*cols+i]=1;const L=6+Math.random()*40|0;
+for(let s=0;s<L;s++){if(Math.random()<.18)d=(d+(Math.random()<.5?1:7))%8;const ni=i+D[d][0],nj=j+D[d][1];if(!ok(ni,nj))break;if(d%2&&(!ok(i+D[d][0],j)||!ok(i,j+D[d][1])))break;i=ni;j=nj;occ[j*cols+i]=1;pts.push([i,j])}if(pts.length>3)traces.push({p:pts,w:Math.random()<.15?3:Math.random()<.4?2:1.2})}
+base=document.createElement('canvas');base.width=W;base.height=H;const b=base.getContext('2d');b.fillStyle='#0d3b26';b.fillRect(0,0,W,H);b.strokeStyle='rgba(255,255,255,.03)';for(let i=0;i<W;i+=G){b.beginPath();b.moveTo(i,0);b.lineTo(i,H);b.stroke()}
+b.lineCap=b.lineJoin='round';for(const t of traces){b.strokeStyle='#1e6b44';b.lineWidth=(t.w+2.4)*dpr;b.beginPath();t.p.forEach(([i,j],k)=>k?b.lineTo(i*G+G/2,j*G+G/2):b.moveTo(i*G+G/2,j*G+G/2));b.stroke();b.strokeStyle='#c89b3c';b.lineWidth=t.w*dpr;b.stroke();
+for(const e of [t.p[0],t.p[t.p.length-1]]){b.fillStyle='#e7c36a';b.beginPath();b.arc(e[0]*G+G/2,e[1]*G+G/2,3.2*dpr,0,7);b.fill();b.fillStyle='#0d3b26';b.beginPath();b.arc(e[0]*G+G/2,e[1]*G+G/2,1.3*dpr,0,7);b.fill()}}
+for(const ch of chips){const X=ch.i*G,Y=ch.j*G,w=ch.w*G,h=ch.h*G;b.fillStyle='#c0c0c0';for(let a=0;a<ch.w;a++){b.fillRect(X+a*G+G*.3,Y-G*.5,G*.4,G*.5);b.fillRect(X+a*G+G*.3,Y+h,G*.4,G*.5)}b.fillStyle='#16161a';b.fillRect(X,Y,w,h);b.strokeStyle='#33333a';b.lineWidth=dpr;b.strokeRect(X+3*dpr,Y+3*dpr,w-6*dpr,h-6*dpr);
+b.fillStyle='#bfbfc8';b.font=`${11*dpr}px "Share Tech",monospace`;b.fillText(ch.l,X+8*dpr,Y+18*dpr);b.beginPath();b.arc(X+10*dpr,Y+h-10*dpr,3*dpr,0,7);b.fill()}
+b.fillStyle='rgba(255,255,255,.75)';b.font=`${22*dpr}px "Major Mono Display",monospace`;b.fillText('mainboard rev c',G*2,H-G*1.5);b.font=`${11*dpr}px "Share Tech"`;b.fillText('© 2026 · MADE IN PORTO · CLICK TO RE-ROUTE',G*2,H-G*.6)}
+document.fonts.ready.then(gen);gen();addEventListener('resize',gen);c.addEventListener('click',gen);
+function f(){x.drawImage(base,0,0);if(pulses.length<60&&traces.length){const t=traces[Math.random()*traces.length|0];pulses.push({t,u:0,s:.15+Math.random()*.3})}
+x.globalCompositeOperation='lighter';for(let k=pulses.length-1;k>=0;k--){const p=pulses[k];p.u+=p.s;if(p.u>=p.t.p.length-1){pulses.splice(k,1);continue}const a=p.t.p[Math.floor(p.u)],b=p.t.p[Math.ceil(p.u)],f=p.u%1;const X=(a[0]+(b[0]-a[0])*f)*G+G/2,Y=(a[1]+(b[1]-a[1])*f)*G+G/2;
+const g=x.createRadialGradient(X,Y,0,X,Y,10*dpr);g.addColorStop(0,'rgba(140,255,200,1)');g.addColorStop(1,'rgba(0,255,140,0)');x.fillStyle=g;x.fillRect(X-10*dpr,Y-10*dpr,20*dpr,20*dpr)}x.globalCompositeOperation='source-over';requestAnimationFrame(f)}f();
+</script></body></html>

@@ -1,0 +1,24 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Executive Cradle</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Italiana&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:linear-gradient(#e8e4dc,#bdb6aa);touch-action:none}canvas{display:block;width:100%;height:100%;cursor:grab}
+.t{position:fixed;left:5vw;top:6vh;font:400 clamp(28px,4.5vw,64px)/1 Italiana,serif;color:#2b2a28}.t small{display:block;font-size:13px;letter-spacing:.35em;margin-top:12px;text-transform:uppercase;font-family:system-ui,sans-serif;color:#6a645a}</style></head><body>
+<canvas id="c"></canvas><div class="t">Conservation<small>momentum · energy · patience — drag a ball</small></div>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio,2);let W,H;const n=5;const a=new Float64Array(n),v=new Float64Array(n);let drag=-1;
+a[0]=-.9;function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr}size();addEventListener('resize',size);
+function geo(){const r=Math.min(W*.045,H*.06),L=Math.min(H*.42,W*.35),top=H*.24;const cx=W/2;return{r,L,top,px:i=>cx+(i-(n-1)/2)*r*2}}
+function phys(){const g=geo(),dt=1/240;for(let s=0;s<4;s++){for(let i=0;i<n;i++){if(i===drag)continue;v[i]+=-9.8/(.6)*Math.sin(a[i])*dt;v[i]*=.99985;a[i]+=v[i]*dt}
+for(let k=0;k<3;k++)for(let i=0;i<n-1;i++){const xi=g.px(i)+Math.sin(a[i])*g.L,xj=g.px(i+1)+Math.sin(a[i+1])*g.L;if(xj-xi<g.r*2-.01&&v[i]>v[i+1]){if(i===drag||i+1===drag)continue;const t=v[i];v[i]=v[i+1];v[i+1]=t;}
+if(xj-xi<g.r*2){const o=(g.r*2-(xj-xi))/g.L/2;if(i!==drag)a[i]-=o;if(i+1!==drag)a[i+1]+=o}}}}
+function f(){phys();const g=geo();x.clearRect(0,0,W,H);
+const bw=(n+1.6)*g.r*2;x.fillStyle='#1d1c1b';x.beginPath();x.roundRect(W/2-bw/2,g.top+g.L+g.r*2.2,bw,g.r*.7,g.r*.2);x.fill();
+x.strokeStyle='#8a857c';x.lineWidth=g.r*.18;x.lineCap='round';x.beginPath();x.moveTo(W/2-bw/2+g.r*.4,g.top+g.L+g.r*2.3);x.lineTo(W/2-bw/2+g.r*.4,g.top);x.lineTo(W/2+bw/2-g.r*.4,g.top);x.lineTo(W/2+bw/2-g.r*.4,g.top+g.L+g.r*2.3);x.stroke();
+for(let i=0;i<n;i++){const bx=g.px(i)+Math.sin(a[i])*g.L,by=g.top+Math.cos(a[i])*g.L;x.fillStyle='rgba(0,0,0,.18)';x.beginPath();x.ellipse(bx,g.top+g.L+g.r*2.15,g.r*(.9-Math.abs(a[i])*.4),g.r*.15,0,0,7);x.fill()}
+for(let i=0;i<n;i++){const bx=g.px(i)+Math.sin(a[i])*g.L,by=g.top+Math.cos(a[i])*g.L;x.strokeStyle='rgba(40,40,40,.6)';x.lineWidth=dpr;x.beginPath();x.moveTo(g.px(i)-g.r*.6,g.top);x.lineTo(bx,by);x.lineTo(g.px(i)+g.r*.6,g.top);x.stroke();
+const gr=x.createRadialGradient(bx-g.r*.35,by-g.r*.4,g.r*.05,bx,by,g.r);gr.addColorStop(0,'#ffffff');gr.addColorStop(.25,'#dcdcdc');gr.addColorStop(.6,'#6d6d6d');gr.addColorStop(.85,'#2a2a2a');gr.addColorStop(1,'#9a9a9a');x.fillStyle=gr;x.beginPath();x.arc(bx,by,g.r,0,7);x.fill();
+x.fillStyle='rgba(232,228,220,.55)';x.beginPath();x.ellipse(bx+g.r*.2,by+g.r*.55,g.r*.5,g.r*.18,0,0,7);x.fill()}requestAnimationFrame(f)}f();
+c.addEventListener('pointerdown',e=>{const g=geo(),X=e.clientX*dpr,Y=e.clientY*dpr;for(let i=0;i<n;i++){const bx=g.px(i)+Math.sin(a[i])*g.L,by=g.top+Math.cos(a[i])*g.L;if(Math.hypot(X-bx,Y-by)<g.r*1.2){drag=i;c.setPointerCapture(e.pointerId)}}});
+c.addEventListener('pointermove',e=>{if(drag<0)return;const g=geo(),X=e.clientX*dpr,Y=e.clientY*dpr;let ang=Math.atan2(X-g.px(drag),Y-g.top);ang=Math.max(-1.2,Math.min(1.2,ang));
+if(drag<(n-1)/2)ang=Math.min(ang,0);else if(drag>(n-1)/2)ang=Math.max(ang,0);const lo=ang<0?0:drag,hi=ang<0?drag:n-1;for(let i=lo;i<=hi;i++){a[i]=ang;v[i]=0}});
+addEventListener('pointerup',()=>drag=-1);
+</script></body></html>

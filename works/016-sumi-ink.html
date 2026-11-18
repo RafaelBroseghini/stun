@@ -1,0 +1,21 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sumi Ink in Water</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;800&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#eef0ec}canvas{display:block;width:100%;height:100%}
+.v{position:fixed;right:5vw;top:8vh;writing-mode:vertical-rl;font:800 clamp(28px,4vw,54px)/1.3 'Shippori Mincho',serif;color:#141414;letter-spacing:.2em}
+.v small{font-weight:500;font-size:13px;letter-spacing:.4em;color:#7a2a20;margin-top:2em}.seal{position:fixed;right:5vw;bottom:8vh;width:46px;height:46px;background:#b3261e;color:#eef0ec;font:800 15px/1.1 'Shippori Mincho',serif;display:grid;place-items:center;text-align:center;border-radius:4px}</style></head><body>
+<canvas id="c"></canvas><div class="v">墨流し<small>drag to drop ink</small></div><div class="seal">墨<br>水</div>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio,2);let W,H,ps=[];
+const P=new Uint8Array(512);for(let i=0;i<256;i++)P[i]=i;for(let i=255;i>0;i--){const j=Math.random()*(i+1)|0;[P[i],P[j]]=[P[j],P[i]]}for(let i=0;i<256;i++)P[i+256]=P[i];
+const fd=t=>t*t*t*(t*(t*6-15)+10),lp=(a,b,t)=>a+t*(b-a),gr=(h,x,y)=>{h&=7;const u=h<4?x:y,v=h<4?y:x;return((h&1)?-u:u)+((h&2)?-2*v:2*v)};
+function N(x,y){let X=Math.floor(x)&255,Y=Math.floor(y)&255;x-=Math.floor(x);y-=Math.floor(y);const u=fd(x),v=fd(y),a=P[X]+Y,b=P[X+1]+Y;return lp(lp(gr(P[a],x,y),gr(P[b],x-1,y),u),lp(gr(P[a+1],x,y-1),gr(P[b+1],x-1,y-1),u),v)}
+function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr;x.fillStyle='#eef0ec';x.fillRect(0,0,W,H)}size();addEventListener('resize',size);
+function drop(px,py,n,red){for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,r=Math.random()*20*dpr;ps.push({x:px+Math.cos(a)*r,y:py+Math.sin(a)*r,vx:Math.cos(a)*2,vy:Math.sin(a)*2,l:200+Math.random()*300,red})}}
+let dn=false;c.addEventListener('pointerdown',e=>{dn=true;drop(e.clientX*dpr,e.clientY*dpr,500,e.shiftKey)});addEventListener('pointerup',()=>dn=false);c.addEventListener('pointermove',e=>{if(dn)drop(e.clientX*dpr,e.clientY*dpr,40)});
+[[.3,.4],[.5,.6],[.42,.3],[.62,.45]].forEach(([a,b],i)=>setTimeout(()=>drop(W*a,H*b,900,i===3),i*350));
+setInterval(()=>{if(ps.length<1500)drop(W*(.2+Math.random()*.6),H*(.2+Math.random()*.6),400,Math.random()<.15)},2600);
+const e=.0009/dpr;let t=0;
+function f(){t+=.002;x.fillStyle='rgba(238,240,236,.012)';x.fillRect(0,0,W,H);
+for(let i=ps.length-1;i>=0;i--){const p=ps[i];const n1=N(p.x*e,p.y*e+t),n2=N(p.x*e+.01,p.y*e+t),n3=N(p.x*e,p.y*e+.01+t);const cx=(n3-n1)*100,cy=-(n2-n1)*100;
+p.vx=p.vx*.96+cx*.12;p.vy=p.vy*.96+cy*.12;const ox=p.x,oy=p.y;p.x+=p.vx*dpr;p.y+=p.vy*dpr;x.strokeStyle=p.red?'rgba(179,38,30,.08)':'rgba(15,15,20,.06)';x.lineWidth=1.4*dpr;x.beginPath();x.moveTo(ox,oy);x.lineTo(p.x,p.y);x.stroke();if(--p.l<0)ps.splice(i,1)}requestAnimationFrame(f)}f();
+</script></body></html>

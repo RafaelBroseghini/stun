@@ -1,0 +1,19 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Gear Train</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Text:wght@700&family=Overpass+Mono&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#123234 radial-gradient(circle at 50% 40%,#1e4a4c,#0b2224 75%);display:grid;place-items:center;font-family:'Overpass Mono',monospace;color:#e9c79a}
+svg{width:100vw;height:100vh}.t{position:fixed;left:4vw;top:5vh}.t h1{font:700 clamp(30px,5vw,72px)/.9 'Big Shoulders Stencil Text',sans-serif;letter-spacing:.04em}.t p{font-size:12px;letter-spacing:.12em;margin-top:10px;opacity:.8}
+input{position:fixed;right:4vw;bottom:5vh;width:200px;accent-color:#e08a4a}label{position:fixed;right:4vw;bottom:calc(5vh + 26px);font-size:11px;letter-spacing:.2em}</style></head><body>
+<div class="t"><h1>GEAR TRAIN<br>NO. 6</h1><p id="r">driver 12 rpm</p></div><svg id="s" viewBox="-600 -380 1200 760" preserveAspectRatio="xMidYMid slice"></svg><label for="sp">CRANK SPEED</label><input id="sp" type="range" min="0" max="60" value="12">
+<script>
+const s=document.getElementById('s'),NS='http://www.w3.org/2000/svg';const M=8;
+function gearPath(z){const r=z*M/2,ra=r+M,rf=r-1.25*M,p=[];for(let i=0;i<z;i++){const a=i/z*Math.PI*2,t=Math.PI*2/z;const pts=[[rf,a-t*.25],[ra,a-t*.12],[ra,a+t*.12],[rf,a+t*.25],[rf,a+t*.75]];pts.forEach(([R,A])=>p.push((Math.cos(A)*R).toFixed(1)+','+(Math.sin(A)*R).toFixed(1)))}return 'M'+p.join('L')+'Z'}
+const G=[{z:36,x:-180,y:40,c:'#c9783a'}];
+function addTo(g,z,ang,c){const d=(g.z+z)*M/2;const n={z,x:g.x+Math.cos(ang)*d,y:g.y+Math.sin(ang)*d,c,par:g};G.push(n);return n}
+const g1=addTo(G[0],18,-.5,'#e9c79a'),g2=addTo(g1,48,-.2,'#a8603a'),g3=addTo(g2,14,1.2,'#d9a55a'),g4=addTo(G[0],24,2.4,'#b98a5a'),g5=addTo(g4,12,2.9,'#e9c79a'),g6=addTo(g2,22,.45,'#c9783a'),g7=addTo(g3,30,1.2,'#d9a55a');
+G.forEach(g=>{const e=document.createElementNS(NS,'g');e.setAttribute('transform',`translate(${g.x},${g.y})`);const r=g.z*M/2;
+e.innerHTML=`<path d="${gearPath(g.z)}" fill="${g.c}" stroke="#3b2210" stroke-width="2"/><circle r="${r*.72}" fill="none" stroke="#3b2210" stroke-width="2" opacity=".5"/>${g.z>20?[0,1,2,3,4].map(k=>`<circle cx="${Math.cos(k*1.2566)*r*.45}" cy="${Math.sin(k*1.2566)*r*.45}" r="${r*.16}" fill="#123234" stroke="#3b2210" stroke-width="2"/>`).join(''):''}<circle r="${Math.max(8,r*.14)}" fill="#3b2210"/><circle r="4" fill="${g.c}"/>`;
+const w=document.createElementNS(NS,'g');w.appendChild(e.firstChild);while(e.firstChild)w.appendChild(e.firstChild);e.appendChild(w);g.el=w;s.appendChild(e)});
+G.forEach(g=>{if(!g.par){g.ratio=1;g.off=0}else{g.ratio=-g.par.ratio*g.par.z/g.z;const a=Math.atan2(g.y-g.par.y,g.x-g.par.x);g.off=(a*180/Math.PI)*(1+g.par.z/g.z)+180+180/g.z-(g.par.off||0)*(g.par.z/g.z)}});
+let ang=0,last=performance.now();const sp=document.getElementById('sp');
+function f(now){const dt=(now-last)/1000;last=now;const rpm=+sp.value;ang+=rpm*6*dt;document.getElementById('r').textContent=`driver ${rpm} rpm · output ${(rpm*G[3].ratio).toFixed(1)} rpm`;G.forEach(g=>g.el.setAttribute('transform',`rotate(${ang*g.ratio+g.off})`));requestAnimationFrame(f)}requestAnimationFrame(f);
+</script></body></html>

@@ -1,0 +1,18 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>The Wind Tree</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gloock&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#f6c4b4}canvas{display:block;width:100%;height:100%}
+h1{position:fixed;left:5vw;top:6vh;font:400 clamp(30px,5vw,70px)/1 Gloock,serif;color:#3d1f3a}h1 small{display:block;font-size:.25em;letter-spacing:.3em;margin-top:12px;opacity:.7;text-transform:uppercase}</style></head><body>
+<canvas id="c"></canvas><h1>The Wind Tree<small id="s">Autumn · gust 4 bft</small></h1>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio,2);let W,H,leaves=[],tips=[];const seeds=[];for(let i=0;i<4096;i++)seeds.push(Math.random());
+function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr}size();addEventListener('resize',size);
+let wind=0,mx=.5;addEventListener('pointermove',e=>mx=e.clientX/innerWidth);
+function br(px,py,len,ang,d,id,t){const sway=(Math.sin(t*.0012+d*.6)*.04+ (mx-.5)*.15+Math.sin(t*.003+id)*.015)*(d*.35);const a=ang+sway;const nx=px+Math.cos(a)*len,ny=py+Math.sin(a)*len;
+x.strokeStyle=`rgb(${60-d*3},${30-d},${50-d*2})`;x.lineWidth=Math.max(.6,(11-d)*1.3)*dpr;x.lineCap='round';x.beginPath();x.moveTo(px,py);x.lineTo(nx,ny);x.stroke();
+if(d>=10){tips.push([nx,ny,id]);return}const s1=seeds[id%4096],s2=seeds[(id*7+3)%4096];br(nx,ny,len*(.7+s1*.12),a-(.25+s1*.3),d+1,id*2+1,t);br(nx,ny,len*(.7+s2*.12),a+(.25+s2*.3),d+1,id*2+2,t)}
+function f(t){const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#7d8fc9');g.addColorStop(.55,'#f6c4b4');g.addColorStop(1,'#fbe3c9');x.fillStyle=g;x.fillRect(0,0,W,H);
+x.fillStyle='#fff3e0';x.beginPath();x.arc(W*.78,H*.3,Math.min(W,H)*.09,0,7);x.fill();x.fillStyle='#3d1f3a';x.beginPath();x.ellipse(W/2,H*.96,W*.6,H*.06,0,Math.PI,0);x.fill();x.fillRect(0,H*.96,W,H);
+tips=[];br(W/2,H*.95,H*.17,-Math.PI/2,0,1,t);const season=(t*.00003)%1;const hue=season<.5?20+season*40:40-season*30;
+for(const [tx,ty,id] of tips){const s=seeds[id%4096];if(s<.55){x.fillStyle=`hsla(${hue+s*40},${70+s*20}%,${45+s*25}%,.85)`;x.beginPath();x.ellipse(tx,ty,4*dpr,2.4*dpr,s*6,0,7);x.fill()}if(s<.55&&Math.random()<.0015&&leaves.length<120)leaves.push({x:tx,y:ty,v:0,r:s*6,h:hue+s*40})}
+for(let i=leaves.length-1;i>=0;i--){const l=leaves[i];l.v+=.02;l.y+=(.6+l.v)*dpr;l.x+=(Math.sin(l.y*.01+l.r)*1.2+(mx-.3)*2)*dpr;l.r+=.05;x.fillStyle=`hsla(${l.h},80%,55%,.9)`;x.beginPath();x.ellipse(l.x,l.y,4*dpr,2*dpr,l.r,0,7);x.fill();if(l.y>H*.95)leaves.splice(i,1)}requestAnimationFrame(f)}requestAnimationFrame(f);
+</script></body></html>

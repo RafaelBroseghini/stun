@@ -1,0 +1,22 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Murmuration</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#f3a27a}canvas{display:block;width:100%;height:100%}
+.t{position:fixed;left:5vw;top:6vh;font:italic 400 clamp(36px,6vw,92px)/.9 'Instrument Serif',serif;color:#2a1a26}.t small{display:block;font-style:normal;font-size:15px;margin-top:14px;letter-spacing:.06em;max-width:36ch;line-height:1.4}</style></head><body>
+<canvas id="c"></canvas><div class="t">Murmuration<small>Each starling watches only its seven nearest neighbours. Move your cursor to play the hawk.</small></div>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio,2);let W,H;const N=750,B=[];let hawk={x:-1e4,y:-1e4};
+function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr}size();addEventListener('resize',size);
+for(let i=0;i<N;i++){const a=Math.random()*7;B.push({x:W*.55+Math.cos(a)*W*.12*Math.random(),y:H*.4+Math.sin(a)*H*.12*Math.random(),vx:Math.cos(a)*2,vy:Math.sin(a)*2})}
+addEventListener('pointermove',e=>{hawk.x=e.clientX*dpr;hawk.y=e.clientY*dpr});addEventListener('pointerleave',()=>hawk.x=-1e4);
+const G=60*dpr;
+function f(t){const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#6a7bb8');g.addColorStop(.45,'#e9a1a0');g.addColorStop(.8,'#f6c08a');g.addColorStop(1,'#f3a27a');x.fillStyle=g;x.fillRect(0,0,W,H);
+const grid=new Map();for(const b of B){const k=((b.x/G)|0)+','+((b.y/G)|0);(grid.get(k)||grid.set(k,[]).get(k)).push(b)}
+const tx=W*(.5+.25*Math.sin(t*.00023)),ty=H*(.42+.15*Math.sin(t*.00041));
+for(const b of B){let ax=0,ay=0,cx=0,cy=0,sx=0,sy=0,n=0;const gx=(b.x/G)|0,gy=(b.y/G)|0;for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j++){const L=grid.get((gx+i)+','+(gy+j));if(!L)continue;for(const o of L){if(o===b)continue;const dx=o.x-b.x,dy=o.y-b.y,d2=dx*dx+dy*dy;if(d2>G*G)continue;n++;ax+=o.vx;ay+=o.vy;cx+=o.x;cy+=o.y;if(d2<(12*dpr)**2){sx-=dx/(d2+1)*40;sy-=dy/(d2+1)*40}}}
+if(n){b.vx+=(ax/n-b.vx)*.06+(cx/n-b.x)*.002+sx*.05;b.vy+=(ay/n-b.vy)*.06+(cy/n-b.y)*.002+sy*.05}
+b.vx+=(tx-b.x)*.00025;b.vy+=(ty-b.y)*.00025;const hx=b.x-hawk.x,hy=b.y-hawk.y,hd=Math.hypot(hx,hy);if(hd<160*dpr){b.vx+=hx/hd*.9;b.vy+=hy/hd*.9}
+const sp=Math.hypot(b.vx,b.vy),mx=4.2*dpr,mn=2.2*dpr;if(sp>mx){b.vx*=mx/sp;b.vy*=mx/sp}else if(sp<mn){b.vx*=mn/sp;b.vy*=mn/sp}b.x+=b.vx;b.y+=b.vy}
+x.fillStyle='rgba(30,18,28,.88)';for(const b of B){const a=Math.atan2(b.vy,b.vx),s=2.6*dpr,flap=Math.sin(t*.03+b.x)*.6;x.save();x.translate(b.x,b.y);x.rotate(a);x.beginPath();x.moveTo(s*1.4,0);x.lineTo(-s,s*(1+flap));x.lineTo(-s*.4,0);x.lineTo(-s,-s*(1+flap));x.fill();x.restore()}
+x.fillStyle='#2a1a26';x.beginPath();x.moveTo(0,H);for(let X=0;X<=W;X+=4*dpr)x.lineTo(X,H*.92-Math.abs(Math.sin(X*.05))*H*.03-Math.sin(X*.004)*H*.02);x.lineTo(W,H);x.fill();
+x.fillRect(W*.62,H*.86,W*.4,H*.012);for(let k=0;k<8;k++)x.fillRect(W*.64+k*W*.045,H*.86,3*dpr,H*.14);requestAnimationFrame(f)}requestAnimationFrame(f);
+</script></body></html>

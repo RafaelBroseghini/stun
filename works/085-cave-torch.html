@@ -1,0 +1,27 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Torchlit Cave</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Della+Respira&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#050302;cursor:none}
+.rock{position:fixed;inset:0;background:radial-gradient(ellipse at 30% 40%,#c89868,#8a6038 40%,#5a3a1e 80%);}
+.rock::before{content:"";position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012' numOctaves='5'/%3E%3CfeDiffuseLighting lighting-color='%23d8b088' surfaceScale='5'%3E%3CfeDistantLight azimuth='45' elevation='45'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)'/%3E%3C/svg%3E");mix-blend-mode:multiply;opacity:.9}
+svg.art{position:fixed;inset:0;width:100%;height:100%}svg.art *{mix-blend-mode:multiply}
+.dark{position:fixed;inset:0;background:radial-gradient(circle var(--r) at var(--x) var(--y),rgba(255,170,90,.08) 0,transparent 30%,rgba(5,3,2,.3) 62%,rgba(5,3,2,.86) 100%);pointer-events:none}
+.t{position:fixed;left:0;right:0;bottom:4vh;text-align:center;font:400 14px 'Della Respira',serif;letter-spacing:.3em;color:#c89a6a;text-transform:uppercase}</style></head><body>
+<div class="rock"></div>
+<svg class="art" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice">
+<g fill="#7a2a16" opacity=".85"><path d="M180 300c40-40 120-50 180-30 30 10 50 0 70-20 6 20-4 40-20 50 20 30 10 70-10 90l6 70h-14l-14-60c-30 10-80 10-120 0l-14 60h-14l4-66c-30-20-50-60-54-94z"/><path d="M430 250c10-20 30-30 44-24-10 10-14 22-10 34z"/></g>
+<g fill="#1f1510" opacity=".85"><path d="M640 260c50-30 130-30 170 0 20 14 40 10 56-4 4 22-8 36-24 44l10 90h-14l-16-80c-40 16-110 16-150 0l-10 80h-14l2-90c-20-6-20-26-10-40z"/><path d="M850 250l30-40 4 8-24 38zM860 252l40-30 2 8-34 28z"/></g>
+<g fill="#b8642a" opacity=".8"><path d="M330 500c30-20 80-20 110-4l30-16-4 20 14 30-30-10c-30 14-80 14-110-4z"/><path d="M900 470c20-10 50-10 70 0l20-10-2 12 8 20-20-6c-20 8-50 8-70-2z"/></g>
+<g fill="#5a1d10" opacity=".7">
+<path d="M90 120l3 30-6 0zM110 110l4 40-8 0zM130 118l3 32-6 0z"/><circle cx="1050" cy="140" r="60" fill="none" stroke="#5a1d10" stroke-width="8"/><circle cx="1050" cy="140" r="30" fill="none" stroke="#5a1d10" stroke-width="6"/>
+</g><g fill="#2a1a12" opacity=".75"><path d="M560 560h10l-4 60 30 0-2 10-48 0 4-10zM600 120c4-20 20-30 30-26s14 30 0 36c10 14 20 40 10 60l-12 4-6-40-6 40-12-4c-4-20 0-50 6-60z"/></g>
+<g opacity=".55">
+<path d="M1000 540c10-10 30-10 40 0 4 10 0 30-10 40l-20 6-14-20z" fill="#7a2a16"/>
+<g fill="#7a2a16">${''}</g></g>
+<g fill="#3a2a1c" opacity=".65"><path d="M60 560c5-3 12-3 15 2 4-4 10-4 14 0 1 8-6 16-14 22-8-6-16-14-15-24z"/></g>
+</svg>
+<div class="dark" id="d" style="--x:40%;--y:45%;--r:240px"></div><div class="t">Grotte d’Arkaig · c. 30,000 BP · move the torch</div>
+<script>
+const svg=document.querySelector('svg.art');for(let i=0;i<34;i++){const e=document.createElementNS('http://www.w3.org/2000/svg','path');const X=40+Math.random()*1120,Y=80+Math.random()*560;e.setAttribute('d',`M${X} ${Y}c-14-4-18 10-12 20 4 8 4 20 2 30 10 0 18-6 20-14 4 2 10 0 10-6-4-6-10-12-20-30z`);e.setAttribute('fill',['#7a2a16','#2a1a12','#b8642a'][i%3]);e.setAttribute('opacity','.5');e.setAttribute('transform',`rotate(${Math.random()*40-20} ${X} ${Y}) scale(.9)`);if(i<8)svg.appendChild(e)}
+const d=document.getElementById('d');let tx=.4,ty=.45,cx=.4,cy=.45,user=false;addEventListener('pointermove',e=>{user=true;tx=e.clientX/innerWidth;ty=e.clientY/innerHeight});
+function f(t){if(!user){tx=.5+.32*Math.sin(t*.0004);ty=.48+.2*Math.sin(t*.0007)}cx+=(tx-cx)*.08;cy+=(ty-cy)*.08;const fl=Math.min(innerWidth,innerHeight)*(.62+.03*Math.sin(t*.02)+.02*Math.sin(t*.053));d.style.setProperty('--x',cx*100+'%');d.style.setProperty('--y',cy*100+'%');d.style.setProperty('--r',fl+'px');requestAnimationFrame(f)}requestAnimationFrame(f);
+</script></body></html>

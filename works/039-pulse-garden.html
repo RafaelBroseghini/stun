@@ -1,0 +1,20 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pulse Garden</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@300;600&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#07060f}canvas{display:block;width:100%;height:100%;cursor:pointer}
+.t{position:fixed;left:0;right:0;top:5vh;text-align:center;color:#e9e6ff;font:300 13px Sora,sans-serif;letter-spacing:.4em;text-transform:uppercase}.t b{display:block;font-weight:600;font-size:clamp(22px,3vw,38px);letter-spacing:.1em;margin-bottom:8px;text-transform:none}</style></head><body>
+<canvas id="c"></canvas><div class="t"><b>Pulse Garden</b><span id="s">21 voices realign every 15 minutes · click for sound</span></div>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio,2);let W,H,A=null,snd=false;const N=21,start=performance.now();const last=new Array(N).fill(0);
+const scale=[0,2,4,7,9];const freq=i=>220*Math.pow(2,(scale[i%5]+12*Math.floor(i/5))/12);
+function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr}size();addEventListener('resize',size);
+c.onclick=()=>{if(!A)A=new AudioContext();snd=!snd;document.getElementById('s').textContent=snd?'sound on · click to mute':'21 voices realign every 15 minutes · click for sound'};
+function ping(i){if(!snd||!A)return;const o=A.createOscillator(),g=A.createGain();o.type='sine';o.frequency.value=freq(i);g.gain.setValueAtTime(.08,A.currentTime);g.gain.exponentialRampToValueAtTime(.0001,A.currentTime+2.2);o.connect(g);g.connect(A.destination);o.start();o.stop(A.currentTime+2.3)}
+function f(now){const t=(now-start)/1000;x.fillStyle='rgba(7,6,15,.35)';x.fillRect(0,0,W,H);const cx=W/2,cy=H*.86,R0=Math.min(W*.46,H*.78),r0=R0*.12;
+x.strokeStyle='rgba(233,230,255,.4)';x.lineWidth=dpr;x.beginPath();x.moveTo(cx-R0*1.04,cy);x.lineTo(cx+R0*1.04,cy);x.stroke();
+for(let i=0;i<N;i++){const r=r0+(R0-r0)*i/(N-1);const loops=50-i;const v=Math.PI*2*loops/900;const a=Math.PI+(t*v)%(Math.PI*2);const ang=a<=Math.PI*2?a:Math.PI*4-a;
+const dist=Math.PI+((t*v)%(Math.PI*2));const theta=dist%(Math.PI*2);const ph=theta<=Math.PI?Math.PI+theta:Math.PI*2-(theta-Math.PI)+Math.PI;
+const p=(t*v)%(Math.PI*2),aa=p<Math.PI?Math.PI+p:Math.PI*3-p;const hue=260-i*11;const since=(now-last[i])/1000;const glow=Math.max(0,1-since*1.2);
+x.strokeStyle=`hsla(${hue},80%,${50+glow*30}%,${.25+glow*.6})`;x.lineWidth=(1.2+glow*2)*dpr;x.beginPath();x.arc(cx,cy,r,Math.PI,Math.PI*2);x.stroke();
+const px=cx+Math.cos(aa)*r,py=cy+Math.sin(aa)*r;x.fillStyle=`hsl(${hue},90%,${70+glow*20}%)`;x.shadowColor=`hsl(${hue},90%,60%)`;x.shadowBlur=(8+glow*20)*dpr;x.beginPath();x.arc(px,py,(3+glow*3)*dpr,0,7);x.fill();x.shadowBlur=0;
+const k=Math.floor(t*v/Math.PI);if(k!==(last[i+100]||0)){last[i+100]=k;last[i]=now;ping(i)}}requestAnimationFrame(f)}requestAnimationFrame(f);
+</script></body></html>

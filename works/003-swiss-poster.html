@@ -1,0 +1,19 @@
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Zürcher Klangtage</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;800;900&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#f2f0eb;color:#111;font-family:'Inter Tight',Helvetica,Arial,sans-serif;display:grid;place-items:center}
+.p{position:relative;height:min(96vh,150vw);aspect-ratio:2/3;max-width:96vw;background:#efece6;overflow:hidden;box-shadow:0 30px 60px -30px rgba(0,0,0,.35)}
+.g{position:absolute;inset:0;background-image:linear-gradient(90deg,rgba(0,0,0,.06) 1px,transparent 1px),linear-gradient(rgba(0,0,0,.06) 1px,transparent 1px);background-size:calc(100%/6) calc(100%/9)}
+.dot{position:absolute;width:52%;aspect-ratio:1;border-radius:50%;background:#e2231a;left:38%;top:18%;animation:roll 9s cubic-bezier(.7,0,.3,1) infinite alternate;mix-blend-mode:multiply}
+@keyframes roll{to{left:-6%;top:46%}}
+.bar{position:absolute;left:0;right:0;top:66.6%;height:2.2%;background:#111;transform-origin:left;animation:grow 1.4s .3s cubic-bezier(.2,.8,.2,1) both}@keyframes grow{from{transform:scaleX(0)}}
+h1{position:absolute;left:4%;top:4%;font-weight:900;font-size:min(16vh,24vw);line-height:.82;letter-spacing:-.06em}
+h1 span{display:block;animation:drop .9s cubic-bezier(.2,.9,.2,1) both}h1 span:nth-child(2){animation-delay:.12s;padding-left:.5em}h1 span:nth-child(3){animation-delay:.24s}
+@keyframes drop{from{transform:translateY(-120%);opacity:0}}
+.v{position:absolute;right:3.5%;top:4%;writing-mode:vertical-rl;font-weight:800;font-size:min(3vh,4.4vw);letter-spacing:.02em}
+.cols{position:absolute;left:4%;right:4%;bottom:4%;display:grid;grid-template-columns:repeat(3,1fr);gap:4%;font-size:min(1.5vh,2.2vw);line-height:1.35;font-weight:500}
+.cols b{display:block;font-weight:800;margin-bottom:.4em}.num{position:absolute;left:4%;top:70%;font-weight:900;font-size:min(13vh,19vw);letter-spacing:-.07em;line-height:1}
+.num i{font-style:normal;color:#e2231a}</style></head><body>
+<div class="p"><div class="g"></div><div class="dot"></div><h1><span>Klang</span><span>und</span><span>Raum</span></h1><div class="v">Zürcher Klangtage · 14.–22. Mai</div><div class="bar"></div>
+<div class="num">20<i>27</i></div>
+<div class="cols"><div><b>Tonhalle</b>Werke für Raum, Stimme und Elektronik. Ein Festival der neuen Musik in neun Abenden.</div><div><b>Programm</b>Do 14.5. Eröffnung<br>Sa 16.5. Stille Partituren<br>Mi 20.5. Lautsprecherorchester</div><div><b>Eintritt</b>CHF 28 / 14<br>klangtage.ch<br>Bahnhof Enge, 8002 Zürich</div></div></div>
+</body></html>
