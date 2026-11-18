@@ -1,23 +1,47 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>The Long Rain</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rozha+One&family=Cutive+Mono&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#0c0c0c}canvas{position:fixed;inset:0;width:100%;height:100%}
-.wall{position:fixed;inset:0;background:radial-gradient(ellipse at 70% 30%,#8a8a8a,#2a2a2a 55%,#0c0c0c);}
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#0c0c0c;user-select:none;-webkit-user-select:none}canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
+.frame{position:fixed;inset:0;animation:weave .12s steps(2) infinite}@keyframes weave{50%{transform:translate(.6px,-.8px)}}
+.wall{position:fixed;inset:0;background:radial-gradient(ellipse at 70% 30%,#8a8a8a,#2a2a2a 55%,#0c0c0c)}
 .blinds{position:fixed;inset:-20%;background:repeating-linear-gradient(transparent 0 26px,rgba(0,0,0,.78) 26px 52px);transform:rotate(-14deg) skewX(-18deg);animation:sway 9s ease-in-out infinite alternate}@keyframes sway{to{transform:rotate(-12deg) skewX(-16deg) translateY(10px)}}
+.fan{position:fixed;left:62%;top:-18%;width:70vmin;height:70vmin;margin-left:-35vmin;opacity:.42;animation:spin 3.2s linear infinite;filter:blur(3px)}@keyframes spin{to{transform:rotate(360deg)}}
+.fan i{position:absolute;left:50%;top:50%;width:48%;height:9%;margin-top:-4.5%;background:#000;border-radius:50%;transform-origin:0 50%}
+.man{position:fixed;right:-2vw;bottom:0;height:78vh;opacity:.88;filter:blur(1px)}
 .t{position:fixed;left:8vw;top:50%;transform:translateY(-50%);color:#f2f2ef;z-index:3}.t small{font:16px 'Cutive Mono',monospace;letter-spacing:.4em;display:block;margin-bottom:2vh;opacity:.85}
-.t h1{font:400 clamp(60px,12vw,190px)/.82 'Rozha One',serif;letter-spacing:-.02em;text-shadow:0 8px 30px #000}.t p{font:14px/1.8 'Cutive Mono',monospace;letter-spacing:.2em;margin-top:3vh;opacity:.85;min-height:5.4em}
+.t h1{font:400 clamp(60px,12vw,190px)/.82 'Rozha One',serif;letter-spacing:-.02em;text-shadow:0 8px 30px #000}.t h1 span{display:block;animation:fadein 2.4s both}.t h1 span:nth-child(2){animation-delay:.5s}.t h1 span:nth-child(3){animation-delay:1s}@keyframes fadein{from{opacity:0;filter:blur(8px)}}
+.t p{font:14px/1.8 'Cutive Mono',monospace;letter-spacing:.2em;margin-top:3vh;opacity:.85;min-height:5.4em}
 .grain{position:fixed;inset:-50%;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E");opacity:.18;animation:g .25s steps(2) infinite;z-index:4;pointer-events:none}@keyframes g{50%{transform:translate(3%,-4%)}}
 .fl{position:fixed;inset:0;background:#fff;opacity:0;animation:fk 4s infinite;z-index:4;pointer-events:none;mix-blend-mode:overlay}@keyframes fk{0%,96%,100%{opacity:0}97%{opacity:.12}98%{opacity:.03}}
-.hint{position:fixed;right:3vw;bottom:3vh;z-index:5;font:12px 'Cutive Mono',monospace;letter-spacing:.25em;color:#bdbdb8}.fl2{position:fixed;inset:0;background:#e8eef5;z-index:2;pointer-events:none;animation:lt .9s ease-out forwards;mix-blend-mode:screen}@keyframes lt{0%{opacity:0}8%{opacity:.85}16%{opacity:.1}26%{opacity:.6}100%{opacity:0}}body{cursor:pointer}
-.vig{position:fixed;inset:0;background:radial-gradient(ellipse,transparent 40%,#000 100%);z-index:3;pointer-events:none}</style></head><body>
-<div class="wall"></div><div class="blinds"></div><canvas id="c"></canvas><div class="vig"></div>
-<div class="t"><small>MERIDIAN PICTURES PRESENTS</small><h1>The<br>Long<br>Rain</h1><p id="cr"></p></div><div class="grain"></div><div class="fl"></div><div class="hint">MOVE THE STREETLIGHT · CLICK FOR THUNDER</div>
+.hint{position:fixed;right:3vw;bottom:3vh;z-index:6;font:12px 'Cutive Mono',monospace;letter-spacing:.25em;color:#bdbdb8;text-align:right;line-height:1.9}.hint button{font:12px 'Cutive Mono';letter-spacing:.2em;color:#f2f2ef;background:none;border:1px solid #777;padding:4px 10px;cursor:pointer;margin-top:6px}
+.fl2{position:fixed;inset:0;background:#e8eef5;z-index:2;pointer-events:none;animation:lt .9s ease-out forwards;mix-blend-mode:screen}@keyframes lt{0%{opacity:0}8%{opacity:.85}16%{opacity:.1}26%{opacity:.6}100%{opacity:0}}
+body{cursor:pointer}.vig{position:fixed;inset:0;background:radial-gradient(ellipse,transparent 40%,#000 100%);z-index:3;pointer-events:none}
+.ctr{position:fixed;left:3vw;bottom:3vh;z-index:6;font:11px 'Cutive Mono';letter-spacing:.2em;color:#888}
+</style></head><body>
+<div class="frame"><div class="wall" id="wl"></div><div class="fan"><i></i><i style="transform:rotate(120deg)"></i><i style="transform:rotate(240deg)"></i></div><div class="blinds" id="bl"></div>
+<svg class="man" viewBox="0 0 200 400"><path d="M60 70c0-30 80-30 80 0l26 4c4 4 0 10-6 10H40c-6 0-10-6-6-10z M70 84c-4 30 6 50 30 54 24-4 34-24 30-54z M40 160c10-30 40-30 60-24 20-6 50-6 60 24l20 240H20z" fill="#000"/><path d="M128 120l26 6" stroke="#000" stroke-width="5"/><circle cx="156" cy="126" r="2.5" fill="#ff9a4a"/></svg></div>
+<canvas id="c"></canvas><div class="vig"></div>
+<div class="t"><small>MERIDIAN PICTURES PRESENTS</small><h1><span>The</span><span>Long</span><span>Rain</span></h1><p id="cr"></p></div><div class="grain"></div><div class="fl"></div>
+<div class="hint">MOVE THE STREETLIGHT · CLICK FOR THUNDER<br><button id="sc">♪ SCORE</button></div><div class="ctr" id="ctr">REEL 1 · 00:00:00</div>
 <script>
-const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio,1.5);let W,H,P=[];function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr}size();addEventListener('resize',size);
-function f(t){x.clearRect(0,0,W,H);if(P.length<140)P.push({x:W*.78+Math.sin(t*.001)*6,y:H*.9,r:6*dpr,a:.22,vx:(Math.random()-.5)*.4,vy:-.8-Math.random()*.6,ph:Math.random()*6});
+const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio||1,1.5);let W,H,P=[],rain=[],scr=[];function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr;rain=Array.from({length:180},()=>[Math.random()*W,Math.random()*H,.5+Math.random()])}size();addEventListener('resize',size);
+let ac,score=false,padT=null;function A(){if(!ac)try{ac=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}return ac}
+function thunder(){const a=A();if(!a)return;const len=a.sampleRate*3,b=a.createBuffer(1,len,a.sampleRate),d=b.getChannelData(0);let l=0;for(let i=0;i<len;i++){l=(l+.04*(Math.random()*2-1))/1.04;d[i]=l*7*Math.pow(1-i/len,2)*(i<a.sampleRate*.03?i/(a.sampleRate*.03):1)}const s=a.createBufferSource(),f=a.createBiquadFilter(),g=a.createGain();s.buffer=b;f.type='lowpass';f.frequency.value=220;g.gain.value=.8;s.connect(f).connect(g).connect(a.destination);s.start(a.currentTime+.35)}
+function chord(){const a=ac;if(!a||!score)return;const roots=[50,45,47,43];const r=roots[(chord.k=(chord.k||0)+1)%4];[0,3,7,10,14].forEach((s,i)=>{const o=a.createOscillator(),g=a.createGain(),f=a.createBiquadFilter();o.type='sawtooth';o.frequency.value=440*Math.pow(2,(r+s-69)/12);f.type='lowpass';f.frequency.value=900;const t=a.currentTime+i*.04;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.025,t+.6);g.gain.exponentialRampToValueAtTime(.0001,t+3.8);o.connect(f).connect(g).connect(a.destination);o.start(t);o.stop(t+4)})}
+document.getElementById('sc').onclick=e=>{e.stopPropagation();A();score=!score;e.target.textContent=score?'■ SCORE':'♪ SCORE';clearInterval(padT);if(score){chord();padT=setInterval(chord,4000)}};
+function f(t){x.clearRect(0,0,W,H);
+// rain on the glass, lit by the streetlight
+x.strokeStyle='rgba(210,215,220,.16)';x.lineWidth=dpr;x.beginPath();for(const r of rain){r[0]-=3*dpr*r[2];r[1]+=14*dpr*r[2];if(r[1]>H){r[1]=-20;r[0]=Math.random()*W*1.3}x.moveTo(r[0],r[1]);x.lineTo(r[0]+4*dpr,r[1]-18*dpr*r[2])}x.stroke();
+const mr=document.querySelector('.man').getBoundingClientRect(),sx0=(mr.left+mr.width*.78)*dpr,sy0=(mr.top+mr.height*.315)*dpr;if(P.length<140)P.push({x:sx0+Math.sin(t*.001)*3,y:sy0,r:5*dpr,a:.22,vx:(Math.random()-.5)*.4,vy:-.6-Math.random()*.5,ph:Math.random()*6});
 for(let i=P.length-1;i>=0;i--){const p=P[i];p.x+=p.vx*dpr+Math.sin(t*.002+p.ph)*.6*dpr;p.y+=p.vy*dpr;p.r+=.35*dpr;p.a*=.988;if(p.a<.01){P.splice(i,1);continue}const g=x.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r);g.addColorStop(0,`rgba(220,220,220,${p.a})`);g.addColorStop(1,'rgba(220,220,220,0)');x.fillStyle=g;x.fillRect(p.x-p.r,p.y-p.r,p.r*2,p.r*2)}
-x.fillStyle='rgba(255,160,90,.9)';x.beginPath();x.arc(W*.78,H*.9,3*dpr*(1+.2*Math.sin(t*.01)),0,7);x.fill();requestAnimationFrame(f)}requestAnimationFrame(f);
-const bl=document.querySelector('.blinds'),wl=document.querySelector('.wall');addEventListener('pointermove',e=>{const x=e.clientX/innerWidth-.5,y=e.clientY/innerHeight-.5;bl.style.animation='none';bl.style.transform=`rotate(${-14+x*14}deg) skewX(${-18+x*26}deg) translateY(${y*50}px)`;wl.style.background=`radial-gradient(ellipse at ${50+x*60}% ${30+y*40}%,#8a8a8a,#2a2a2a 55%,#0c0c0c)`});
-addEventListener('click',()=>{const f=document.createElement('div');f.className='fl2';document.body.appendChild(f);setTimeout(()=>f.remove(),1000)});
+// film scratches and dust
+if(Math.random()<.08)scr.push({x:Math.random()*W,l:6+Math.random()*12});x.strokeStyle='rgba(255,255,255,.18)';x.lineWidth=dpr;for(let i=scr.length-1;i>=0;i--){const s=scr[i];x.beginPath();x.moveTo(s.x,0);x.lineTo(s.x+Math.sin(t*.01+i)*3,H);x.stroke();s.x+=(Math.random()-.5)*4;if(--s.l<0)scr.splice(i,1)}
+for(let i=0;i<4;i++){if(Math.random()<.3){x.fillStyle=Math.random()<.5?'rgba(255,255,255,.4)':'rgba(0,0,0,.6)';x.beginPath();x.arc(Math.random()*W,Math.random()*H,Math.random()*2.5*dpr,0,7);x.fill()}}
+const s=Math.floor(t/1000);document.getElementById('ctr').textContent=`REEL 1 · ${String(Math.floor(s/3600)).padStart(2,'0')}:${String(Math.floor(s/60)%60).padStart(2,'0')}:${String(s%60).padStart(2,'0')} · ${String(Math.floor(t/41.7)%24).padStart(2,'0')}`;
+requestAnimationFrame(f)}requestAnimationFrame(f);
+const bl=document.getElementById('bl'),wl=document.getElementById('wl');addEventListener('pointermove',e=>{const x2=e.clientX/innerWidth-.5,y=e.clientY/innerHeight-.5;bl.style.animation='none';bl.style.transform=`rotate(${-14+x2*14}deg) skewX(${-18+x2*26}deg) translateY(${y*50}px)`;wl.style.background=`radial-gradient(ellipse at ${50+x2*60}% ${30+y*40}%,#8a8a8a,#2a2a2a 55%,#0c0c0c)`});
+addEventListener('click',()=>{const f=document.createElement('div');f.className='fl2';document.body.appendChild(f);setTimeout(()=>f.remove(),1000);thunder()});
+addEventListener('keydown',e=>{if(e.key===' '){e.preventDefault();document.body.click()}});
 const C=['STARRING VERA HOLLOWAY','AND JACK MORRO AS "THE DUTCHMAN"','MUSIC BY OSKAR LINDH','DIRECTED BY E. M. KASPRZAK'];let k=0;
-function cr(){const s=C[k++%C.length];let i=0;const e=document.getElementById('cr');e.textContent='';const iv=setInterval(()=>{e.textContent=s.slice(0,++i);if(i>=s.length){clearInterval(iv);setTimeout(cr,1800)}},55)}cr();
+function cr(){const s=C[k++%C.length];let i=0;const e=document.getElementById('cr');e.textContent='';const iv=setInterval(()=>{e.textContent=s.slice(0,++i);if(i>=s.length){clearInterval(iv);setTimeout(cr,1800)}},55)}setTimeout(cr,1400);
 </script></body></html>
