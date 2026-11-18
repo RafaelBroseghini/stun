@@ -1,19 +1,39 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Physarum Network</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;700&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#06110d}canvas{display:block;width:100%;height:100%;image-rendering:auto;cursor:crosshair}
-.t{position:fixed;left:24px;bottom:22px;background:rgba(6,17,13,.85);padding:12px 16px;border-radius:10px;color:#f7e36a;font:300 12px Unbounded,sans-serif;letter-spacing:.12em}.t b{display:block;font-weight:700;font-size:clamp(20px,2.6vw,34px);letter-spacing:.02em;margin-bottom:6px}</style></head><body>
-<canvas id="c"></canvas><div class="t"><b>Physarum polycephalum</b>40,000 agents follow each other's trails · click to drop food</div>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;500;700&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#06110d;user-select:none;-webkit-user-select:none}canvas{display:block;width:100%;height:100%;cursor:crosshair;touch-action:none}
+.t{position:fixed;left:24px;bottom:22px;background:rgba(6,17,13,.82);backdrop-filter:blur(8px);padding:14px 16px;border-radius:12px;color:#f7e36a;font:300 11px/1.6 Unbounded,sans-serif;letter-spacing:.1em;border:1px solid rgba(247,227,106,.15);max-width:min(420px,calc(100vw - 48px))}
+.t b{display:block;font-weight:700;font-size:clamp(18px,2.4vw,30px);letter-spacing:.01em;margin-bottom:6px;font-style:italic}
+.row{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.row button{font:500 10px Unbounded;letter-spacing:.08em;color:inherit;background:transparent;border:1px solid rgba(247,227,106,.35);padding:6px 9px;border-radius:99px;cursor:pointer}.row button[aria-pressed="true"]{background:#f7e36a;color:#06110d}
+.sl{display:grid;grid-template-columns:5.5em 1fr;gap:4px 10px;margin-top:10px;align-items:center}.sl input{accent-color:#f7e36a;width:100%}
+</style></head><body>
+<canvas id="c"></canvas>
+<div class="t"><b>Physarum polycephalum</b>42,000 agents follow each other’s trails, the way slime mould finds the shortest road to food. Click to drop oats; shift-drag or right-drag to lay salt.
+<div class="row" id="pal"></div><div class="sl"><span>Sensor angle</span><input id="sa" type="range" min="10" max="80" value="26"><span>Sensor reach</span><input id="sd" type="range" min="3" max="24" value="9"></div><div class="row"><button id="clr">Clear salt & oats</button><button id="rs">Respawn</button></div></div>
 <script>
-const c=document.getElementById('c'),x=c.getContext('2d');let W,H,T,T2,img,A;const N=40000;
-function init(){const s=.5;W=c.width=Math.floor(innerWidth*s);H=c.height=Math.floor(innerHeight*s);T=new Float32Array(W*H);T2=new Float32Array(W*H);img=x.createImageData(W,H);A=new Float32Array(N*3);
-for(let i=0;i<N;i++){A[i*3]=Math.random()*W;A[i*3+1]=Math.random()*H;A[i*3+2]=Math.random()*Math.PI*2}}
+const c=document.getElementById('c'),x=c.getContext('2d');let W,H,T,T2,img,A,food=[],wall;const N=42000;
+const PALS=[['Gold',[[6,17,13],[40,120,70],[247,227,106],[255,255,230]]],['Biolume',[[2,6,20],[10,60,140],[60,220,255],[230,255,255]]],['Magma',[[10,2,4],[120,10,30],[255,120,20],[255,240,180]]],['Ink',[[244,238,226],[160,150,140],[40,36,40],[10,8,10]]]];let pi=0,LUT=new Uint8Array(256*3);
+function mkLut(){const s=PALS[pi][1];for(let i=0;i<256;i++){const t=i/255*3,k=Math.min(2,Math.floor(t)),f=t-k;for(let j=0;j<3;j++)LUT[i*3+j]=s[k][j]+(s[k+1][j]-s[k][j])*f}document.body.style.background=`rgb(${s[0]})`}
+const pal=document.getElementById('pal');PALS.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p[0];b.setAttribute('aria-pressed',i===0);b.onclick=()=>{pi=i;mkLut();[...pal.children].forEach((o,k)=>o.setAttribute('aria-pressed',k===i))};pal.appendChild(b)});mkLut();
+function spawn(){for(let i=0;i<N;i++){A[i*3]=Math.random()*W;A[i*3+1]=Math.random()*H;A[i*3+2]=Math.random()*Math.PI*2}}
+function init(){const s=.5;W=c.width=Math.floor(innerWidth*s);H=c.height=Math.floor(innerHeight*s);T=new Float32Array(W*H);T2=new Float32Array(W*H);wall=new Uint8Array(W*H);img=x.createImageData(W,H);A=new Float32Array(N*3);food=[];spawn()}
 init();addEventListener('resize',init);
-c.addEventListener('click',e=>{const X=e.clientX/innerWidth*W|0,Y=e.clientY/innerHeight*H|0;for(let dy=-8;dy<=8;dy++)for(let dx=-8;dx<=8;dx++){const xx=X+dx,yy=Y+dy;if(xx>=0&&yy>=0&&xx<W&&yy<H)T[yy*W+xx]+=60}});
-const SA=.45,SD=9,RA=.35,SP=1.1;const sense=(px,py)=>{const X=px|0,Y=py|0;return X<0||Y<0||X>=W||Y>=H?0:T[Y*W+X]};
-function step(){for(let i=0;i<N;i++){const o=i*3;let px=A[o],py=A[o+1],a=A[o+2];const f=sense(px+Math.cos(a)*SD,py+Math.sin(a)*SD),l=sense(px+Math.cos(a-SA)*SD,py+Math.sin(a-SA)*SD),r=sense(px+Math.cos(a+SA)*SD,py+Math.sin(a+SA)*SD);
-if(f<l&&f<r)a+=(Math.random()<.5?-1:1)*RA;else if(l>r)a-=RA;else if(r>l)a+=RA;px+=Math.cos(a)*SP;py+=Math.sin(a)*SP;if(px<1||px>=W-1||py<1||py>=H-1){a=Math.random()*Math.PI*2;px=Math.min(W-2,Math.max(1,px));py=Math.min(H-2,Math.max(1,py))}
-A[o]=px;A[o+1]=py;A[o+2]=a;T[(py|0)*W+(px|0)]+=1.2}
-for(let y=1;y<H-1;y++)for(let X=1;X<W-1;X++){const i=y*W+X;T2[i]=(T[i]*4+T[i-1]+T[i+1]+T[i-W]+T[i+W])/8*.94}[T,T2]=[T2,T]}
-function draw(){const d=img.data;for(let i=0;i<W*H;i++){const v=Math.min(1,T[i]/9);const o=i*4;d[o]=6+v*v*241;d[o+1]=17+v*210+v*v*0;d[o+2]=13+v*40+(1-v)*v*120;d[o+3]=255}x.putImageData(img,0,0)}
-for(let i=0;i<90;i++)step();function f(){step();step();draw();requestAnimationFrame(f)}f();
+const pos=e=>[e.clientX/innerWidth*W|0,e.clientY/innerHeight*H|0];let salt=false;
+c.addEventListener('contextmenu',e=>e.preventDefault());
+c.addEventListener('pointerdown',e=>{c.setPointerCapture(e.pointerId);salt=e.shiftKey||e.button===2;const [X,Y]=pos(e);if(!salt)food.push([X,Y,1]);else paintSalt(X,Y)});
+c.addEventListener('pointermove',e=>{if(salt&&e.buttons){const [X,Y]=pos(e);paintSalt(X,Y)}});c.addEventListener('pointerup',()=>salt=false);
+function paintSalt(X,Y){for(let dy=-5;dy<=5;dy++)for(let dx=-5;dx<=5;dx++){const xx=X+dx,yy=Y+dy;if(dx*dx+dy*dy<=25&&xx>=0&&yy>=0&&xx<W&&yy<H){wall[yy*W+xx]=1;T[yy*W+xx]=0}}}
+document.getElementById('clr').onclick=()=>{wall.fill(0);food=[]};document.getElementById('rs').onclick=()=>{T.fill(0);spawn()};
+addEventListener('keydown',e=>{if(e.key===' '){e.preventDefault();food.push([Math.random()*W|0,Math.random()*H|0,1])}const n=+e.key;if(n>=1&&n<=4)pal.children[n-1].click()});
+let SA=26*Math.PI/180,SD=9;document.getElementById('sa').oninput=e=>SA=e.target.value*Math.PI/180;document.getElementById('sd').oninput=e=>SD=+e.target.value;
+const RA=.35,SP=1.1;const sense=(px,py)=>{const X=px|0,Y=py|0;if(X<0||Y<0||X>=W||Y>=H)return -1;const i=Y*W+X;return wall[i]?-5:T[i]};
+function step(){for(const [fx,fy] of food){for(let dy=-3;dy<=3;dy++)for(let dx=-3;dx<=3;dx++){const xx=fx+dx,yy=fy+dy;if(xx>=0&&yy>=0&&xx<W&&yy<H)T[yy*W+xx]+=3}}
+for(let i=0;i<N;i++){const o=i*3;let px=A[o],py=A[o+1],a=A[o+2];const f=sense(px+Math.cos(a)*SD,py+Math.sin(a)*SD),l=sense(px+Math.cos(a-SA)*SD,py+Math.sin(a-SA)*SD),r=sense(px+Math.cos(a+SA)*SD,py+Math.sin(a+SA)*SD);
+if(f<l&&f<r)a+=(Math.random()<.5?-1:1)*RA;else if(l>r)a-=RA;else if(r>l)a+=RA;let nx=px+Math.cos(a)*SP,ny=py+Math.sin(a)*SP;
+if(nx<1||nx>=W-1||ny<1||ny>=H-1||wall[(ny|0)*W+(nx|0)]){a=Math.random()*Math.PI*2;nx=px;ny=py}
+A[o]=nx;A[o+1]=ny;A[o+2]=a;T[(ny|0)*W+(nx|0)]+=1.2}
+for(let y=1;y<H-1;y++)for(let X=1;X<W-1;X++){const i=y*W+X;T2[i]=wall[i]?0:(T[i]*4+T[i-1]+T[i+1]+T[i-W]+T[i+W])/8*.94}[T,T2]=[T2,T]}
+function draw(){const d=img.data;const ink=pi===3;for(let i=0;i<W*H;i++){const o=i*4;if(wall[i]){d[o]=ink?200:255;d[o+1]=ink?60:250;d[o+2]=ink?60:240;d[o+3]=255;continue}const v=Math.min(255,Math.pow(T[i]/10,.8)*255)|0;d[o]=LUT[v*3];d[o+1]=LUT[v*3+1];d[o+2]=LUT[v*3+2];d[o+3]=255}
+for(const [fx,fy] of food){for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++){const xx=fx+dx,yy=fy+dy;if(xx>=0&&yy>=0&&xx<W&&yy<H){const o=(yy*W+xx)*4;d[o]=240;d[o+1]=220;d[o+2]=170}}}x.putImageData(img,0,0)}
+for(let i=0;i<60;i++)step();function f(){step();step();draw();requestAnimationFrame(f)}f();
 </script></body></html>

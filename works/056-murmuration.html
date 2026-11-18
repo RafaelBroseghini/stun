@@ -1,22 +1,48 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Murmuration</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#f3a27a}canvas{display:block;width:100%;height:100%}
-.t{position:fixed;left:5vw;top:6vh;font:italic 400 clamp(36px,6vw,92px)/.9 'Instrument Serif',serif;color:#2a1a26}.t small{display:block;font-style:normal;font-size:15px;margin-top:14px;letter-spacing:.06em;max-width:36ch;line-height:1.4}</style></head><body>
-<canvas id="c"></canvas><div class="t">Murmuration<small>Each starling watches only its seven nearest neighbours. Move your cursor to play the hawk.</small></div>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#f3a27a;user-select:none;-webkit-user-select:none}canvas{display:block;width:100%;height:100%;cursor:none;touch-action:none}
+.t{position:fixed;left:5vw;top:6vh;font:italic 400 clamp(36px,6vw,92px)/.9 'Instrument Serif',serif;color:#2a1a26;pointer-events:none}.t small{display:block;font:400 14px/1.5 Inter,sans-serif;font-style:normal;margin-top:16px;letter-spacing:.02em;max-width:36ch;opacity:.85}
+.b{position:fixed;right:5vw;top:6vh;display:flex;gap:6px}.b button{font:400 12px Inter;letter-spacing:.14em;text-transform:uppercase;color:#2a1a26;background:rgba(255,255,255,.25);border:1px solid rgba(42,26,38,.3);padding:8px 12px;border-radius:99px;cursor:pointer;backdrop-filter:blur(4px)}.b button:hover{background:rgba(255,255,255,.45)}
+.c{position:fixed;right:5vw;bottom:5vh;font:italic 400 18px 'Instrument Serif';color:#2a1a26;text-align:right;pointer-events:none}
+</style></head><body>
+<canvas id="c"></canvas><div class="t">Murmuration<small>Each starling watches only its seven nearest neighbours. Move to play the hawk; click to stoop.</small></div>
+<div class="b"><button id="ro">Roost</button><button id="fl">Flush</button></div><div class="c"><span id="n">1,100</span> starlings · <span id="st">wheeling</span></div>
 <script>
-const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio,2);let W,H;const N=750,B=[];let hawk={x:-1e4,y:-1e4};
+const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio||1,2);let W,H;const N=1100,B=[];let hawk={x:-1e4,y:-1e4,vx:0,vy:0},tgt={x:-1e4,y:-1e4},dive=0,roost=false,waves=[];
 function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr}size();addEventListener('resize',size);
-for(let i=0;i<N;i++){const a=Math.random()*7;B.push({x:W*.55+Math.cos(a)*W*.12*Math.random(),y:H*.4+Math.sin(a)*H*.12*Math.random(),vx:Math.cos(a)*2,vy:Math.sin(a)*2})}
-addEventListener('pointermove',e=>{hawk.x=e.clientX*dpr;hawk.y=e.clientY*dpr});addEventListener('pointerleave',()=>hawk.x=-1e4);
-const G=60*dpr;
+for(let i=0;i<N;i++){const a=Math.random()*7;B.push({x:W*.55+Math.cos(a)*W*.12*Math.random(),y:H*.4+Math.sin(a)*H*.12*Math.random(),vx:Math.cos(a)*2,vy:Math.sin(a)*2,z:Math.random(),perch:null})}
+addEventListener('pointermove',e=>{tgt.x=e.clientX*dpr;tgt.y=e.clientY*dpr;if(hawk.x<-1e3){hawk.x=tgt.x;hawk.y=tgt.y}});addEventListener('pointerleave',()=>{tgt.x=-1e4});
+c.addEventListener('pointerdown',()=>{dive=1;waves.push({x:hawk.x,y:hawk.y,r:0});swoosh(1)});
+const roostB=document.getElementById('ro'),flB=document.getElementById('fl');roostB.onclick=()=>{roost=true;document.getElementById('st').textContent='settling into the reeds'};flB.onclick=flush;
+function flush(){roost=false;B.forEach(b=>{if(b.perch){b.perch=null;b.vy=-(3+Math.random()*4)*dpr;b.vx=(Math.random()-.5)*4*dpr}});swoosh(1.5);document.getElementById('st').textContent='wheeling'}
+addEventListener('keydown',e=>{if(e.key===' '){e.preventDefault();roost?flush():roostB.click()}});
+let ac;function swoosh(k){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const b=ac.createBuffer(1,ac.sampleRate*1.2,ac.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.sin(i/d.length*Math.PI)*(.5+.5*Math.sin(i*.004));const s=ac.createBufferSource(),f=ac.createBiquadFilter(),g=ac.createGain();s.buffer=b;f.type='bandpass';f.frequency.value=600;f.Q.value=.6;g.gain.value=.25*k;s.connect(f).connect(g).connect(ac.destination);s.start()}catch(e){}}
+const G=60*dpr;let reeds=[];function mkReeds(){reeds=Array.from({length:Math.round(W/(5*dpr))},(_,i)=>({x:i*5*dpr+Math.random()*4*dpr,h:H*(.06+Math.random()*.08),p:Math.random()*6}))}mkReeds();addEventListener('resize',mkReeds);
 function f(t){const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#6a7bb8');g.addColorStop(.45,'#e9a1a0');g.addColorStop(.8,'#f6c08a');g.addColorStop(1,'#f3a27a');x.fillStyle=g;x.fillRect(0,0,W,H);
-const grid=new Map();for(const b of B){const k=((b.x/G)|0)+','+((b.y/G)|0);(grid.get(k)||grid.set(k,[]).get(k)).push(b)}
+x.fillStyle='rgba(255,236,200,.75)';x.beginPath();x.arc(W*.78,H*.78,Math.min(W,H)*.08,0,7);x.fill();
+const cols=Math.ceil(W/G)+2,grid=new Map();for(const b of B){if(b.perch)continue;const k=((b.y/G)|0)*cols+((b.x/G)|0);let L=grid.get(k);if(!L){L=[];grid.set(k,L)}L.push(b)}
 const tx=W*(.5+.25*Math.sin(t*.00023)),ty=H*(.42+.15*Math.sin(t*.00041));
-for(const b of B){let ax=0,ay=0,cx=0,cy=0,sx=0,sy=0,n=0;const gx=(b.x/G)|0,gy=(b.y/G)|0;for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j++){const L=grid.get((gx+i)+','+(gy+j));if(!L)continue;for(const o of L){if(o===b)continue;const dx=o.x-b.x,dy=o.y-b.y,d2=dx*dx+dy*dy;if(d2>G*G)continue;n++;ax+=o.vx;ay+=o.vy;cx+=o.x;cy+=o.y;if(d2<(12*dpr)**2){sx-=dx/(d2+1)*40;sy-=dy/(d2+1)*40}}}
+// the hawk chases the cursor and stoops on click
+if(tgt.x>-1e3){hawk.vx+=(tgt.x-hawk.x)*.004;hawk.vy+=(tgt.y-hawk.y)*.004+dive*1.6*dpr;hawk.vx*=.9;hawk.vy*=.9;hawk.x+=hawk.vx;hawk.y+=hawk.vy}dive*=.95;
+const fear=(130+dive*160)*dpr;const groundY=H*.9;
+for(const b of B){if(b.perch){b.x+=(b.perch[0]-b.x)*.1;b.y+=(b.perch[1]-b.y)*.1;continue}let ax=0,ay=0,cx=0,cy=0,sx=0,sy=0,n=0;const gx=(b.x/G)|0,gy=(b.y/G)|0;for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j++){const L=grid.get((gy+j)*cols+gx+i);if(!L)continue;for(const o of L){if(o===b)continue;const dx=o.x-b.x,dy=o.y-b.y,d2=dx*dx+dy*dy;if(d2>G*G)continue;n++;ax+=o.vx;ay+=o.vy;cx+=o.x;cy+=o.y;if(d2<(12*dpr)**2){sx-=dx/(d2+1)*40;sy-=dy/(d2+1)*40}}if(n>14)break}
 if(n){b.vx+=(ax/n-b.vx)*.06+(cx/n-b.x)*.002+sx*.05;b.vy+=(ay/n-b.vy)*.06+(cy/n-b.y)*.002+sy*.05}
-b.vx+=(tx-b.x)*.00025;b.vy+=(ty-b.y)*.00025;const hx=b.x-hawk.x,hy=b.y-hawk.y,hd=Math.hypot(hx,hy);if(hd<160*dpr){b.vx+=hx/hd*.9;b.vy+=hy/hd*.9}
-const sp=Math.hypot(b.vx,b.vy),mx=4.2*dpr,mn=2.2*dpr;if(sp>mx){b.vx*=mx/sp;b.vy*=mx/sp}else if(sp<mn){b.vx*=mn/sp;b.vy*=mn/sp}b.x+=b.vx;b.y+=b.vy}
-x.fillStyle='rgba(30,18,28,.88)';for(const b of B){const a=Math.atan2(b.vy,b.vx),s=2.6*dpr,flap=Math.sin(t*.03+b.x)*.6;x.save();x.translate(b.x,b.y);x.rotate(a);x.beginPath();x.moveTo(s*1.4,0);x.lineTo(-s,s*(1+flap));x.lineTo(-s*.4,0);x.lineTo(-s,-s*(1+flap));x.fill();x.restore()}
-x.fillStyle='#2a1a26';x.beginPath();x.moveTo(0,H);for(let X=0;X<=W;X+=4*dpr)x.lineTo(X,H*.92-Math.abs(Math.sin(X*.05))*H*.03-Math.sin(X*.004)*H*.02);x.lineTo(W,H);x.fill();
-x.fillRect(W*.62,H*.86,W*.4,H*.012);for(let k=0;k<8;k++)x.fillRect(W*.64+k*W*.045,H*.86,3*dpr,H*.14);requestAnimationFrame(f)}requestAnimationFrame(f);
+if(roost){const rx=W*(.05+((b.z*997)%1)*.9);b.vx+=(rx-b.x)*.0006;b.vy+=(groundY-b.y)*.0012;if(b.y>groundY-H*.04&&Math.random()<.03){b.perch=[b.x,groundY-H*(.03+Math.random()*.05)];continue}}
+else{b.vx+=(tx-b.x)*.00025;b.vy+=(ty-b.y)*.00025}
+const hx=b.x-hawk.x,hy=b.y-hawk.y,hd=Math.hypot(hx,hy)||1;if(hd<fear){b.vx+=hx/hd*(.9+dive);b.vy+=hy/hd*(.9+dive)}
+for(const w of waves){const d=Math.hypot(b.x-w.x,b.y-w.y);if(Math.abs(d-w.r)<30*dpr){b.vx+=(b.x-w.x)/d*.8;b.vy+=(b.y-w.y)/d*.8}}
+const sp=Math.hypot(b.vx,b.vy),mx=(4.2+dive*2)*dpr,mn=2.2*dpr;if(sp>mx){b.vx*=mx/sp;b.vy*=mx/sp}else if(sp<mn){b.vx*=mn/sp;b.vy*=mn/sp}b.x+=b.vx;b.y+=b.vy;if(b.y>groundY)b.vy-=.5*dpr}
+for(let i=waves.length-1;i>=0;i--){waves[i].r+=12*dpr;if(waves[i].r>600*dpr)waves.splice(i,1)}
+// birds, sorted roughly by depth via two passes
+for(const pass of [0,1]){x.fillStyle=pass?'rgba(30,18,28,.92)':'rgba(60,36,56,.55)';for(const b of B){if((b.z>.5)!==!!pass)continue;const a=b.perch?0:Math.atan2(b.vy,b.vx),s=(pass?2.8:2)*dpr,flap=b.perch?0:Math.sin(t*.03+b.x)*.6;x.save();x.translate(b.x,b.y);x.rotate(a);x.beginPath();x.moveTo(s*1.4,0);x.lineTo(-s,s*(1+flap));x.lineTo(-s*.4,0);x.lineTo(-s,-s*(1+flap));x.fill();x.restore()}}
+// reeds and pylons
+x.strokeStyle='#2a1a26';x.lineWidth=1.4*dpr;x.beginPath();for(const r of reeds){const bend=Math.sin(t*.0015+r.p+r.x*.003)*4*dpr;x.moveTo(r.x,H);x.quadraticCurveTo(r.x,H-r.h*.5,r.x+bend,H*.94-r.h*.4)}x.stroke();
+x.fillStyle='#2a1a26';x.beginPath();x.moveTo(0,H);for(let X=0;X<=W;X+=4*dpr)x.lineTo(X,H*.93-Math.abs(Math.sin(X*.05))*H*.02-Math.sin(X*.004)*H*.015);x.lineTo(W,H);x.fill();
+for(let k=0;k<3;k++){const px=W*(.6+k*.16),ph=H*.36;x.strokeStyle='#2a1a26';x.lineWidth=2*dpr;x.beginPath();x.moveTo(px-14*dpr,H*.93);x.lineTo(px,H*.93-ph);x.lineTo(px+14*dpr,H*.93);x.moveTo(px-26*dpr,H*.93-ph*.85);x.lineTo(px+26*dpr,H*.93-ph*.85);x.stroke()}
+x.strokeStyle='rgba(42,26,38,.6)';x.lineWidth=dpr;x.beginPath();for(let k=0;k<2;k++){const a=W*(.6+k*.16),b2=W*(.6+(k+1)*.16),yy=H*.93-H*.36*.85;x.moveTo(a+26*dpr,yy);x.quadraticCurveTo((a+b2)/2,yy+30*dpr,b2-26*dpr,yy)}x.stroke();
+// hawk
+if(tgt.x>-1e3){const a=Math.atan2(hawk.vy,hawk.vx),s=9*dpr*(1+dive*.3),fl=Math.sin(t*.012)*.5*(1-dive);x.save();x.translate(hawk.x,hawk.y);x.rotate(a);x.fillStyle='#1a0e16';x.beginPath();x.moveTo(s*1.6,0);x.quadraticCurveTo(0,-s*(1.8+fl)*(1-dive*.7),-s*.8,-s*(2.2+fl)*(1-dive*.7));x.lineTo(-s*.4,0);x.lineTo(-s*.8,s*(2.2+fl)*(1-dive*.7));x.quadraticCurveTo(0,s*(1.8+fl)*(1-dive*.7),s*1.6,0);x.fill();x.beginPath();x.moveTo(-s*.4,0);x.lineTo(-s*1.6,-s*.5);x.lineTo(-s*1.6,s*.5);x.fill();x.restore()}
+const perched=B.filter(b=>b.perch).length;if(roost&&perched>N*.9)document.getElementById('st').textContent='roosting · click Flush';
+requestAnimationFrame(f)}requestAnimationFrame(f);
 </script></body></html>
