@@ -1,31 +1,91 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Calibre 7 Chronograph</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;500&family=Libre+Baskerville:ital@1&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:radial-gradient(circle at 50% 40%,#2c3036,#0c0d0f 70%);display:grid;place-items:center;font-family:Oswald,sans-serif;color:#c9ccd1}
-.w{width:min(86vmin,640px);aspect-ratio:1;position:relative;cursor:pointer}.w svg{width:100%;height:100%;filter:drop-shadow(0 30px 40px #000)}
-.cap{position:fixed;left:5vw;bottom:6vh;font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:#8a9099}.cap b{display:block;font:italic 26px 'Libre Baskerville',serif;letter-spacing:0;text-transform:none;color:#e6e8eb;margin-bottom:6px}</style></head><body>
-<div class="w" id="w" title="click to start / stop / reset the chronograph"><svg viewBox="-200 -200 400 400" id="s">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500&family=Libre+Baskerville:ital@1&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}
+body{background:radial-gradient(circle at 50% 40%,#2c3036,#0c0d0f 70%);display:grid;place-items:center;font-family:Oswald,sans-serif;color:#c9ccd1;perspective:1600px;user-select:none;-webkit-user-select:none;transition:background .6s}
+body.lume{background:radial-gradient(circle at 50% 40%,#0b0e12,#000 70%)}
+.strap{position:fixed;left:50%;width:min(36vmin,270px);transform:translateX(-50%);background:linear-gradient(90deg,#2a1a12,#4a2e1e 30%,#3b2418 70%,#22150e);box-shadow:inset 0 0 0 2px rgba(0,0,0,.3)}
+.strap::before{content:"";position:absolute;inset:8px 12px;border-left:1px dashed rgba(220,180,140,.35);border-right:1px dashed rgba(220,180,140,.35)}
+.strap.t{top:-2vh;height:30vh;border-radius:0 0 8px 8px}.strap.b{bottom:-2vh;height:30vh;border-radius:8px 8px 0 0}
+.w{width:min(78vmin,620px);aspect-ratio:1;position:relative;transform-style:preserve-3d;transition:transform 1s cubic-bezier(.3,.7,.2,1);animation:in 1.2s cubic-bezier(.2,.8,.2,1) both}
+@keyframes in{from{opacity:0;transform:scale(.9) rotateX(20deg)}}
+.w.flip .face{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;transform-style:preserve-3d;transition:transform 1.1s cubic-bezier(.4,0,.2,1)}
+.face>svg{position:absolute;inset:0;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;filter:drop-shadow(0 30px 40px #000);overflow:visible}
+.face>svg.back{transform:rotateY(180deg)}
+.push{cursor:pointer}.push:active rect{transform:translateX(-4px)}.push rect{transition:transform .08s}
+.lumeG{opacity:0;transition:opacity .6s}body.lume .lumeG{opacity:1}body.lume .dayG{opacity:.08}.dayG{transition:opacity .6s}
+.cap{position:fixed;left:5vw;bottom:6vh;font-size:12px;line-height:1.9;letter-spacing:.3em;text-transform:uppercase;color:#8a9099;pointer-events:none}.cap b{display:block;font:italic 26px 'Libre Baskerville',serif;letter-spacing:0;text-transform:none;color:#e6e8eb;margin-bottom:6px}
+.rd{position:fixed;right:5vw;bottom:6vh;text-align:right;font:300 12px Oswald;letter-spacing:.3em;color:#8a9099;text-transform:uppercase}.rd b{display:block;font:400 34px Oswald;letter-spacing:.04em;color:#e6e8eb;font-variant-numeric:tabular-nums}
+.btns{position:fixed;right:5vw;top:6vh;display:flex;gap:8px}.btns button{font:400 11px Oswald;letter-spacing:.22em;text-transform:uppercase;color:#c9ccd1;background:transparent;border:1px solid #4a5058;padding:8px 12px;cursor:pointer;border-radius:2px;transition:background .2s,border-color .2s}.btns button:hover{border-color:#c9ccd1}.btns button[aria-pressed="true"]{background:#c9ccd1;color:#111}
+@media (max-width:640px){.cap{display:none}.rd b{font-size:24px}}
+</style></head><body>
+<div class="strap t"></div><div class="strap b"></div>
+<div class="w" id="w"><div class="face" id="face">
+<svg viewBox="-200 -200 400 400" id="s">
 <defs><radialGradient id="case" cx=".35" cy=".3"><stop offset="0" stop-color="#f2f4f7"/><stop offset=".5" stop-color="#8d939b"/><stop offset="1" stop-color="#3a3f45"/></radialGradient>
-<radialGradient id="dial" cx=".5" cy=".35"><stop offset="0" stop-color="#26364a"/><stop offset="1" stop-color="#0c1420"/></radialGradient>
+<radialGradient id="dial" cx=".5" cy=".35"><stop offset="0" stop-color="#2a3b52"/><stop offset="1" stop-color="#0a121d"/></radialGradient>
 <radialGradient id="sub"><stop offset="0" stop-color="#0a0f16"/><stop offset="1" stop-color="#1a2533"/></radialGradient>
-<linearGradient id="hand" x1="0" x2="1"><stop offset="0" stop-color="#bfc5cc"/><stop offset=".5" stop-color="#fff"/><stop offset="1" stop-color="#8d939b"/></linearGradient></defs>
-<rect x="-14" y="-200" width="28" height="30" rx="4" fill="url(#case)"/><rect x="178" y="-60" width="16" height="22" rx="3" fill="url(#case)" transform="rotate(-30)"/><rect x="178" y="38" width="16" height="22" rx="3" fill="url(#case)" transform="rotate(30)"/><rect x="186" y="-12" width="14" height="24" rx="3" fill="url(#case)"/>
-<circle r="190" fill="url(#case)"/><circle r="176" fill="#15181c"/><g id="tachy"></g><circle r="150" fill="url(#dial)"/><g id="idx"></g>
-<g transform="translate(0,-62)"><circle r="36" fill="url(#sub)" stroke="#3b4a5c"/><g id="s1"></g><line id="hm" y2="-30" stroke="#ff6a3d" stroke-width="2.4" stroke-linecap="round"/><circle r="3" fill="#ff6a3d"/></g>
-<g transform="translate(-66,30)"><circle r="36" fill="url(#sub)" stroke="#3b4a5c"/><g id="s2"></g><line id="hs" y2="-30" stroke="#e6e8eb" stroke-width="2" stroke-linecap="round"/><circle r="3" fill="#e6e8eb"/></g>
-<g transform="translate(66,30)"><circle r="36" fill="url(#sub)" stroke="#3b4a5c"/><g id="s3"></g><line id="hc" y2="-30" stroke="#ff6a3d" stroke-width="2" stroke-linecap="round"/><circle r="3" fill="#ff6a3d"/></g>
-<rect x="96" y="-10" width="30" height="20" fill="#f2f0e8" stroke="#8d939b"/><text id="date" x="111" y="6" text-anchor="middle" font-family="Oswald" font-size="14" fill="#111">18</text>
+<linearGradient id="hand" x1="0" x2="1"><stop offset="0" stop-color="#bfc5cc"/><stop offset=".5" stop-color="#fff"/><stop offset="1" stop-color="#8d939b"/></linearGradient>
+<linearGradient id="glass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<filter id="glow"><feGaussianBlur stdDeviation="2.5"/></filter></defs>
+<g class="push" id="pStart"><rect x="178" y="-60" width="18" height="22" rx="3" fill="url(#case)" transform="rotate(-30)"/></g>
+<g class="push" id="pReset"><rect x="178" y="38" width="18" height="22" rx="3" fill="url(#case)" transform="rotate(30)"/></g>
+<rect x="186" y="-13" width="16" height="26" rx="3" fill="url(#case)"/>
+<circle r="190" fill="url(#case)"/><circle r="176" fill="#15181c"/><g id="tachy"></g><circle r="150" fill="url(#dial)"/>
+<g class="dayG" id="sunray"></g><g id="idx"></g><g class="lumeG" id="lidx" filter="url(#glow)"></g>
+<g transform="translate(0,-62)"><circle r="36" fill="url(#sub)" stroke="#3b4a5c"/><g id="s1"></g><text y="16" text-anchor="middle" font-size="6" letter-spacing="1.5" fill="#6b7a8c">HOURS</text><line id="hm" y2="-30" stroke="#ff6a3d" stroke-width="2.4" stroke-linecap="round"/><circle r="3" fill="#ff6a3d"/></g>
+<g transform="translate(-66,30)"><circle r="36" fill="url(#sub)" stroke="#3b4a5c"/><g id="s2"></g><text y="16" text-anchor="middle" font-size="6" letter-spacing="1.5" fill="#6b7a8c">SEC</text><line id="hs" y2="-30" stroke="#e6e8eb" stroke-width="2" stroke-linecap="round"/><circle r="3" fill="#e6e8eb"/></g>
+<g transform="translate(66,30)"><circle r="36" fill="url(#sub)" stroke="#3b4a5c"/><g id="s3"></g><text y="16" text-anchor="middle" font-size="6" letter-spacing="1.5" fill="#6b7a8c">MIN</text><line id="hc" y2="-30" stroke="#ff6a3d" stroke-width="2" stroke-linecap="round"/><circle r="3" fill="#ff6a3d"/></g>
+<rect x="106" y="-10" width="24" height="20" fill="#f2f0e8" stroke="#8d939b"/><text id="date" x="118" y="6" text-anchor="middle" font-family="Oswald" font-size="14" fill="#111">18</text>
 <text y="100" text-anchor="middle" font-family="Libre Baskerville" font-style="italic" font-size="16" fill="#e6e8eb">Calibre 7</text><text y="116" text-anchor="middle" font-family="Oswald" font-size="7.5" letter-spacing="3" fill="#8a9bb0">AUTOMATIC · 100M</text>
-<g id="H" style="filter:drop-shadow(3px 5px 3px rgba(0,0,0,.6))"><path d="M-6 20L-4 -80L0 -92L4 -80L6 20Z" fill="url(#hand)"/><path d="M-2 -40L0 -84L2 -40Z" fill="#cfe9ff"/></g>
-<g id="M" style="filter:drop-shadow(4px 7px 3px rgba(0,0,0,.6))"><path d="M-4.5 24L-3 -128L0 -140L3 -128L4.5 24Z" fill="url(#hand)"/><path d="M-1.6 -60L0 -132L1.6 -60Z" fill="#cfe9ff"/></g>
-<g id="S" style="filter:drop-shadow(5px 9px 3px rgba(0,0,0,.6))"><path d="M-1.2 36L-.8 -146L.8 -146L1.2 36Z" fill="#ff6a3d"/><circle cy="24" r="5" fill="#ff6a3d"/></g><circle r="6" fill="#d6d9de" stroke="#555"/></svg></div>
-<div class="cap"><b>Calibre 7</b>Click the watch · start / stop / reset chronograph</div>
+<g id="H" style="filter:drop-shadow(3px 5px 3px rgba(0,0,0,.6))"><path d="M-6 20L-4 -80L0 -92L4 -80L6 20Z" fill="url(#hand)"/><path d="M-2 -40L0 -84L2 -40Z" fill="#cfe9ff"/><path class="lumeG" d="M-2 -40L0 -84L2 -40Z" fill="#9dffd0" filter="url(#glow)"/></g>
+<g id="M" style="filter:drop-shadow(4px 7px 3px rgba(0,0,0,.6))"><path d="M-4.5 24L-3 -128L0 -140L3 -128L4.5 24Z" fill="url(#hand)"/><path d="M-1.6 -60L0 -132L1.6 -60Z" fill="#cfe9ff"/><path class="lumeG" d="M-1.6 -60L0 -132L1.6 -60Z" fill="#9dffd0" filter="url(#glow)"/></g>
+<g id="S" style="filter:drop-shadow(5px 9px 3px rgba(0,0,0,.6))"><path d="M-1.2 36L-.8 -146L.8 -146L1.2 36Z" fill="#ff6a3d"/><circle cy="24" r="5" fill="#ff6a3d"/></g><circle r="6" fill="#d6d9de" stroke="#555"/>
+<circle r="176" fill="url(#glass)" id="gl" pointer-events="none"/><ellipse id="spec" cx="-60" cy="-90" rx="70" ry="26" fill="#fff" opacity=".07" transform="rotate(-30)" pointer-events="none"/>
+</svg>
+<svg viewBox="-200 -200 400 400" class="back" id="bk">
+<defs><radialGradient id="plate" cx=".4" cy=".35"><stop offset="0" stop-color="#d9c79a"/><stop offset=".6" stop-color="#a8925a"/><stop offset="1" stop-color="#6e5a2e"/></radialGradient><radialGradient id="rot" cx=".4" cy=".3"><stop offset="0" stop-color="#f6f8fb"/><stop offset="1" stop-color="#7d838b"/></radialGradient></defs>
+<circle r="190" fill="url(#case)"/><circle r="168" fill="#0d0f12"/><circle r="160" fill="url(#plate)"/>
+<g id="cg" opacity=".25" stroke="#3a2e14" fill="none"></g>
+<g id="g1" transform="translate(-60,-40)"></g><g id="g2" transform="translate(30,-70)"></g><g id="g3" transform="translate(-20,40)"></g>
+<g transform="translate(70,40)"><circle r="46" fill="none" stroke="#4a3a1a" stroke-width="2"/><g id="bal"><circle r="40" fill="none" stroke="#e0c070" stroke-width="5"/><path d="M-40 0H40M0 -40V40" stroke="#e0c070" stroke-width="3"/><circle r="6" fill="#c0392b"/></g><path id="hair" fill="none" stroke="#bfc5cc" stroke-width=".8"/></g>
+<g fill="#c0392b"><circle cx="-60" cy="-40" r="5"/><circle cx="30" cy="-70" r="4"/><circle cx="-20" cy="40" r="4"/><circle cx="70" cy="-10" r="3"/><circle cx="-100" cy="20" r="3"/></g>
+<g id="rotor"><path d="M0 0L150 -40A155 155 0 0 1 150 40Z" fill="url(#rot)" opacity=".0"/><path d="M-148 -30A151 151 0 0 1 148 -30L40 -10A42 42 0 0 0 -40 -10Z" fill="url(#rot)" stroke="#5a6068"/><text y="-90" text-anchor="middle" font-family="Libre Baskerville" font-style="italic" font-size="15" fill="#3a3f45">Calibre 7 · 28 jewels</text></g>
+<circle r="14" fill="#c9ccd1" stroke="#5a6068"/><circle r="168" fill="url(#glass)" pointer-events="none"/>
+</svg></div></div>
+<div class="btns"><button id="bl" aria-pressed="false">Lume</button><button id="bf" aria-pressed="false">Caseback</button></div>
+<div class="cap"><b>Calibre 7</b>Upper pusher · start / stop<br>Lower pusher · reset<br>F · flip &nbsp; L · lume</div>
+<div class="rd">Chronograph<b id="rd">00:00.0</b></div>
 <script>
 const NS='http://www.w3.org/2000/svg',$=id=>document.getElementById(id);const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);p.appendChild(e);return e};
-for(let i=0;i<60;i++){const a=i*6,big=i%5===0;el('line',{x1:0,y1:-148,x2:0,y2:big?-132:-142,stroke:big?'#e6e8eb':'#6b7a8c','stroke-width':big?3:1,transform:`rotate(${a})`},$('idx'));if(big&&i%15){const r=118,t=(a-90)*Math.PI/180;el('text',{x:Math.cos(t)*r,y:Math.sin(t)*r+5,'text-anchor':'middle','font-size':14,'font-family':'Oswald',fill:'#e6e8eb'},$('idx')).textContent=i/5}}
+for(let i=0;i<60;i++){const a=i*6,big=i%5===0;el('line',{x1:0,y1:-148,x2:0,y2:big?-132:-142,stroke:big?'#e6e8eb':'#6b7a8c','stroke-width':big?3:1,transform:`rotate(${a})`},$('idx'));if(big){el('rect',{x:-2,y:-146,width:4,height:12,fill:'#9dffd0',transform:`rotate(${a})`},$('lidx'))}if(big&&i%15){const r=118,t=(a-90)*Math.PI/180;el('text',{x:Math.cos(t)*r,y:Math.sin(t)*r+5,'text-anchor':'middle','font-size':14,'font-family':'Oswald',fill:'#e6e8eb'},$('idx')).textContent=i/5}}
+for(let i=0;i<180;i++)el('line',{x1:0,y1:-20,x2:0,y2:-150,stroke:i%2?'#fff':'#000','stroke-opacity':.025,'stroke-width':2.6,transform:`rotate(${i*2})`},$('sunray'));
 for(let v=60;v<=500;v+=v<200?20:50){const a=360*60/v/60;el('line',{y1:-176,y2:-168,stroke:'#8a9099',transform:`rotate(${a})`},$('tachy'));const t=(a-90)*Math.PI/180;el('text',{x:Math.cos(t)*160,y:Math.sin(t)*160+3,'text-anchor':'middle','font-size':8,'font-family':'Oswald',fill:'#a9b0b8',transform:`rotate(${a} ${Math.cos(t)*160} ${Math.sin(t)*160})`},$('tachy')).textContent=v}
 ['s1','s2','s3'].forEach(s=>{for(let i=0;i<30;i++)el('line',{y1:-34,y2:i%5?-31:-27,stroke:'#6b7a8c','stroke-width':i%5?.6:1.2,transform:`rotate(${i*12})`},$(s))});
-let st=0,run=false,acc=0,t0=0;$('w').onclick=()=>{if(!run&&acc===0){run=true;t0=performance.now()}else if(run){run=false;acc+=performance.now()-t0}else{acc=0}};
+// caseback: côtes de Genève and gears
+for(let k=-8;k<=8;k++)el('path',{d:`M${k*20-200},-200 Q${k*20},0 ${k*20-200},200`,'stroke-width':10},$('cg'));
+function gear(r,n){let d='';for(let i=0;i<n;i++){const a0=i/n*Math.PI*2,a1=(i+.3)/n*Math.PI*2,a2=(i+.5)/n*Math.PI*2,a3=(i+.8)/n*Math.PI*2,P=(a,R)=>`${(Math.cos(a)*R).toFixed(1)},${(Math.sin(a)*R).toFixed(1)}`;d+=(i?'L':'M')+P(a0,r)+'L'+P(a1,r+6)+'L'+P(a2,r+6)+'L'+P(a3,r)}return d+'Z'}
+[['g1',44,30],['g2',30,20],['g3',36,24]].forEach(([id,r,n])=>{const g=el('g',{},$(id));el('path',{d:gear(r,n),fill:'#e0c070',stroke:'#7a6020'},g);el('circle',{r:r*.6,fill:'#c8a850',stroke:'#7a6020'},g);for(let k=0;k<5;k++){const a=k/5*Math.PI*2;el('circle',{cx:Math.cos(a)*r*.35,cy:Math.sin(a)*r*.35,r:r*.14,fill:'url(#plate)'},g)}$(id)._r=g});
+let run=false,acc=0,t0=0;let ac;function tick(f=3200,v=.05){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type='square';o.frequency.value=f;g.gain.setValueAtTime(v,ac.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+.03);o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+.04)}catch(e){}}
+function startStop(){if(run){run=false;acc+=performance.now()-t0}else{run=true;t0=performance.now()}tick(2600,.08)}
+function reset(){if(run)return;acc=0;tick(1800,.08)}
+$('pStart').addEventListener('click',e=>{e.stopPropagation();startStop()});$('pReset').addEventListener('click',e=>{e.stopPropagation();reset()});
+$('s').addEventListener('click',()=>{if(!run&&acc>0)reset();else startStop()});
+function flip(){$('w').classList.toggle('flip');$('bf').setAttribute('aria-pressed',$('w').classList.contains('flip'))}
+function lume(){document.body.classList.toggle('lume');$('bl').setAttribute('aria-pressed',document.body.classList.contains('lume'))}
+$('bf').onclick=flip;$('bl').onclick=lume;$('bk').addEventListener('click',flip);
+addEventListener('keydown',e=>{if(e.key==='f'||e.key==='F')flip();if(e.key==='l'||e.key==='L')lume();if(e.key===' '||e.key==='Enter'){e.preventDefault();startStop()}if(e.key==='r'||e.key==='R')reset()});
 $('date').textContent=new Date().getDate();
-function f(){const d=new Date(),ms=d.getMilliseconds(),s=d.getSeconds()+ms/1000,m=d.getMinutes()+s/60,h=d.getHours()%12+m/60;$('H').setAttribute('transform',`rotate(${h*30})`);$('M').setAttribute('transform',`rotate(${m*6})`);$('hs').setAttribute('transform',`rotate(${s*6})`);
-const ce=acc+(run?performance.now()-t0:0),cs=ce/1000;$('S').setAttribute('transform',`rotate(${cs*6})`);$('hc').setAttribute('transform',`rotate(${(cs/60)%30*12})`);$('hm').setAttribute('transform',`rotate(${(cs/3600)%12*30})`);requestAnimationFrame(f)}f();
+let rotA=0,rotV=0,lastX=0;addEventListener('pointermove',e=>{const dx=e.clientX-lastX;lastX=e.clientX;rotV+=dx*.05;const nx=e.clientX/innerWidth-.5,ny=e.clientY/innerHeight-.5;$('w').style.transform=`rotateY(${nx*16}deg) rotateX(${-ny*12}deg)`;$('spec').setAttribute('cx',-60+nx*120);$('spec').setAttribute('cy',-90+ny*80);$('gl').setAttribute('transform',`rotate(${nx*40})`)});
+const rdE=$('rd');let lastBeat=-1;
+function f(){const d=new Date(),ms=d.getMilliseconds(),s=d.getSeconds()+Math.floor(ms/125)/8,m=d.getMinutes()+s/60,h=d.getHours()%12+m/60;$('H').setAttribute('transform',`rotate(${h*30})`);$('M').setAttribute('transform',`rotate(${m*6})`);$('hs').setAttribute('transform',`rotate(${s*6})`);
+const ce=acc+(run?performance.now()-t0:0),cs=Math.floor(ce/125)/8;$('S').setAttribute('transform',`rotate(${cs*6})`);$('hc').setAttribute('transform',`rotate(${(cs/60)%30*12})`);$('hm').setAttribute('transform',`rotate(${(cs/3600)%12*30})`);
+const mm=Math.floor(ce/60000),ss=Math.floor(ce/1000)%60,tt=Math.floor(ce/100)%10;rdE.textContent=String(mm).padStart(2,'0')+':'+String(ss).padStart(2,'0')+'.'+tt;
+// movement
+const now=performance.now()/1000;const b=Math.sin(now*Math.PI*8)*200;$('bal').setAttribute('transform',`rotate(${b})`);let hp='';for(let i=0;i<=60;i++){const a=i/60*Math.PI*6+b*Math.PI/180*.5,r=6+i*.5;hp+=(i?'L':'M')+(Math.cos(a)*r).toFixed(1)+' '+(Math.sin(a)*r).toFixed(1)}$('hair').setAttribute('d',hp);
+$('g1')._r.setAttribute('transform',`rotate(${now*12})`);$('g2')._r.setAttribute('transform',`rotate(${-now*12*44/30})`);$('g3')._r.setAttribute('transform',`rotate(${-now*12*44/36})`);
+rotV+=-Math.sin(rotA*Math.PI/180)*.15;rotV*=.97;rotA+=rotV;$('rotor').setAttribute('transform',`rotate(${rotA})`);
+const beat=Math.floor(ms/125);if(run&&beat!==lastBeat&&beat%2===0)tick(4200,.012);lastBeat=beat;
+requestAnimationFrame(f)}f();
 </script></body></html>

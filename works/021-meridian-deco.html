@@ -1,29 +1,56 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>The Meridian Express</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Limelight&family=Poiret+One&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#0b1826;display:grid;place-items:center;font-family:'Poiret One',sans-serif}
-.p{--g:#d8b25a;position:relative;height:min(95vh,140vw);aspect-ratio:.68;background:#10283d;overflow:hidden;border:2px solid var(--g);outline:8px solid #0b1826;box-shadow:0 0 0 10px var(--g),0 30px 80px #000}
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}
+body{background:radial-gradient(80% 70% at 50% 40%,#12263a,#060d16);display:grid;place-items:center;font-family:'Poiret One',sans-serif;perspective:1400px;user-select:none;-webkit-user-select:none}
+.p{--g:#d8b25a;--mx:50%;--my:30%;position:relative;height:min(94vh,140vw);aspect-ratio:.68;background:linear-gradient(#0c1e30,#163650 55%,#10283d);overflow:hidden;border:2px solid var(--g);outline:8px solid #0b1826;box-shadow:0 0 0 10px var(--g),0 40px 90px #000;cursor:pointer;transition:transform .4s cubic-bezier(.2,.8,.2,1);animation:in 1.4s cubic-bezier(.2,.8,.2,1) both}
+@keyframes in{from{opacity:0;transform:translateY(30px) rotateX(10deg)}}
+.foil{position:absolute;inset:0;pointer-events:none;z-index:8;background:radial-gradient(40% 30% at var(--mx) var(--my),rgba(255,240,200,.22),transparent 70%);mix-blend-mode:overlay}
+.stars{position:absolute;inset:0 0 50% 0;background-image:radial-gradient(1px 1px at 12% 22%,#f3e3b8,transparent),radial-gradient(1px 1px at 82% 12%,#f3e3b8,transparent),radial-gradient(1.4px 1.4px at 64% 30%,#fff,transparent),radial-gradient(1px 1px at 30% 8%,#f3e3b8,transparent),radial-gradient(1px 1px at 92% 34%,#f3e3b8,transparent),radial-gradient(1px 1px at 46% 18%,#fff,transparent);opacity:.7;animation:tw 4s ease-in-out infinite alternate}@keyframes tw{to{opacity:.35}}
 .rays{position:absolute;left:50%;top:58%;width:220%;aspect-ratio:1;transform:translate(-50%,-50%);background:repeating-conic-gradient(from -90deg,rgba(216,178,90,.22) 0 3deg,transparent 3deg 9deg);-webkit-mask:linear-gradient(#000 50%,transparent 50%);mask:linear-gradient(#000 50%,transparent 50%);animation:sp 60s linear infinite}@keyframes sp{to{transform:translate(-50%,-50%) rotate(360deg)}}
-.sun{position:absolute;left:50%;top:58%;width:48%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,#f3d58e,#d8b25a 60%,#a5782a);-webkit-mask:linear-gradient(#000 50%,transparent 50%);mask:linear-gradient(#000 50%,transparent 50%)}
-.sun::after{content:"";position:absolute;inset:8%;border-radius:50%;border:2px solid #10283d}
-svg{position:absolute;left:0;bottom:0;width:100%;height:62%}
-.t{position:absolute;top:4%;left:0;right:0;text-align:center;color:var(--g)}.t small{font-size:min(1.9vh,2.8vw);letter-spacing:.6em;display:block}
-.t h1{font-family:Limelight,serif;font-weight:400;font-size:min(8.5vh,12.5vw);line-height:.95;margin:2% 0;background:linear-gradient(100deg,#a5782a 20%,#fff3c4 40%,#d8b25a 50%,#a5782a 70%);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sh 6s linear infinite}@keyframes sh{to{background-position:-300% 0}}
-.b{position:absolute;left:6%;right:6%;bottom:4%;display:flex;justify-content:space-between;align-items:center;color:#f3e3b8;font-size:min(2.1vh,3vw);letter-spacing:.3em;border-top:1px solid var(--g);padding-top:3%}
-.fan{width:14%;aspect-ratio:2;background:repeating-conic-gradient(from -90deg at 50% 100%,var(--g) 0 2deg,transparent 2deg 15deg);-webkit-mask:radial-gradient(circle at 50% 100%,#000 70%,transparent 71%);mask:radial-gradient(circle at 50% 100%,#000 70%,transparent 71%)}</style></head><body>
-<div class="p"><div class="rays"></div><div class="sun"></div>
-<svg viewBox="0 0 300 300" preserveAspectRatio="xMidYMax slice"><defs><linearGradient id="bd" x1="0" x2="1"><stop offset="0" stop-color="#0d2134"/><stop offset=".5" stop-color="#1b3f5c"/><stop offset="1" stop-color="#0d2134"/></linearGradient></defs>
+.sun{position:absolute;left:50%;top:58%;width:48%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,#f8e2a4,#d8b25a 60%,#a5782a);-webkit-mask:linear-gradient(#000 50%,transparent 50%);mask:linear-gradient(#000 50%,transparent 50%);box-shadow:0 0 80px rgba(216,178,90,.5)}
+.sun::after{content:"";position:absolute;inset:8%;border-radius:50%;border:2px solid #10283d;box-shadow:0 0 0 10px rgba(16,40,61,.25)}
+.beam{position:absolute;bottom:38%;width:3%;height:70%;transform-origin:50% 100%;background:linear-gradient(rgba(243,227,184,0),rgba(243,227,184,.18));clip-path:polygon(0 0,100% 0,60% 100%,40% 100%);animation:sw 7s ease-in-out infinite alternate}
+.beam.b1{left:22%;--a:-28deg;--b:14deg}.beam.b2{left:70%;--a:24deg;--b:-18deg;animation-delay:-3s;animation-duration:9s}@keyframes sw{from{transform:rotate(var(--a))}to{transform:rotate(var(--b))}}
+svg.city{position:absolute;left:0;bottom:0;width:100%;height:62%;transition:transform .4s cubic-bezier(.2,.8,.2,1)}
+.lit{animation:wl 3s steps(1) infinite}.lit:nth-child(3n){animation-duration:5s}.lit:nth-child(4n){animation-duration:7s;animation-delay:-2s}@keyframes wl{60%{opacity:.15}}
+.train{position:absolute;left:0;bottom:6.4%;width:100%;height:9%;pointer-events:none;z-index:3}
+.train g{transform:translateX(-120%)}
+.train.go g{animation:run 3.6s cubic-bezier(.55,0,.35,1) forwards}@keyframes run{to{transform:translateX(130%)}}
+.t{position:absolute;top:4%;left:0;right:0;text-align:center;color:var(--g);z-index:4}.t small{font-size:min(1.9vh,2.8vw);letter-spacing:.6em;display:block}
+.t h1{font-family:Limelight,serif;font-weight:400;font-size:min(8.5vh,12.5vw);line-height:.95;margin:2% 0;background:linear-gradient(100deg,#a5782a 20%,#fff3c4 40%,#d8b25a 50%,#a5782a 70%);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sh 6s linear infinite;filter:drop-shadow(0 2px 0 #0b1826)}@keyframes sh{to{background-position:-300% 0}}
+.t h1 span{display:block;animation:rise 1.1s cubic-bezier(.2,.8,.2,1) both}.t h1 span:nth-child(2){animation-delay:.12s}.t h1 span:nth-child(3){animation-delay:.24s}@keyframes rise{from{transform:translateY(30%);opacity:0;letter-spacing:.3em}}
+.b{position:absolute;left:6%;right:6%;bottom:2.2%;display:flex;justify-content:space-between;align-items:center;color:#f3e3b8;font-size:min(2.1vh,3vw);letter-spacing:.3em;border-top:1px solid var(--g);padding-top:2.4%;z-index:4}
+.fan{width:14%;aspect-ratio:2;background:repeating-conic-gradient(from -90deg at 50% 100%,var(--g) 0 2deg,transparent 2deg 15deg);-webkit-mask:radial-gradient(circle at 50% 100%,#000 70%,transparent 71%);mask:radial-gradient(circle at 50% 100%,#000 70%,transparent 71%);transition:transform .6s cubic-bezier(.2,.9,.3,1.5)}
+.p:hover .fan{transform:scale(1.15)}
+.corner{position:absolute;width:12%;aspect-ratio:1;border:2px solid var(--g);z-index:5;pointer-events:none}.corner::after{content:"";position:absolute;inset:18%;border:1px solid var(--g)}
+.c1{left:2%;top:2%;border-right:0;border-bottom:0}.c2{right:2%;top:2%;border-left:0;border-bottom:0}.c3{left:2%;bottom:2%;border-right:0;border-top:0;opacity:0}.c4{right:2%;bottom:2%;border-left:0;border-top:0;opacity:0}
+.hint{position:fixed;left:0;right:0;bottom:1.4vh;text-align:center;font:400 12px 'Poiret One';letter-spacing:.4em;color:#d8b25a;opacity:.6;text-transform:uppercase;pointer-events:none}
+@media (max-height:640px){.hint{display:none}}
+</style></head><body>
+<div class="p" id="p"><div class="stars"></div><div class="rays" id="rays"></div><div class="beam b1"></div><div class="beam b2"></div><div class="sun" id="sun"></div>
+<svg class="city" id="city" viewBox="0 0 300 300" preserveAspectRatio="xMidYMax slice"><defs><linearGradient id="bd" x1="0" x2="1"><stop offset="0" stop-color="#0d2134"/><stop offset=".5" stop-color="#1b3f5c"/><stop offset="1" stop-color="#0d2134"/></linearGradient></defs>
 <g fill="url(#bd)" stroke="#d8b25a" stroke-width=".8">
 <path d="M20 300V170h14v-12h10v12h14v130z"/><path d="M240 300V160h12v-14h16v14h12v140z"/><path d="M60 300V140h10v-16h8v-12h6v-20h2v20h6v12h8v16h10v160z"/><path d="M196 300V130h10v-14h10v-10h4v-26h2v26h4v10h10v14h10v170z"/>
 <path d="M112 300V96h12V76h8V52h6V18h2v-8h2v8h2v34h6v24h8v20h12v204z"/></g>
-<g stroke="#d8b25a" stroke-width=".5" opacity=".7">
-<path d="M150 40v260M140 80v220M160 80v220M130 100v200M170 100v200"/></g>
-<g fill="#f3d58e" opacity=".85"><rect x="68" y="160" width="3" height="4"/><rect x="74" y="190" width="3" height="4"/><rect x="204" y="150" width="3" height="4"/><rect x="214" y="200" width="3" height="4"/><rect x="246" y="190" width="3" height="4"/><rect x="26" y="210" width="3" height="4"/></g>
-<rect x="0" y="282" width="300" height="18" fill="#0b1826"/><path d="M0 282h300" stroke="#d8b25a"/><g fill="#d8b25a"><rect x="30" y="286" width="90" height="8" rx="4"/><rect x="122" y="286" width="40" height="8" rx="2"/><rect x="164" y="286" width="40" height="8" rx="2"/></g></svg>
-<div class="t"><small>Nord-Atlantic Railways</small><h1>The<br>Meridian<br>Express</h1><small>Paris · Vienne · Istanbul</small></div>
-<div class="b"><span>MCMXXIX</span><div class="fan"></div><span>Nightly 21h</span></div></div>
+<g stroke="#d8b25a" stroke-width=".5" opacity=".7"><path d="M150 40v260M140 80v220M160 80v220M130 100v200M170 100v200"/></g>
+<circle cx="150" cy="10" r="1.6" fill="#ff5a3d"><animate attributeName="opacity" values="1;.1;1" dur="1.6s" repeatCount="indefinite"/></circle>
+<g fill="#f3d58e" opacity=".9"><rect class="lit" x="68" y="160" width="3" height="4"/><rect class="lit" x="74" y="190" width="3" height="4"/><rect class="lit" x="204" y="150" width="3" height="4"/><rect class="lit" x="214" y="200" width="3" height="4"/><rect class="lit" x="246" y="190" width="3" height="4"/><rect class="lit" x="26" y="210" width="3" height="4"/><rect class="lit" x="66" y="230" width="3" height="4"/><rect class="lit" x="208" y="240" width="3" height="4"/><rect class="lit" x="252" y="230" width="3" height="4"/><rect class="lit" x="36" y="250" width="3" height="4"/></g>
+<rect x="0" y="282" width="300" height="18" fill="#0b1826"/><path d="M0 282h300" stroke="#d8b25a"/><g stroke="#d8b25a" stroke-width=".6" opacity=".6"><path d="M0 288h300M0 292h300"/></g></svg>
+<svg class="train" id="train" viewBox="0 0 300 30" preserveAspectRatio="xMidYMax meet"><g><g fill="#0b1826" stroke="#d8b25a" stroke-width=".7">
+<path d="M150 26V8h32c12 0 22 6 30 18z"/><rect x="104" y="8" width="44" height="18" rx="2"/><rect x="56" y="8" width="44" height="18" rx="2"/><rect x="8" y="8" width="44" height="18" rx="2"/></g>
+<g fill="#f3d58e"><rect x="110" y="12" width="6" height="5"/><rect x="120" y="12" width="6" height="5"/><rect x="130" y="12" width="6" height="5"/><rect x="62" y="12" width="6" height="5"/><rect x="72" y="12" width="6" height="5"/><rect x="82" y="12" width="6" height="5"/><rect x="14" y="12" width="6" height="5"/><rect x="24" y="12" width="6" height="5"/><rect x="34" y="12" width="6" height="5"/><circle cx="206" cy="21" r="1.6"/></g>
+<g stroke="#d8b25a" stroke-width=".6"><path d="M158 20h46M158 22.6h50M8 21h140"/></g><g stroke="#f3e3b8" stroke-width=".5" opacity=".7"><path d="M-40 12h40M-60 17h50M-30 22h30"/></g></g></svg>
+<div class="t"><small>Nord-Atlantic Railways</small><h1><span>The</span><span>Meridian</span><span>Express</span></h1><small>Paris · Vienne · Istanbul</small></div>
+<div class="b"><span>MCMXXIX</span><div class="fan"></div><span>Nightly 21h</span></div>
+<div class="corner c1"></div><div class="corner c2"></div><div class="foil"></div></div>
+<div class="hint">Tilt with the cursor · click for the night train</div>
 <script>
-const p=document.querySelector('.p'),svg=p.querySelector('svg'),sun=p.querySelector('.sun'),h=p.querySelector('h1'),rays=p.querySelector('.rays');document.body.style.perspective='1400px';p.style.transition='transform .3s ease-out';p.style.cursor='pointer';
-addEventListener('pointermove',e=>{const x=e.clientX/innerWidth-.5,y=e.clientY/innerHeight-.5;p.style.transform=`rotateY(${x*16}deg) rotateX(${-y*11}deg)`;svg.style.transform=`translate(${x*-16}px,${y*-8}px)`;sun.style.transform=`translate(calc(-50% + ${x*12}px),calc(-50% + ${y*8}px))`;h.style.animation='none';h.style.backgroundPosition=`${50-x*200}% 0`});
-p.addEventListener('click',()=>{const a=rays.getAnimations()[0];if(!a)return;a.playbackRate=40;const iv=setInterval(()=>{a.playbackRate=Math.max(1,a.playbackRate*.9);if(a.playbackRate<=1)clearInterval(iv)},60)});
+const p=document.getElementById('p'),svg=document.getElementById('city'),sun=document.getElementById('sun'),h=p.querySelector('h1'),rays=document.getElementById('rays'),tr=document.getElementById('train');
+addEventListener('pointermove',e=>{const x=e.clientX/innerWidth-.5,y=e.clientY/innerHeight-.5;p.style.transform=`rotateY(${x*14}deg) rotateX(${-y*10}deg)`;svg.style.transform=`translate(${x*-16}px,${y*-8}px)`;sun.style.transform=`translate(calc(-50% + ${x*12}px),calc(-50% + ${y*8}px))`;h.style.animation='none';h.style.backgroundPosition=`${50-x*200}% 0`;const r=p.getBoundingClientRect();p.style.setProperty('--mx',((e.clientX-r.left)/r.width*100)+'%');p.style.setProperty('--my',((e.clientY-r.top)/r.height*100)+'%')});
+let ac;function whistle(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const t=ac.currentTime;[392,494,587].forEach(f=>{const o=ac.createOscillator(),g=ac.createGain(),fl=ac.createBiquadFilter();o.type='sawtooth';o.frequency.value=f;o.frequency.linearRampToValueAtTime(f*.97,t+1.4);fl.type='bandpass';fl.frequency.value=f*2;fl.Q.value=3;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.05,t+.12);g.gain.setValueAtTime(.05,t+1.1);g.gain.exponentialRampToValueAtTime(.0001,t+1.6);o.connect(fl).connect(g).connect(ac.destination);o.start(t);o.stop(t+1.7)})}catch(e){}}
+let busy=false;function depart(){if(busy)return;busy=true;whistle();tr.classList.remove('go');void tr.getBoundingClientRect();tr.classList.add('go');const a=rays.getAnimations()[0];if(a){a.playbackRate=30;const iv=setInterval(()=>{a.playbackRate=Math.max(1,a.playbackRate*.92);if(a.playbackRate<=1)clearInterval(iv)},60)}setTimeout(()=>busy=false,3700)}
+p.addEventListener('click',depart);addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();depart()}});
+setTimeout(()=>{tr.classList.add('go');setTimeout(()=>tr.classList.remove('go'),3700)},1600);
 </script>
 </body></html>
