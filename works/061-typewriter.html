@@ -1,17 +1,51 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Letter from Trieste</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#3b4a3a radial-gradient(ellipse at 50% 30%,#55684f,#2a3529);display:flex;flex-direction:column;align-items:center;font-family:'Special Elite',monospace}
-.sheet{position:relative;margin-top:4vh;width:min(620px,92vw);height:62vh;background:#fbf8f1;box-shadow:0 10px 30px rgba(0,0,0,.4);padding:44px 54px;overflow:hidden;transition:transform .12s;background-image:linear-gradient(rgba(0,0,0,.025) 1px,transparent 1px);background-size:100% 3px}
-#t{font-size:clamp(13px,1.7vw,17px);line-height:1.65;color:#1d1d24;white-space:pre-wrap;word-wrap:break-word}#t span{display:inline-block;white-space:pre}
-.car{position:relative;width:min(760px,98vw);height:16vh;margin-top:-2vh;background:linear-gradient(#2a2a2a,#111);border-radius:16px 16px 8px 8px;box-shadow:0 20px 40px rgba(0,0,0,.6),inset 0 2px 0 #444;display:flex;justify-content:center;align-items:center}
-.roll{position:absolute;top:-14px;left:3%;right:3%;height:28px;border-radius:14px;background:linear-gradient(#555,#111 60%,#333);box-shadow:0 4px 8px #000}.knob{position:absolute;top:-22px;width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#666,#111)}
-.brand{color:#c9b27a;font-size:clamp(18px,2.6vw,30px);letter-spacing:.4em}.cur{display:inline-block;width:.55em;height:1.1em;background:#b3261e;opacity:.6;vertical-align:-.2em;animation:b 1s steps(1) infinite}@keyframes b{50%{opacity:0}}
-.hint{position:fixed;bottom:2vh;color:#c9d3c0;font-size:12px;letter-spacing:.2em}</style></head><body>
-<div class="sheet" id="sh"><div id="t"></div></div><div class="car"><div class="roll"></div><div class="knob" style="left:-10px"></div><div class="knob" style="right:-10px"></div><div class="brand">PALLAS · 1958</div></div><div class="hint">START TYPING — THE MACHINE IS YOURS</div>
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;user-select:none;-webkit-user-select:none}
+body{background:#3b4a3a radial-gradient(ellipse at 50% 30%,#5a6e54,#232d22);display:flex;flex-direction:column;align-items:center;font-family:'Special Elite',monospace}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(40% 40% at 50% 20%,rgba(255,230,180,.14),transparent 70%)}
+.stage{position:relative;width:min(760px,98vw);height:66vh;overflow:hidden;margin-top:2vh}
+.carriage{position:absolute;left:50%;top:0;width:min(620px,92vw);transform:translateX(-50%);transition:transform .08s ease-out}
+.carriage.ret{transition:transform .45s cubic-bezier(.3,.7,.2,1)}
+.sheet{position:relative;width:100%;min-height:62vh;background:#fbf8f1;box-shadow:0 10px 30px rgba(0,0,0,.4);padding:44px 54px 30vh;background-image:linear-gradient(rgba(0,0,0,.025) 1px,transparent 1px);background-size:100% 3px;transition:transform .3s cubic-bezier(.3,.7,.2,1)}
+.sheet::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 30% 10%,transparent 60%,rgba(140,110,60,.12));pointer-events:none}
+#t{font-size:clamp(13px,1.7vw,17px);line-height:1.65;color:#1d1d24;white-space:pre-wrap;word-wrap:break-word}#t span{display:inline-block;white-space:pre}#t span.red{color:#a8241c}
+.cur{display:inline-block;width:.55em;height:1.1em;background:#b3261e;opacity:.6;vertical-align:-.2em;animation:b 1s steps(1) infinite}@keyframes b{50%{opacity:0}}
+.car{position:relative;width:min(780px,98vw);height:18vh;margin-top:-3vh;background:linear-gradient(#2e2e2e,#111);border-radius:18px 18px 8px 8px;box-shadow:0 20px 40px rgba(0,0,0,.6),inset 0 2px 0 #4a4a4a;display:flex;justify-content:center;align-items:center;z-index:2}
+.roll{position:absolute;top:-16px;left:3%;right:3%;height:30px;border-radius:15px;background:linear-gradient(#5a5a5a,#111 60%,#333);box-shadow:0 4px 8px #000}
+.knob{position:absolute;top:-24px;width:48px;height:48px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#777,#111);box-shadow:0 4px 8px rgba(0,0,0,.6)}
+.lever{position:absolute;left:-6px;top:-40px;width:60px;height:8px;background:linear-gradient(#ddd,#888);border-radius:4px;transform-origin:right;transform:rotate(-20deg);cursor:pointer}
+.bars{position:absolute;top:-6px;left:50%;width:140px;height:40px;margin-left:-70px;pointer-events:none}
+.bars i{position:absolute;bottom:0;left:50%;width:3px;height:34px;margin-left:-1.5px;background:linear-gradient(#bbb,#555);transform-origin:bottom;transform:rotate(var(--a)) scaleY(.4);opacity:.7;transition:transform .05s}
+.bars i.hit{transform:rotate(0) scaleY(1);opacity:1}
+.brand{color:#c9b27a;font-size:clamp(18px,2.6vw,30px);letter-spacing:.4em;text-shadow:0 1px 0 #000}
+.rib{position:absolute;right:6%;bottom:16%;display:flex;gap:6px;font:12px 'Special Elite';color:#c9b27a;align-items:center}.rib button{width:22px;height:12px;border:0;border-radius:2px;cursor:pointer}.rib button.on{outline:2px solid #c9b27a;outline-offset:2px}
+.send{position:absolute;left:6%;bottom:16%;font:13px 'Special Elite';color:#1d1d24;background:#c9b27a;border:0;padding:7px 12px;border-radius:3px;cursor:pointer;letter-spacing:.1em}
+.hint{position:fixed;bottom:2vh;color:#c9d3c0;font-size:12px;letter-spacing:.2em;text-align:center;padding:0 16px}
+.fly{animation:fly 1.6s cubic-bezier(.6,0,.4,1) forwards}@keyframes fly{40%{transform:translateX(-50%) translateY(10vh) scale(.4) rotate(-6deg)}100%{transform:translateX(-50%) translateY(-120vh) scale(.2) rotate(14deg);opacity:0}}
+</style></head><body>
+<div class="stage"><div class="carriage" id="cg"><div class="sheet" id="sh"><div id="t"></div></div></div></div>
+<div class="car"><div class="roll"></div><div class="knob" style="left:-12px"><div class="lever" id="lv" title="Carriage return"></div></div><div class="knob" style="right:-12px"></div><div class="bars" id="bars"></div><div class="brand">PALLAS · 1958</div>
+<div class="rib"><span>ribbon</span><button style="background:#1d1d24" class="on" data-r="0" aria-label="Black ribbon"></button><button style="background:#a8241c" data-r="1" aria-label="Red ribbon"></button></div><button class="send" id="send">Post it ✉</button></div>
+<div class="hint">START TYPING — THE MACHINE IS YOURS · ENTER OR THE LEVER FOR A NEW LINE</div>
 <script>
-const t=document.getElementById('t'),sh=document.getElementById('sh');const cur=document.createElement('span');cur.className='cur';t.appendChild(cur);
+const t=document.getElementById('t'),sh=document.getElementById('sh'),cg=document.getElementById('cg');const cur=document.createElement('span');cur.className='cur';t.appendChild(cur);
+const bars=document.getElementById('bars');for(let i=0;i<13;i++){const b=document.createElement('i');b.style.setProperty('--a',(i-6)*12+'deg');bars.appendChild(b)}
 const msg=`Trieste, 14 March\n\nDear Margit,\n\nThe sea has been the colour of pewter all week and I have not left the flat except for bread and the newspaper. I bought a typewriter from the man below — it sticks on the "e", so forgive me.\n\nI think of the summer at the lake more than I should. Write to me. Tell me whether the old boat still floats.\n\nYours, always,\nL.`;
-function key(ch){if(ch==='\n'){t.insertBefore(document.createElement('br'),cur);sh.style.transform='translateX(0)';return}const s=document.createElement('span');s.textContent=ch;s.style.transform=`translate(${(Math.random()-.5)*1.2}px,${(Math.random()-.5)*1.4}px) rotate(${(Math.random()-.5)*2}deg)`;s.style.opacity=.72+Math.random()*.28;if(ch==='e'&&Math.random()<.3)s.style.transform+=' translateY(-2px)';t.insertBefore(s,cur);sh.style.transform=`translateX(${-Math.random()*3}px)`;if(t.scrollHeight>sh.clientHeight-80)sh.scrollTop=1e9}
-let i=0,user=false;function auto(){if(user||i>=msg.length)return;key(msg[i++]);setTimeout(auto,msg[i-1]==='\n'?380:28+Math.random()*90)}auto();
-addEventListener('keydown',e=>{if(e.metaKey||e.ctrlKey)return;if(!user){user=true}if(e.key==='Enter')key('\n');else if(e.key==='Backspace'){const p=cur.previousSibling;if(p)p.remove()}else if(e.key.length===1)key(e.key);e.preventDefault()});
+let ac;function A(){if(!ac)try{ac=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}return ac}
+function noise(dur,f,q,v,type='bandpass',when=0){const a=ac;if(!a)return;const b=a.createBuffer(1,a.sampleRate*dur,a.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,3);const s=a.createBufferSource(),fl=a.createBiquadFilter(),g=a.createGain();s.buffer=b;fl.type=type;fl.frequency.value=f;fl.Q.value=q;g.gain.value=v;s.connect(fl).connect(g).connect(a.destination);s.start(a.currentTime+when)}
+function clack(){noise(.04,1800+Math.random()*900,1.2,.5);noise(.02,500,1,.4,'lowpass',.012)}
+function bell(){const a=ac;if(!a)return;const o=a.createOscillator(),g=a.createGain();o.frequency.value=2637;g.gain.setValueAtTime(.08,a.currentTime);g.gain.exponentialRampToValueAtTime(.0001,a.currentTime+1.2);o.connect(g).connect(a.destination);o.start();o.stop(a.currentTime+1.3)}
+function zip(){const a=ac;if(!a)return;for(let i=0;i<10;i++)noise(.02,900+i*80,2,.12,'bandpass',i*.035);noise(.05,300,1,.5,'lowpass',.4)}
+let col=0,red=false,belled=false;const CW=()=>parseFloat(getComputedStyle(t).fontSize)*.62;
+function place(){const off=(sh.clientWidth/2-54-Math.min(col,64)*CW())*.55;cg.style.transform=`translateX(calc(-50% + ${off}px))`}
+function newline(){t.insertBefore(document.createElement('br'),cur);col=0;belled=false;cg.classList.add('ret');place();setTimeout(()=>cg.classList.remove('ret'),460);zip();const lines=t.querySelectorAll('br').length;sh.style.transform=`translateY(${-Math.max(0,lines-8)*parseFloat(getComputedStyle(t).fontSize)*1.65}px)`}
+function key(ch){if(ch==='\n')return newline();const s=document.createElement('span');s.textContent=ch;if(red)s.className='red';s.style.transform=`translate(${(Math.random()-.5)*1.2}px,${(Math.random()-.5)*1.4}px) rotate(${(Math.random()-.5)*2}deg)`;s.style.opacity=.72+Math.random()*.28;if(ch==='e'&&Math.random()<.3)s.style.transform+=' translateY(-2px)';t.insertBefore(s,cur);
+if(ch!==' '){clack();const b=bars.children[Math.random()*13|0];b.classList.add('hit');setTimeout(()=>b.classList.remove('hit'),60)}else noise(.03,600,1,.25);col++;place();if(col>=48&&!belled){belled=true;bell()}}
+place();let i=0,user=false;function auto(){if(user||i>=msg.length)return;key(msg[i++]);setTimeout(auto,msg[i-1]==='\n'?480:30+Math.random()*90)}setTimeout(auto,600);
+addEventListener('pointerdown',A,{once:true});
+addEventListener('keydown',e=>{if(e.metaKey||e.ctrlKey||e.altKey)return;A();if(!user){user=true}if(e.key==='Enter')key('\n');else if(e.key==='Backspace'){const p=cur.previousSibling;if(p){if(p.tagName==='BR'){p.remove()}else{p.remove();col=Math.max(0,col-1);place();noise(.03,700,1,.3)}}}else if(e.key==='Tab'){for(let k=0;k<4;k++)key(' ')}else if(e.key.length===1){key(e.key)}e.preventDefault()});
+document.getElementById('lv').onclick=()=>{A();user=true;key('\n')};
+document.querySelectorAll('.rib button').forEach(b=>b.onclick=()=>{red=b.dataset.r==='1';document.querySelectorAll('.rib button').forEach(o=>o.classList.toggle('on',o===b))});
+document.getElementById('send').onclick=()=>{A();user=true;noise(.3,400,.5,.3,'lowpass');cg.classList.add('fly');setTimeout(()=>{cg.classList.remove('fly');t.innerHTML='';t.appendChild(cur);col=0;place();sh.style.transform='';cg.style.opacity=0;requestAnimationFrame(()=>{cg.style.transition='opacity .6s';cg.style.opacity=1;setTimeout(()=>cg.style.transition='',700)})},1650)};
 </script></body></html>

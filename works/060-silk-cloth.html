@@ -1,22 +1,40 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tearable Silk</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@700&family=Karla&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#1a1416;touch-action:none}canvas{display:block;width:100%;height:100%;cursor:grab}
-.t{position:fixed;left:24px;bottom:22px;color:#e9d8c4;font:13px Karla,sans-serif;letter-spacing:.06em}.t b{display:block;font:700 26px 'Playfair Display SC',serif;letter-spacing:.06em;margin-bottom:4px}</style></head><body>
-<canvas id="c"></canvas><div class="t"><b>Tearable Silk</b>Drag to pull the fabric · hold Shift (or right-drag) to cut · double-click to rehang</div>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@700&family=Karla:wght@400;500&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#1a1416;touch-action:none;user-select:none;-webkit-user-select:none}canvas{display:block;width:100%;height:100%;cursor:grab}canvas.cut{cursor:crosshair}
+.t{position:fixed;left:24px;bottom:22px;color:#e9d8c4;font:13px/1.6 Karla,sans-serif;letter-spacing:.04em;pointer-events:none}.t b{display:block;font:700 28px 'Playfair Display SC',serif;letter-spacing:.06em;margin-bottom:4px}
+.ui{position:fixed;right:24px;bottom:22px;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.ui button{font:500 11px Karla;letter-spacing:.16em;text-transform:uppercase;color:#e9d8c4;background:rgba(255,255,255,.05);border:1px solid rgba(233,216,196,.25);padding:8px 12px;border-radius:99px;cursor:pointer}.ui button:hover{border-color:#e9d8c4}.ui button[aria-pressed="true"]{background:#e9d8c4;color:#1a1416}
+</style></head><body>
+<canvas id="c"></canvas><div class="t"><b>Tearable Silk</b>Drag to pull the fabric · right-drag or Scissors to cut<br>Double-click to rehang · pull too hard and it tears</div>
+<div class="ui"><button id="sc" aria-pressed="false">✂ Scissors</button><button id="wd" aria-pressed="true">Breeze</button><button data-p="0" aria-pressed="true">Ikat</button><button data-p="1">Damask</button><button data-p="2">Madras</button><button id="rh">Rehang</button></div>
 <script>
-const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio,2);let W,H,P,S,cols=42,rows=26,sp;let m={x:0,y:0,px:0,py:0,dn:false,cut:false};
+const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio||1,2);let W,H,P,S,cols=44,rows=28,sp,cellS;let m={x:0,y:0,px:0,py:0,dn:false,cut:false},scis=false,breeze=true,pat=0,grab=null;
 function build(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr;sp=Math.min(W*.7/cols,H*.65/rows);const ox=(W-sp*(cols-1))/2,oy=H*.1;P=[];S=[];
-for(let j=0;j<rows;j++)for(let i=0;i<cols;i++){P.push({x:ox+i*sp,y:oy+j*sp,px:ox+i*sp,py:oy+j*sp,pin:j===0&&i%4===0});if(i)S.push([P.length-2,P.length-1,sp]);if(j)S.push([P.length-1-cols,P.length-1,sp])}}
+for(let j=0;j<rows;j++)for(let i=0;i<cols;i++){P.push({x:ox+i*sp,y:oy+j*sp+Math.random(),px:ox+i*sp,py:oy+j*sp,pin:j===0&&i%4===0,i,j});if(i)S.push([P.length-2,P.length-1,sp,'h']);if(j)S.push([P.length-1-cols,P.length-1,sp,'v'])}cellS=new Map();for(const s of S)cellS.set(s[0]+'-'+s[1],s)}
 build();addEventListener('resize',build);c.addEventListener('dblclick',build);c.addEventListener('contextmenu',e=>e.preventDefault());
-c.addEventListener('pointerdown',e=>{m.dn=true;m.cut=e.shiftKey||e.button===2;m.x=m.px=e.clientX*dpr;m.y=m.py=e.clientY*dpr});addEventListener('pointerup',()=>m.dn=false);
+document.getElementById('rh').onclick=build;document.getElementById('sc').onclick=e=>{scis=!scis;e.target.setAttribute('aria-pressed',scis);c.classList.toggle('cut',scis)};document.getElementById('wd').onclick=e=>{breeze=!breeze;e.target.setAttribute('aria-pressed',breeze)};
+document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{pat=+b.dataset.p;document.querySelectorAll('[data-p]').forEach(o=>o.setAttribute('aria-pressed',o===b))});
+let ac;function rip(k){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const n=ac.createBufferSource(),b=ac.createBuffer(1,ac.sampleRate*.08,ac.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length)*(Math.random()<.4?1:.2);n.buffer=b;const f=ac.createBiquadFilter();f.type='bandpass';f.frequency.value=1800+Math.random()*1500;const g=ac.createGain();g.gain.value=Math.min(.2,.05*k);n.connect(f).connect(g).connect(ac.destination);n.start()}catch(e){}}let ripN=0;
+c.addEventListener('pointerdown',e=>{c.setPointerCapture(e.pointerId);m.dn=true;m.cut=scis||e.shiftKey||e.button===2;m.x=m.px=e.clientX*dpr;m.y=m.py=e.clientY*dpr;if(!m.cut){let best=60*dpr;grab=null;for(const p of P){const d=Math.hypot(p.x-m.x,p.y-m.y);if(d<best){best=d;grab=p}}}});
+addEventListener('pointerup',()=>{m.dn=false;grab=null});
 c.addEventListener('pointermove',e=>{m.px=m.x;m.py=m.y;m.x=e.clientX*dpr;m.y=e.clientY*dpr});
 function segD(px,py,ax,ay,bx,by){const dx=bx-ax,dy=by-ay,t=Math.max(0,Math.min(1,((px-ax)*dx+(py-ay)*dy)/(dx*dx+dy*dy||1)));return Math.hypot(px-ax-dx*t,py-ay-dy*t)}
-function f(t){const wind=Math.sin(t*.0007)*.15+Math.sin(t*.0019)*.08;
-for(const p of P){if(p.pin)continue;const vx=(p.x-p.px)*.99,vy=(p.y-p.py)*.99;p.px=p.x;p.py=p.y;p.x+=vx+wind*dpr;p.y+=vy+.35*dpr;
-if(m.dn&&!m.cut){const d=Math.hypot(p.x-m.x,p.y-m.y);if(d<50*dpr){p.px=p.x-(m.x-m.px)*.9;p.py=p.y-(m.y-m.py)*.9}}if(p.y>H){p.y=H;p.py=H}}
-for(let k=0;k<4;k++)for(let i=S.length-1;i>=0;i--){const s=S[i],a=P[s[0]],b=P[s[1]];const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1;if(d>s[2]*4.5){S.splice(i,1);continue}const df=(d-s[2])/d*.5;if(!a.pin){a.x+=dx*df;a.y+=dy*df}if(!b.pin){b.x-=dx*df;b.y-=dy*df}}
-if(m.dn&&m.cut)for(let i=S.length-1;i>=0;i--){const a=P[S[i][0]],b=P[S[i][1]];if(segD((a.x+b.x)/2,(a.y+b.y)/2,m.px,m.py,m.x,m.y)<8*dpr)S.splice(i,1)}
-x.fillStyle='#1a1416';x.fillRect(0,0,W,H);x.lineWidth=1.3*dpr;
-for(const s of S){const a=P[s[0]],b=P[s[1]];const j=Math.floor(s[1]/cols),i=s[1]%cols;const stretch=Math.hypot(b.x-a.x,b.y-a.y)/s[2];const band=Math.floor(i/6)%2^Math.floor(j/6)%2;const hue=band?348:38;const light=Math.max(25,Math.min(80,(band?52:62)-(stretch-1)*60+(b.x-a.x)/s[2]*6));x.strokeStyle=`hsl(${hue},${band?62:70}%,${light}%)`;x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}
-x.fillStyle='#e9d8c4';for(const p of P)if(p.pin){x.beginPath();x.arc(p.x,p.y,4*dpr,0,7);x.fill()}x.strokeStyle='#6b5b4a';x.lineWidth=4*dpr;x.beginPath();x.moveTo(P[0].x-20*dpr,P[0].y);x.lineTo(P[cols-1].x+20*dpr,P[0].y);x.stroke();requestAnimationFrame(f)}requestAnimationFrame(f);
+const PAL=[[[200,40,80],[240,180,60],[30,60,120],[245,230,210]],[[120,20,40],[160,40,60],[200,160,90],[90,10,30]],[[220,70,50],[40,90,160],[250,200,60],[30,120,90]]];
+function color(i,j){const p=PAL[pat];if(pat===0){const d=(Math.abs((i%12)-6)+Math.abs((j%12)-6)+Math.floor(Math.sin(j*.8)*1.5))%6;return p[d<2?0:d<4?1:d<5?2:3]}if(pat===1){const u=Math.sin(i*.55)*Math.sin(j*.55)+Math.sin((i+j)*.3);return u>.6?p[2]:u>0?p[1]:p[0]}const a=(Math.floor(i/3)%4),b=(Math.floor(j/3)%4);return p[(a+b)%4]}
+function f(t){const wind=breeze?(Math.sin(t*.0007)*.15+Math.sin(t*.0019)*.08):0;
+for(const p of P){if(p.pin)continue;const vx=(p.x-p.px)*.99,vy=(p.y-p.py)*.99;p.px=p.x;p.py=p.y;p.x+=vx+wind*dpr*(.6+Math.sin(p.j*.3+t*.002)*.4);p.y+=vy+.35*dpr;if(p.y>H){p.y=H;p.py=H}}
+if(m.dn&&!m.cut&&grab){grab.x+=(m.x-grab.x)*.5;grab.y+=(m.y-grab.y)*.5;for(const p of P){if(p===grab||p.pin)continue;const d=Math.hypot(p.x-m.x,p.y-m.y);if(d<40*dpr){p.px=p.x-(m.x-m.px)*.6;p.py=p.y-(m.y-m.py)*.6}}}
+for(let k=0;k<4;k++)for(let i=S.length-1;i>=0;i--){const s=S[i],a=P[s[0]],b=P[s[1]];const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1;if(d>s[2]*4){cellS.delete(s[0]+'-'+s[1]);S.splice(i,1);if(++ripN%3===0)rip(1.5);continue}const df=(d-s[2])/d*.5;if(!a.pin){a.x+=dx*df;a.y+=dy*df}if(!b.pin){b.x-=dx*df;b.y-=dy*df}}
+if(m.dn&&m.cut)for(let i=S.length-1;i>=0;i--){const a=P[S[i][0]],b=P[S[i][1]];if(segD((a.x+b.x)/2,(a.y+b.y)/2,m.px,m.py,m.x,m.y)<8*dpr){cellS.delete(S[i][0]+'-'+S[i][1]);S.splice(i,1);if(++ripN%2===0)rip(2)}}
+x.fillStyle='#1a1416';x.fillRect(0,0,W,H);const lg=x.createRadialGradient(W*.3,0,0,W*.3,0,H);lg.addColorStop(0,'rgba(255,220,180,.08)');lg.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=lg;x.fillRect(0,0,W,H);
+// woven quads, lit by how much each cell is stretched and tilted
+for(let j=0;j<rows-1;j++)for(let i=0;i<cols-1;i++){const k=j*cols+i;if(!cellS.has(k+'-'+(k+1))||!cellS.has(k+'-'+(k+cols))||!cellS.has((k+1)+'-'+(k+1+cols))||!cellS.has((k+cols)+'-'+(k+cols+1)))continue;
+const a=P[k],b=P[k+1],cc=P[k+1+cols],d=P[k+cols];const area=((b.x-a.x)*(d.y-a.y)-(b.y-a.y)*(d.x-a.x))/(sp*sp);const tiltL=((b.y-a.y)-(d.x-a.x))/sp;const col=color(i,j);const l=Math.max(.35,Math.min(1.25,.75+tiltL*.35+(1-Math.abs(area))*-.4+Math.sin(i*.9)*.03));
+x.fillStyle=`rgb(${col[0]*l|0},${col[1]*l|0},${col[2]*l|0})`;x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.lineTo(cc.x,cc.y);x.lineTo(d.x,d.y);x.closePath();x.fill()}
+// loose threads where the weave has torn
+x.strokeStyle='rgba(233,216,196,.35)';x.lineWidth=.8*dpr;x.beginPath();for(const s of S){const a=P[s[0]],b=P[s[1]];const st=Math.hypot(b.x-a.x,b.y-a.y)/s[2];if(st>1.6){x.moveTo(a.x,a.y);x.lineTo(b.x,b.y)}}x.stroke();
+x.fillStyle='#e9d8c4';for(const p of P)if(p.pin){x.beginPath();x.arc(p.x,p.y,4*dpr,0,7);x.fill()}const rod=x.createLinearGradient(0,P[0].y-3*dpr,0,P[0].y+3*dpr);rod.addColorStop(0,'#c9a35a');rod.addColorStop(1,'#5a4320');x.strokeStyle=rod;x.lineWidth=6*dpr;x.lineCap='round';x.beginPath();x.moveTo(P[0].x-24*dpr,P[0].y);x.lineTo(P[cols-1].x+24*dpr,P[0].y);x.stroke();
+if(m.dn&&m.cut){x.strokeStyle='rgba(255,255,255,.6)';x.lineWidth=1.5*dpr;x.beginPath();x.moveTo(m.px,m.py);x.lineTo(m.x,m.y);x.stroke()}
+requestAnimationFrame(f)}requestAnimationFrame(f);
 </script></body></html>
