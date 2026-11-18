@@ -1,19 +1,40 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Wet on Wet</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Italianno&family=Lato:wght@300&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#f7f4ee}canvas{display:block;width:100%;height:100%;cursor:pointer}
-.t{position:fixed;right:5vw;bottom:5vh;text-align:right;color:#4a4458}.t h1{font:400 clamp(50px,8vw,120px)/.8 Italianno,cursive}.t p{font:300 12px Lato,sans-serif;letter-spacing:.3em;text-transform:uppercase;margin-top:8px}</style></head><body>
-<canvas id="c"></canvas><div class="t"><h1>Wet on Wet</h1><p>Click to let a colour bloom</p></div>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Italianno&family=Lato:wght@300;400&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#f7f4ee;user-select:none;-webkit-user-select:none}canvas{display:block;width:100%;height:100%;cursor:crosshair;touch-action:none;position:fixed;inset:0}
+.paper{position:fixed;inset:0;pointer-events:none;mix-blend-mode:multiply;opacity:.5;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.04 .06' numOctaves='5'/%3E%3CfeDiffuseLighting lighting-color='%23fff' surfaceScale='1.6'%3E%3CfeDistantLight azimuth='45' elevation='60'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.t{position:fixed;right:5vw;bottom:5vh;text-align:right;color:#4a4458;pointer-events:none}.t h1{font:400 clamp(50px,8vw,120px)/.8 Italianno,cursive}.t p{font:300 11px Lato,sans-serif;letter-spacing:.3em;text-transform:uppercase;margin-top:8px}
+.tin{position:fixed;left:3vw;top:4vh;display:flex;flex-direction:column;gap:10px;padding:14px 12px;border-radius:12px;background:linear-gradient(#f2f2f2,#d8d8d8);box-shadow:0 10px 30px rgba(60,50,70,.25),inset 0 1px 0 #fff;z-index:2}
+.pans{display:grid;grid-template-columns:repeat(2,34px);gap:8px}.pans button{width:34px;height:26px;border-radius:6px;border:0;cursor:pointer;box-shadow:inset 0 2px 4px rgba(0,0,0,.25),0 1px 0 #fff;transition:transform .2s cubic-bezier(.2,.9,.3,1.6)}.pans button:hover{transform:scale(1.08)}.pans button[aria-pressed="true"]{outline:2px solid #4a4458;outline-offset:2px}
+.tools{display:flex;flex-direction:column;gap:6px}.tools button{font:400 10px Lato;letter-spacing:.18em;text-transform:uppercase;color:#4a4458;background:#fff;border:1px solid #bbb;padding:6px 8px;border-radius:6px;cursor:pointer}.tools button[aria-pressed="true"]{background:#4a4458;color:#fff;border-color:#4a4458}
+@media (max-width:640px){.tin{flex-direction:row;top:auto;bottom:2vh;left:2vw;padding:8px}.pans{grid-template-columns:repeat(4,28px)}.pans button{width:28px;height:22px}.t{bottom:auto;top:3vh}}
+</style></head><body>
+<canvas id="c"></canvas><div class="paper"></div>
+<div class="tin"><div class="pans" id="pans"></div><div class="tools" id="tools"><button data-t="brush" aria-pressed="true">Brush</button><button data-t="drop">Drop</button><button data-t="water">Water</button><button data-t="salt">Salt</button><button id="fresh">New sheet</button></div></div>
+<div class="t"><h1>Wet on Wet</h1><p>Drop or drag colour onto damp paper</p></div>
 <script>
-const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio,2);let W,H,Q=[];
-function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr;x.fillStyle='#f7f4ee';x.fillRect(0,0,W,H);const d=x.getImageData(0,0,W,H);for(let i=0;i<d.data.length;i+=4){const n=(Math.random()-.5)*10;d.data[i]+=n;d.data[i+1]+=n;d.data[i+2]+=n}x.putImageData(d,0,0)}
+const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio||1,2);let W,H,Q=[];
+const pal=[['Rose madder',[214,72,110]],['Gamboge',[240,160,60]],['Cerulean',[60,130,190]],['Dioxazine',[110,70,160]],['Viridian',[50,150,120]],['Cadmium',[230,110,80]],['Sepia',[120,80,50]],['Payne’s',[60,70,90]]];let pi=2,tool='brush';
+const pans=document.getElementById('pans');pal.forEach((p,i)=>{const b=document.createElement('button');b.style.background=`radial-gradient(circle at 40% 35%,rgba(${p[1]},.7),rgb(${p[1].map(v=>v*.8|0)}))`;b.title=p[0];b.setAttribute('aria-label',p[0]);b.setAttribute('aria-pressed',i===pi);b.onclick=()=>{pi=i;[...pans.children].forEach((o,k)=>o.setAttribute('aria-pressed',k===i))};pans.appendChild(b)});
+document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{tool=b.dataset.t;document.querySelectorAll('[data-t]').forEach(o=>o.setAttribute('aria-pressed',o===b))});
+function sheet(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr;x.fillStyle='#f7f4ee';x.fillRect(0,0,W,H);const d=x.getImageData(0,0,W,H);for(let i=0;i<d.data.length;i+=4){const n=(Math.random()-.5)*10;d.data[i]+=n;d.data[i+1]+=n;d.data[i+2]+=n}x.putImageData(d,0,0);Q=[]}
+document.getElementById('fresh').onclick=sheet;
 const g=()=>{let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};
-function deform(p,d,v){const o=[];for(let i=0;i<p.length;i++){const a=p[i],b=p[(i+1)%p.length];o.push(a);const len=Math.hypot(b[0]-a[0],b[1]-a[1]);const m=[(a[0]+b[0])/2+g()*len*v,(a[1]+b[1])/2+g()*len*v];o.push(m)}return d>1?deform(o,d-1,v):o}
+function deform(p,d,v){const o=[];for(let i=0;i<p.length;i++){const a=p[i],b=p[(i+1)%p.length];o.push(a);const len=Math.hypot(b[0]-a[0],b[1]-a[1]);o.push([(a[0]+b[0])/2+g()*len*v,(a[1]+b[1])/2+g()*len*v])}return d>1?deform(o,d-1,v):o}
 function poly(cx,cy,r,n=10){return Array.from({length:n},(_,i)=>{const a=i/n*Math.PI*2;return[cx+Math.cos(a)*r,cy+Math.sin(a)*r]})}
-const pal=[[214,72,110],[240,160,60],[60,130,190],[110,70,160],[50,150,120],[230,110,80]];
-function bloom(cx,cy,r,col){const base=deform(poly(cx,cy,r),3,.45);for(let l=0;l<36;l++)Q.push({p:deform(base,3,.3),col,a:.022})}
-c.addEventListener('click',e=>bloom(e.clientX*dpr,e.clientY*dpr,(40+Math.random()*90)*dpr,pal[Math.random()*pal.length|0]));
-size();addEventListener('resize',size);
-const start=[[.25,.35,.14,0],[.38,.55,.12,1],[.6,.4,.16,2],[.52,.7,.1,4],[.75,.6,.12,3],[.18,.68,.09,5],[.82,.28,.08,1]];start.forEach(([a,b,r,k])=>bloom(a*innerWidth*dpr,b*innerHeight*dpr,r*Math.min(innerWidth,innerHeight)*dpr*1.4,pal[k]));
-function f(){for(let k=0;k<6&&Q.length;k++){const q=Q.splice(Math.random()*Math.min(Q.length,40)|0,1)[0];x.globalCompositeOperation='multiply';x.fillStyle=`rgba(${q.col.join(',')},${q.a})`;x.beginPath();q.p.forEach((p,i)=>i?x.lineTo(...p):x.moveTo(...p));x.fill();x.globalCompositeOperation='source-over'}requestAnimationFrame(f)}
-for(let i=0;i<120;i++){const q=Q.shift();if(!q)break;x.globalCompositeOperation='multiply';x.fillStyle=`rgba(${q.col.join(',')},${q.a})`;x.beginPath();q.p.forEach((p,i)=>i?x.lineTo(...p):x.moveTo(...p));x.fill()}x.globalCompositeOperation='source-over';f();
+function bloom(cx,cy,r,col,layers=36,a=.022){const base=deform(poly(cx,cy,r),3,.45);for(let l=0;l<layers;l++)Q.push({p:deform(base,3,.3),col,a,edge:l%6===0})}
+function water(cx,cy,r){const base=deform(poly(cx,cy,r),3,.4);for(let l=0;l<14;l++)Q.push({p:deform(base,2,.3),water:1})}
+function salt(cx,cy){for(let i=0;i<40;i++){const a=Math.random()*6.28,d=Math.random()*60*dpr;Q.push({salt:1,x:cx+Math.cos(a)*d,y:cy+Math.sin(a)*d,r:(2+Math.random()*6)*dpr})}}
+let ac;function drip(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),gg=ac.createGain();o.type='sine';o.frequency.setValueAtTime(900+Math.random()*400,ac.currentTime);o.frequency.exponentialRampToValueAtTime(300,ac.currentTime+.12);gg.gain.setValueAtTime(.05,ac.currentTime);gg.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+.15);o.connect(gg).connect(ac.destination);o.start();o.stop(ac.currentTime+.16)}catch(e){}}
+let down=false,lx=0,ly=0,acc=0;
+c.addEventListener('pointerdown',e=>{c.setPointerCapture(e.pointerId);down=true;lx=e.clientX*dpr;ly=e.clientY*dpr;acc=0;const X=lx,Y=ly;if(tool==='drop'){bloom(X,Y,(40+Math.random()*90)*dpr,pal[pi][1]);drip()}else if(tool==='water')water(X,Y,(50+Math.random()*50)*dpr);else if(tool==='salt')salt(X,Y);else bloom(X,Y,18*dpr,pal[pi][1],10,.03)});
+c.addEventListener('pointermove',e=>{if(!down||tool==='drop'||tool==='salt')return;const X=e.clientX*dpr,Y=e.clientY*dpr;acc+=Math.hypot(X-lx,Y-ly);if(acc>10*dpr){acc=0;if(tool==='water')water(X,Y,26*dpr);else bloom(X,Y,(12+Math.random()*12)*dpr,pal[pi][1],7,.03)}lx=X;ly=Y});
+c.addEventListener('pointerup',()=>down=false);
+addEventListener('keydown',e=>{const n=+e.key;if(n>=1&&n<=8)pans.children[n-1].click();if(e.key===' '){e.preventDefault();bloom(Math.random()*W,Math.random()*H,(50+Math.random()*80)*dpr,pal[Math.random()*pal.length|0][1])}});
+sheet();addEventListener('resize',sheet);
+const start=[[.25,.35,.14,0],[.38,.55,.12,1],[.6,.4,.16,2],[.52,.7,.1,4],[.75,.6,.12,3],[.18,.68,.09,5],[.82,.28,.08,1]];start.forEach(([a,b,r,k])=>bloom(a*W,b*H,r*Math.min(W,H)*1.4,pal[k][1]));
+function draw(q){if(q.salt){const g2=x.createRadialGradient(q.x,q.y,0,q.x,q.y,q.r);g2.addColorStop(0,'rgba(247,244,238,.55)');g2.addColorStop(1,'rgba(247,244,238,0)');x.fillStyle=g2;x.beginPath();x.arc(q.x,q.y,q.r,0,7);x.fill();return}
+x.beginPath();q.p.forEach((p,i)=>i?x.lineTo(...p):x.moveTo(...p));x.closePath();if(q.water){x.globalCompositeOperation='screen';x.fillStyle='rgba(247,244,238,.06)';x.fill()}else{x.globalCompositeOperation='multiply';x.fillStyle=`rgba(${q.col.join(',')},${q.a})`;x.fill();if(q.edge){x.strokeStyle=`rgba(${q.col.map(v=>v*.7|0).join(',')},.05)`;x.lineWidth=2*dpr;x.stroke()}}x.globalCompositeOperation='source-over'}
+for(let i=0;i<120;i++){const q=Q.shift();if(!q)break;draw(q)}
+(function f(){for(let k=0;k<8&&Q.length;k++){const q=Q.splice(Math.random()*Math.min(Q.length,40)|0,1)[0];draw(q)}requestAnimationFrame(f)})();
 </script></body></html>

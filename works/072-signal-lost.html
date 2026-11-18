@@ -1,19 +1,49 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Signal Lost</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik+Glitch&family=JetBrains+Mono:wght@400;800&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#0a0a0a;display:grid;place-items:center;font-family:'JetBrains Mono',monospace;color:#fff}
-.g{position:relative;font:800 clamp(50px,13vw,200px)/.85 'JetBrains Mono',monospace;letter-spacing:-.06em;text-transform:uppercase;text-align:center}
-.g span{position:absolute;inset:0}.g .r{color:#ff1f4d;mix-blend-mode:screen;animation:gr 2.2s infinite steps(1)}.g .b{color:#1fd6ff;mix-blend-mode:screen;animation:gb 1.7s infinite steps(1)}.g .m{position:relative;color:#fff;mix-blend-mode:screen}
-@keyframes gr{0%{transform:translate(-4px,0);clip-path:inset(0 0 0 0)}10%{transform:translate(8px,-2px);clip-path:inset(20% 0 50% 0)}20%{transform:translate(-2px,1px);clip-path:inset(60% 0 10% 0)}35%{transform:translate(-6px,0);clip-path:inset(0)}60%{transform:translate(12px,3px);clip-path:inset(40% 0 35% 0)}70%{transform:translate(-3px,0);clip-path:inset(0)}}
-@keyframes gb{0%{transform:translate(4px,0)}15%{transform:translate(-10px,2px);clip-path:inset(10% 0 70% 0)}25%{transform:translate(3px,0);clip-path:inset(0)}50%{transform:translate(-5px,-2px);clip-path:inset(70% 0 5% 0)}65%{transform:translate(6px,0);clip-path:inset(0)}}
-.sl{position:absolute;left:-5%;right:-5%;height:8%;background:inherit;animation:sl 3s infinite steps(1)}
-.noise{position:fixed;inset:-50%;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");opacity:.13;animation:nz .3s steps(3) infinite;pointer-events:none}@keyframes nz{33%{transform:translate(-5%,3%)}66%{transform:translate(4%,-6%)}}
-.bar{position:fixed;left:0;right:0;height:14vh;background:linear-gradient(transparent,rgba(255,255,255,.08),transparent);animation:bar 4s linear infinite;pointer-events:none}@keyframes bar{from{top:-15vh}to{top:110vh}}
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;user-select:none;-webkit-user-select:none}
+body{background:#0a0a0a;font-family:'JetBrains Mono',monospace;color:#fff;cursor:ns-resize}
+canvas{position:fixed;inset:0;width:100%;height:100%;touch-action:none}
 .scan{position:fixed;inset:0;background:repeating-linear-gradient(transparent 0 2px,rgba(0,0,0,.35) 2px 4px);pointer-events:none}
-.hud{position:fixed;left:3vw;top:3vh;font-size:13px;letter-spacing:.15em;color:#ddd}.hud b{color:#ff1f4d}.rec{position:fixed;right:3vw;top:3vh;font-size:13px;letter-spacing:.2em}.rec::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;background:#ff1f4d;margin-right:8px;animation:bl 1s steps(1) infinite}@keyframes bl{50%{opacity:0}}
-.ft{position:fixed;bottom:4vh;left:0;right:0;text-align:center;font-size:12px;letter-spacing:.4em;color:#888}
-body:hover .g .r{animation-duration:.4s}body:hover .g .b{animation-duration:.33s}</style></head><body>
-<div class="noise"></div><div class="hud">CH 03 · <b>NO CARRIER</b><br><span id="tc">00:00:00:00</span></div><div class="rec">PLAY</div>
-<div class="g" id="g"><span class="r">Signal<br>Lost</span><span class="b">Signal<br>Lost</span><div class="m">Signal<br>Lost</div></div>
-<div class="bar"></div><div class="scan"></div><div class="ft">PLEASE ADJUST YOUR TRACKING · HOVER TO INTERFERE</div>
-<script>let f=0;setInterval(()=>{f++;const s=Math.floor(f/25),p=n=>String(n).padStart(2,'0');document.getElementById('tc').textContent=`${p(Math.floor(s/3600))}:${p(Math.floor(s/60)%60)}:${p(s%60)}:${p(f%25)}`;const g=document.getElementById('g');g.style.transform=Math.random()<.06?`translateX(${(Math.random()-.5)*30}px) skewX(${(Math.random()-.5)*20}deg)`:'none'},40)</script>
-</body></html>
+.vig{position:fixed;inset:0;pointer-events:none;background:radial-gradient(110% 90% at 50% 50%,transparent 55%,rgba(0,0,0,.75));box-shadow:inset 0 0 120px rgba(0,0,0,.8)}
+.bar{position:fixed;left:0;right:0;height:14vh;background:linear-gradient(transparent,rgba(255,255,255,.08),transparent);animation:bar 4s linear infinite;pointer-events:none}@keyframes bar{from{top:-15vh}to{top:110vh}}
+.hud{position:fixed;left:3vw;top:3vh;font-size:14px;letter-spacing:.15em;color:#ddd;text-shadow:2px 0 #ff1f4d,-2px 0 #1fd6ff;pointer-events:none}.hud b{color:#7dff7a;font-size:30px;display:block;letter-spacing:.06em}
+.rec{position:fixed;right:3vw;top:3vh;font-size:14px;letter-spacing:.2em;pointer-events:none;text-shadow:2px 0 #ff1f4d,-2px 0 #1fd6ff}.rec::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;background:#ff1f4d;margin-right:8px;animation:bl 1s steps(1) infinite}@keyframes bl{50%{opacity:0}}
+.trk{position:fixed;left:50%;bottom:9vh;transform:translateX(-50%);display:flex;align-items:center;gap:10px;font-size:12px;letter-spacing:.3em;color:#7dff7a;opacity:0;transition:opacity .3s;pointer-events:none;text-shadow:0 0 6px #7dff7a}.trk.on{opacity:1}
+.trk i{display:flex;gap:3px}.trk i u{width:8px;height:14px;background:#7dff7a;opacity:.25}.trk i u.on{opacity:1}
+.ft{position:fixed;bottom:3.5vh;left:0;right:0;text-align:center;font-size:11px;letter-spacing:.4em;color:#888;pointer-events:none}
+</style></head><body>
+<canvas id="c"></canvas><div class="bar"></div><div class="scan"></div><div class="vig"></div>
+<div class="hud" id="hud"><b id="chn">CH 03</b><span id="cn">NO CARRIER</span><br><span id="tc">00:00:00:00</span></div><div class="rec" id="rc">PLAY</div>
+<div class="trk" id="trk">TRACKING <i id="tb"></i></div>
+<div class="ft">DRAG UP / DOWN TO ADJUST TRACKING · SCROLL OR ↑ ↓ TO CHANGE CHANNEL</div>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');let W,H;const S=.5;function size(){W=c.width=Math.floor(innerWidth*S);H=c.height=Math.floor(innerHeight*S)}size();addEventListener('resize',size);
+const tb=document.getElementById('tb');for(let i=0;i<16;i++)tb.appendChild(document.createElement('u'));
+const CH=[{n:2,name:'STATIC'},{n:3,name:'NO CARRIER'},{n:4,name:'COLOUR BARS'},{n:5,name:'TEST CARD'},{n:7,name:'LATE NIGHT'},{n:9,name:'???'}];let ci=1,trk=.56,ttrk=.56,osd=0,hide=0;
+const sweet=.72;
+let ac,hiss,hg,tone,tg;function audio(){if(ac)return;try{ac=new (window.AudioContext||window.webkitAudioContext)();const b=ac.createBuffer(1,ac.sampleRate*2,ac.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;hiss=ac.createBufferSource();hiss.buffer=b;hiss.loop=true;const f=ac.createBiquadFilter();f.type='highpass';f.frequency.value=1200;hg=ac.createGain();hg.gain.value=0;hiss.connect(f).connect(hg).connect(ac.destination);hiss.start();tone=ac.createOscillator();tone.frequency.value=1000;tg=ac.createGain();tg.gain.value=0;tone.connect(tg).connect(ac.destination);tone.start()}catch(e){}}
+function setCh(d){ci=(ci+d+CH.length)%CH.length;osd=1;document.getElementById('chn').textContent='CH '+String(CH[ci].n).padStart(2,'0');document.getElementById('cn').textContent=CH[ci].name;burst=1;if(ac){const o=ac.createOscillator(),g=ac.createGain();o.type='square';o.frequency.value=180;g.gain.setValueAtTime(.05,ac.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+.06);o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+.07)}}
+let burst=0,drag=null;
+addEventListener('pointerdown',e=>{audio();drag={y:e.clientY,t:ttrk}});addEventListener('pointermove',e=>{if(drag){ttrk=Math.max(0,Math.min(1,drag.t-(e.clientY-drag.y)/innerHeight*1.2));showT()}});addEventListener('pointerup',()=>drag=null);
+let wl=0;addEventListener('wheel',e=>{audio();const n=performance.now();if(n-wl<220)return;wl=n;setCh(e.deltaY>0?1:-1)},{passive:true});
+addEventListener('keydown',e=>{audio();if(e.key==='ArrowUp')setCh(1);if(e.key==='ArrowDown')setCh(-1);if(e.key==='ArrowLeft'){ttrk=Math.max(0,ttrk-.05);showT()}if(e.key==='ArrowRight'){ttrk=Math.min(1,ttrk+.05);showT()}});
+function showT(){const t=document.getElementById('trk');t.classList.add('on');clearTimeout(hide);hide=setTimeout(()=>t.classList.remove('on'),1400);[...tb.children].forEach((u,i)=>u.classList.toggle('on',i<=ttrk*15))}
+const off=document.createElement('canvas'),ox=off.getContext('2d');
+function frame(n,t){off.width=W;off.height=H;const g=ox;g.fillStyle='#000';g.fillRect(0,0,W,H);const k=CH[ci].n;
+if(k===3||k===9){const msg=k===9&&Math.abs(trk-sweet)<.06?['WE ARE','STILL HERE']:['SIGNAL','LOST'];g.fillStyle='#fff';g.font=`800 ${Math.min(W*.16,H*.3)}px "JetBrains Mono"`;g.textAlign='center';g.textBaseline='middle';g.fillText(msg[0],W/2,H*.4);g.fillText(msg[1],W/2,H*.64)}
+else if(k===4){const cols=['#c0c0c0','#c0c000','#00c0c0','#00c000','#c000c0','#c00000','#0000c0'];cols.forEach((cl,i)=>{g.fillStyle=cl;g.fillRect(i*W/7,0,W/7+1,H*.67)});['#0000c0','#111','#c000c0','#111','#00c0c0','#111','#c0c0c0'].forEach((cl,i)=>{g.fillStyle=cl;g.fillRect(i*W/7,H*.67,W/7+1,H*.08)});g.fillStyle='#00214c';g.fillRect(0,H*.75,W/5,H);g.fillStyle='#fff';g.fillRect(W/5,H*.75,W/5,H);g.fillStyle='#32006a';g.fillRect(W*2/5,H*.75,W/5,H);g.fillStyle='#111';g.fillRect(W*3/5,H*.75,W*2/5,H)}
+else if(k===5){g.fillStyle='#808080';g.fillRect(0,0,W,H);g.strokeStyle='#fff';g.lineWidth=1;for(let i=0;i<W;i+=W/16){g.beginPath();g.moveTo(i,0);g.lineTo(i,H);g.stroke()}for(let j=0;j<H;j+=H/12){g.beginPath();g.moveTo(0,j);g.lineTo(W,j);g.stroke()}const r=Math.min(W,H)*.38;g.fillStyle='#202020';g.beginPath();g.arc(W/2,H/2,r,0,7);g.fill();['#ff0','#0ff','#0f0','#f0f','#f00','#00f'].forEach((cl,i)=>{g.fillStyle=cl;g.fillRect(W/2-r*.8+i*r*.27,H/2-r*.5,r*.27,r*.4)});for(let i=0;i<10;i++){g.fillStyle=i%2?'#fff':'#000';g.fillRect(W/2-r*.8+i*r*.16,H/2,r*.16,r*.25)}g.fillStyle='#fff';g.font=`800 ${r*.16}px "JetBrains Mono"`;g.textAlign='center';g.fillText('STUN · 625',W/2,H/2+r*.5);g.strokeStyle='#fff';g.lineWidth=2;g.beginPath();g.arc(W/2,H/2,r,0,7);g.stroke()}
+else if(k===7){g.fillStyle='#001a4a';g.fillRect(0,0,W,H);g.fillStyle='#ffcc00';g.font=`800 ${H*.09}px "JetBrains Mono"`;g.textAlign='left';g.fillText('LATE NIGHT WEATHER',W*.06,H*.18);g.fillStyle='#fff';g.font=`400 ${H*.06}px "JetBrains Mono"`;['NORTH  ·  4°  FOG','COAST  ·  7°  RAIN','HILLS  · -1°  SNOW','CITY   ·  9°  CLOUD'].forEach((l,i)=>g.fillText(l,W*.08,H*(.36+i*.12)));g.fillStyle='#c00';g.fillRect(0,H*.86,W,H*.1);g.fillStyle='#fff';const crawl=' · NIGHT BUS SERVICES RESUME AT 05:10 · LOST: ONE BLUE UMBRELLA, ROUTE 14 · THE STATION WILL CLOSE AFTER THE ANTHEM · ';g.fillText(crawl.repeat(3),W-((t*.06)%(W*4)),H*.93)}
+// snow & tracking damage
+const err=Math.abs(trk-sweet)*(k===2?3:1),img=g.getImageData(0,0,W,H),d=img.data;const snowAmt=k===2?1:Math.min(1,err*1.2)+burst;
+for(let y=0;y<H;y++){const band=Math.sin(y*.05+t*.004)*Math.sin(y*.013-t*.002);const shift=Math.round((err>.08?band*err*40:0)+(Math.random()<err*.08?(Math.random()-.5)*W*err*.6:0));
+for(let X=0;X<W;X++){const o=(y*W+X)*4,sx=((X-shift)%W+W)%W,so=(y*W+sx)*4;let r=d[so],gg=d[so+1],b=d[so+2];if(Math.random()<snowAmt*.6){const v=Math.random()*255;r=r*(1-snowAmt)+v*snowAmt;gg=gg*(1-snowAmt)+v*snowAmt;b=b*(1-snowAmt)+v*snowAmt}img.data[o]=r;img.data[o+1]=gg;img.data[o+2]=b}}
+// chroma split
+x.putImageData(img,0,0);const sp=2+err*8;x.globalCompositeOperation='lighter';x.globalAlpha=.35;x.drawImage(c,sp,0);x.drawImage(c,-sp,0);x.globalAlpha=1;x.globalCompositeOperation='source-over';
+// vertical roll when badly out
+if(err>.45){const roll=(t*.15*err)%H;const copy=x.getImageData(0,0,W,H);x.putImageData(copy,0,roll);x.putImageData(copy,0,roll-H);x.fillStyle='#000';x.fillRect(0,roll-4,W,8)}}
+let fr=0;function f(t){trk+=(ttrk-trk)*.15;burst*=.85;fr++;frame(fr,t);if(hg){const k=CH[ci].n;hg.gain.setTargetAtTime(k===2?.12:Math.min(.1,Math.abs(trk-sweet)*.25)+burst*.1,ac.currentTime,.05);tg.gain.setTargetAtTime(k===4?.025:0,ac.currentTime,.05)}
+const s=Math.floor(fr/25),p=n=>String(n).padStart(2,'0');document.getElementById('tc').textContent=`${p(Math.floor(s/3600))}:${p(Math.floor(s/60)%60)}:${p(s%60)}:${p(fr%25)}`;document.getElementById('rc').textContent=Math.abs(trk-sweet)<.06?'▶ LOCKED':'PLAY';requestAnimationFrame(f)}
+document.fonts.ready.then(()=>{});requestAnimationFrame(f);
+</script></body></html>
