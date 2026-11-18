@@ -1,23 +1,58 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mainboard Rev C</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&family=Share+Tech&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#0d3b26}canvas{display:block;width:100%;height:100%;cursor:pointer}</style></head><body>
-<canvas id="c"></canvas>
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#0d3b26;user-select:none;-webkit-user-select:none}canvas{display:block;width:100%;height:100%;cursor:crosshair}
+.sheen{position:fixed;inset:0;pointer-events:none;background:radial-gradient(40% 50% at var(--lx,30%) var(--ly,30%),rgba(255,255,255,.08),transparent 70%);mix-blend-mode:screen}
+.ui{position:fixed;right:18px;top:18px;display:flex;gap:8px;align-items:center}
+.pw{width:54px;height:28px;border-radius:14px;background:#08251a;border:1px solid #2e7a54;position:relative;cursor:pointer}.pw::after{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#c0c0c0;transition:transform .25s cubic-bezier(.2,.9,.3,1.4),background .25s}.pw.on::after{transform:translateX(26px);background:#7dffb0;box-shadow:0 0 10px #7dffb0}
+.ui span{font:12px 'Share Tech',monospace;color:#bfe8d0;letter-spacing:.14em}.ui button{font:12px 'Share Tech';letter-spacing:.14em;color:#bfe8d0;background:#08251a;border:1px solid #2e7a54;padding:6px 10px;border-radius:4px;cursor:pointer}
+.tip{position:fixed;pointer-events:none;background:rgba(8,37,26,.92);border:1px solid #2e7a54;color:#bfe8d0;font:12px/1.5 'Share Tech',monospace;padding:8px 10px;border-radius:4px;opacity:0;transition:opacity .15s;white-space:nowrap}.tip.on{opacity:1}.tip b{color:#e7c36a}
+.scope{position:fixed;left:18px;top:18px;width:200px;height:84px;background:#06140e;border:1px solid #2e7a54;border-radius:6px;overflow:hidden}.scope canvas{width:100%;height:100%}.scope span{position:absolute;left:8px;top:4px;font:10px 'Share Tech';color:#7dffb0;letter-spacing:.12em}
+@media (max-width:640px){.scope{display:none}}
+</style></head><body>
+<canvas id="c"></canvas><div class="sheen" id="sh"></div>
+<div class="scope"><span id="sl">PROBE · —</span><canvas id="sc" width="400" height="168"></canvas></div>
+<div class="ui"><span>POWER</span><div class="pw on" id="pw" role="switch" aria-checked="true" tabindex="0"></div><button id="rr">RE-ROUTE</button></div><div class="tip" id="tip"></div>
 <script>
-const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio,2);let W,H,G,cols,rows,occ,traces,chips,pulses,base;
-function gen(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr;G=14*dpr;cols=Math.floor(W/G);rows=Math.floor(H/G);occ=new Uint8Array(cols*rows);traces=[];chips=[];pulses=[];
+const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio||1,2);let W,H,G,cols,rows,occ,traces,chips,pulses,base,parts,leds;let power=true,hovT=null,hovC=null;
+function gen(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr;G=14*dpr;cols=Math.floor(W/G);rows=Math.floor(H/G);occ=new Uint8Array(cols*rows);traces=[];chips=[];pulses=[];parts=[];leds=[];
 const ok=(i,j)=>i>=0&&j>=0&&i<cols&&j<rows&&!occ[j*cols+i];
-for(let k=0;k<9;k++){const w=4+Math.random()*8|0,h=3+Math.random()*6|0,i=2+Math.random()*(cols-w-4)|0,j=2+Math.random()*(rows-h-4)|0;let free=true;for(let a=i-2;a<i+w+2;a++)for(let b=j-2;b<j+h+2;b++)if(!ok(a,b))free=false;if(!free)continue;for(let a=i-1;a<i+w+1;a++)for(let b=j-1;b<j+h+1;b++)occ[b*cols+a]=2;chips.push({i,j,w,h,l:['MCU','DSP','RAM','PWR','RF','I/O','ADC','FPGA'][k%8]+'-'+(100+Math.random()*900|0)})}
+for(let k=0;k<10;k++){const w=4+Math.random()*8|0,h=3+Math.random()*6|0,i=2+Math.random()*(cols-w-4)|0,j=2+Math.random()*(rows-h-6)|0;let free=true;for(let a=i-2;a<i+w+2;a++)for(let b=j-2;b<j+h+2;b++)if(!ok(a,b))free=false;if(!free)continue;for(let a=i-1;a<i+w+1;a++)for(let b=j-1;b<j+h+1;b++)occ[b*cols+a]=2;chips.push({i,j,w,h,l:['MCU','DSP','RAM','PWR','RF','I/O','ADC','FPGA','USB','CLK'][k%10]+'-'+(100+Math.random()*900|0),f:['168 MHz','600 MHz','8 GB','3V3 · 2A','2.4 GHz','GPIO ×48','24-bit','LUT 85k','480 Mb/s','25 MHz'][k%10],tr:[]})}
 const D=[[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1],[0,-1],[1,-1]];
-for(let t=0;t<420;t++){let i=Math.random()*cols|0,j=Math.random()*rows|0;if(!ok(i,j))continue;let d=Math.random()*8|0;const pts=[[i,j]];occ[j*cols+i]=1;const L=6+Math.random()*40|0;
-for(let s=0;s<L;s++){if(Math.random()<.18)d=(d+(Math.random()<.5?1:7))%8;const ni=i+D[d][0],nj=j+D[d][1];if(!ok(ni,nj))break;if(d%2&&(!ok(i+D[d][0],j)||!ok(i,j+D[d][1])))break;i=ni;j=nj;occ[j*cols+i]=1;pts.push([i,j])}if(pts.length>3)traces.push({p:pts,w:Math.random()<.15?3:Math.random()<.4?2:1.2})}
-base=document.createElement('canvas');base.width=W;base.height=H;const b=base.getContext('2d');b.fillStyle='#0d3b26';b.fillRect(0,0,W,H);b.strokeStyle='rgba(255,255,255,.03)';for(let i=0;i<W;i+=G){b.beginPath();b.moveTo(i,0);b.lineTo(i,H);b.stroke()}
+function route(i,j,d,L,chip){const pts=[[i,j]];occ[j*cols+i]=1;for(let s=0;s<L;s++){if(Math.random()<.18)d=(d+(Math.random()<.5?1:7))%8;const ni=i+D[d][0],nj=j+D[d][1];if(!ok(ni,nj))break;if(d%2&&(!ok(i+D[d][0],j)||!ok(i,j+D[d][1])))break;i=ni;j=nj;occ[j*cols+i]=1;pts.push([i,j])}if(pts.length>3){const t={p:pts,w:Math.random()<.15?3:Math.random()<.4?2:1.2,chip,net:'N'+(traces.length+1)};traces.push(t);if(chip)chip.tr.push(t)}}
+chips.forEach(ch=>{for(let a=0;a<ch.w;a++){if(Math.random()<.6)route(ch.i+a,ch.j-2,6,8+Math.random()*30|0,ch);if(Math.random()<.6)route(ch.i+a,ch.j+ch.h+1,2,8+Math.random()*30|0,ch)}});
+for(let t=0;t<320;t++){const i=Math.random()*cols|0,j=Math.random()*rows|0;if(ok(i,j))route(i,j,Math.random()*8|0,6+Math.random()*40|0,null)}
+for(let k=0;k<60;k++){const i=Math.random()*cols|0,j=Math.random()*rows|0;if(ok(i,j)&&ok(i+1,j)){occ[j*cols+i]=occ[j*cols+i+1]=3;parts.push({i,j,t:Math.random()<.5?'R':'C',n:Math.random()*90+1|0})}}
+for(let k=0;k<6;k++){const i=Math.random()*cols|0,j=Math.random()*rows|0;if(ok(i,j)){occ[j*cols+i]=3;leds.push({i,j,c:['#ff3b3b','#7dffb0','#5fb0ff','#ffd34a'][k%4],p:Math.random()*6})}}
+base=document.createElement('canvas');base.width=W;base.height=H;const b=base.getContext('2d');b.fillStyle='#0d3b26';b.fillRect(0,0,W,H);
+for(let i=0;i<W*H/600;i++){b.fillStyle=`rgba(${Math.random()<.5?0:255},${Math.random()<.5?40:255},${Math.random()<.5?20:255},.025)`;b.fillRect(Math.random()*W,Math.random()*H,dpr,dpr)}
+b.strokeStyle='rgba(255,255,255,.03)';for(let i=0;i<W;i+=G){b.beginPath();b.moveTo(i,0);b.lineTo(i,H);b.stroke()}
 b.lineCap=b.lineJoin='round';for(const t of traces){b.strokeStyle='#1e6b44';b.lineWidth=(t.w+2.4)*dpr;b.beginPath();t.p.forEach(([i,j],k)=>k?b.lineTo(i*G+G/2,j*G+G/2):b.moveTo(i*G+G/2,j*G+G/2));b.stroke();b.strokeStyle='#c89b3c';b.lineWidth=t.w*dpr;b.stroke();
 for(const e of [t.p[0],t.p[t.p.length-1]]){b.fillStyle='#e7c36a';b.beginPath();b.arc(e[0]*G+G/2,e[1]*G+G/2,3.2*dpr,0,7);b.fill();b.fillStyle='#0d3b26';b.beginPath();b.arc(e[0]*G+G/2,e[1]*G+G/2,1.3*dpr,0,7);b.fill()}}
-for(const ch of chips){const X=ch.i*G,Y=ch.j*G,w=ch.w*G,h=ch.h*G;b.fillStyle='#c0c0c0';for(let a=0;a<ch.w;a++){b.fillRect(X+a*G+G*.3,Y-G*.5,G*.4,G*.5);b.fillRect(X+a*G+G*.3,Y+h,G*.4,G*.5)}b.fillStyle='#16161a';b.fillRect(X,Y,w,h);b.strokeStyle='#33333a';b.lineWidth=dpr;b.strokeRect(X+3*dpr,Y+3*dpr,w-6*dpr,h-6*dpr);
-b.fillStyle='#bfbfc8';b.font=`${11*dpr}px "Share Tech",monospace`;b.fillText(ch.l,X+8*dpr,Y+18*dpr);b.beginPath();b.arc(X+10*dpr,Y+h-10*dpr,3*dpr,0,7);b.fill()}
-b.fillStyle='rgba(255,255,255,.75)';b.font=`${22*dpr}px "Major Mono Display",monospace`;b.fillText('mainboard rev c',G*2,H-G*1.5);b.font=`${11*dpr}px "Share Tech"`;b.fillText('© 2026 · MADE IN PORTO · CLICK TO RE-ROUTE',G*2,H-G*.6)}
-document.fonts.ready.then(gen);gen();addEventListener('resize',gen);c.addEventListener('click',gen);
-function f(){x.drawImage(base,0,0);if(pulses.length<60&&traces.length){const t=traces[Math.random()*traces.length|0];pulses.push({t,u:0,s:.15+Math.random()*.3})}
-x.globalCompositeOperation='lighter';for(let k=pulses.length-1;k>=0;k--){const p=pulses[k];p.u+=p.s;if(p.u>=p.t.p.length-1){pulses.splice(k,1);continue}const a=p.t.p[Math.floor(p.u)],b=p.t.p[Math.ceil(p.u)],f=p.u%1;const X=(a[0]+(b[0]-a[0])*f)*G+G/2,Y=(a[1]+(b[1]-a[1])*f)*G+G/2;
-const g=x.createRadialGradient(X,Y,0,X,Y,10*dpr);g.addColorStop(0,'rgba(140,255,200,1)');g.addColorStop(1,'rgba(0,255,140,0)');x.fillStyle=g;x.fillRect(X-10*dpr,Y-10*dpr,20*dpr,20*dpr)}x.globalCompositeOperation='source-over';requestAnimationFrame(f)}f();
+for(const p of parts){const X=p.i*G+G*.2,Y=p.j*G+G*.25;b.fillStyle='#c0c0c0';b.fillRect(X,Y,G*.35,G*.5);b.fillRect(X+G*1.25,Y,G*.35,G*.5);b.fillStyle=p.t==='R'?'#1a1a1a':'#b88a5a';b.fillRect(X+G*.3,Y,G,G*.5);b.fillStyle='rgba(255,255,255,.75)';b.font=`${8*dpr}px "Share Tech"`;b.fillText(p.t+p.n,X,Y-2*dpr)}
+for(const ch of chips){const X=ch.i*G,Y=ch.j*G,w=ch.w*G,h=ch.h*G;b.fillStyle='#c0c0c0';for(let a=0;a<ch.w;a++){b.fillRect(X+a*G+G*.3,Y-G*.5,G*.4,G*.5);b.fillRect(X+a*G+G*.3,Y+h,G*.4,G*.5)}const cg=b.createLinearGradient(X,Y,X+w,Y+h);cg.addColorStop(0,'#1e1e24');cg.addColorStop(1,'#101014');b.fillStyle=cg;b.fillRect(X,Y,w,h);b.strokeStyle='#33333a';b.lineWidth=dpr;b.strokeRect(X+3*dpr,Y+3*dpr,w-6*dpr,h-6*dpr);
+b.fillStyle='#bfbfc8';b.font=`${11*dpr}px "Share Tech",monospace`;b.fillText(ch.l,X+8*dpr,Y+18*dpr);b.globalAlpha=.6;b.font=`${9*dpr}px "Share Tech"`;b.fillText(ch.f,X+8*dpr,Y+30*dpr);b.globalAlpha=1;b.beginPath();b.arc(X+10*dpr,Y+h-10*dpr,3*dpr,0,7);b.fill()}
+b.fillStyle='rgba(255,255,255,.75)';b.font=`${22*dpr}px "Major Mono Display",monospace`;b.fillText('mainboard rev c',G*2,H-G*1.5);b.font=`${11*dpr}px "Share Tech"`;b.fillText('© 2026 · MADE IN PORTO · CLICK A CHIP TO WAKE IT',G*2,H-G*.6)}
+document.fonts.ready.then(gen);gen();addEventListener('resize',gen);document.getElementById('rr').onclick=gen;
+const pw=document.getElementById('pw');const tg=()=>{power=!power;pw.classList.toggle('on',power);pw.setAttribute('aria-checked',power);click(power?880:220)};pw.onclick=tg;pw.onkeydown=e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();tg()}};
+let ac;function click(f){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type='square';o.frequency.value=f;g.gain.setValueAtTime(.04,ac.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+.08);o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+.09)}catch(e){}}
+let mx=-1,my=-1;const tip=document.getElementById('tip');
+c.addEventListener('pointermove',e=>{mx=e.clientX*dpr;my=e.clientY*dpr;document.getElementById('sh').style.setProperty('--lx',e.clientX+'px');document.getElementById('sh').style.setProperty('--ly',e.clientY+'px');const i=Math.floor(mx/G),j=Math.floor(my/G);
+hovC=chips.find(ch=>i>=ch.i&&i<ch.i+ch.w&&j>=ch.j&&j<ch.j+ch.h)||null;hovT=null;if(!hovC){let best=1.2;for(const t of traces)for(const [a,b2] of t.p){const d=Math.hypot(a-i+.5,b2-j+.5);if(d<best){best=d;hovT=t}}}
+tip.style.left=e.clientX+14+'px';tip.style.top=e.clientY+14+'px';if(hovC){tip.innerHTML=`<b>${hovC.l}</b> · ${hovC.f}<br>${hovC.tr.length} nets · click to wake`;tip.classList.add('on')}else if(hovT){tip.innerHTML=`<b>${hovT.net}</b> · ${hovT.w>2?'power':'signal'} · ${hovT.p.length*0.35|0} mm`;tip.classList.add('on')}else tip.classList.remove('on')});
+c.addEventListener('pointerleave',()=>{hovC=hovT=null;tip.classList.remove('on')});
+c.addEventListener('click',()=>{if(hovC&&power){click(1320);hovC.wake=1;hovC.tr.forEach(t=>{for(let k=0;k<3;k++)pulses.push({t,u:-k*2,s:.35,hot:1})})}});
+const sc=document.getElementById('sc'),sx=sc.getContext('2d');let phase=0;
+function f(t){x.drawImage(base,0,0);
+if(hovT||hovC){x.globalCompositeOperation='lighter';x.lineCap=x.lineJoin='round';const list=hovC?hovC.tr:[hovT];x.strokeStyle='rgba(255,220,120,.5)';for(const tr of list){x.lineWidth=(tr.w+3)*dpr;x.beginPath();tr.p.forEach(([i,j],k)=>k?x.lineTo(i*G+G/2,j*G+G/2):x.moveTo(i*G+G/2,j*G+G/2));x.stroke()}x.globalCompositeOperation='source-over';if(hovC){x.strokeStyle='#e7c36a';x.lineWidth=2*dpr;x.strokeRect(hovC.i*G-2*dpr,hovC.j*G-2*dpr,hovC.w*G+4*dpr,hovC.h*G+4*dpr)}}
+if(power&&pulses.length<70&&traces.length&&Math.random()<.8){const tr=traces[Math.random()*traces.length|0];pulses.push({t:tr,u:0,s:.15+Math.random()*.3})}
+x.globalCompositeOperation='lighter';for(let k=pulses.length-1;k>=0;k--){const p=pulses[k];p.u+=p.s*(power?1:.0);if(!power)p.s*=.9;if(p.u>=p.t.p.length-1||p.s<.01){pulses.splice(k,1);continue}if(p.u<0)continue;const a=p.t.p[Math.floor(p.u)],b=p.t.p[Math.ceil(p.u)],fr=p.u%1;const X=(a[0]+(b[0]-a[0])*fr)*G+G/2,Y=(a[1]+(b[1]-a[1])*fr)*G+G/2;
+const r=(p.hot?16:10)*dpr;const g=x.createRadialGradient(X,Y,0,X,Y,r);g.addColorStop(0,p.hot?'rgba(255,230,150,1)':'rgba(140,255,200,1)');g.addColorStop(1,'rgba(0,255,140,0)');x.fillStyle=g;x.fillRect(X-r,Y-r,r*2,r*2)}
+for(const l of leds){const on=power&&Math.sin(t*.004+l.p)>-.2;const X=l.i*G+G/2,Y=l.j*G+G/2;x.fillStyle=on?l.c:'#333';x.beginPath();x.arc(X,Y,3*dpr,0,7);x.fill();if(on){const g=x.createRadialGradient(X,Y,0,X,Y,16*dpr);g.addColorStop(0,l.c+'aa');g.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=g;x.fillRect(X-16*dpr,Y-16*dpr,32*dpr,32*dpr)}}
+for(const ch of chips){if(ch.wake){ch.wake*=.96;x.fillStyle=`rgba(255,220,120,${ch.wake*.25})`;x.fillRect(ch.i*G,ch.j*G,ch.w*G,ch.h*G);if(ch.wake<.02)ch.wake=0}}
+x.globalCompositeOperation='source-over';
+// oscilloscope on whatever net is under the probe
+phase+=.15;sx.fillStyle='rgba(6,20,14,.4)';sx.fillRect(0,0,400,168);sx.strokeStyle='rgba(125,255,176,.15)';for(let i=0;i<400;i+=40){sx.beginPath();sx.moveTo(i,0);sx.lineTo(i,168);sx.stroke()}sx.strokeStyle='#7dffb0';sx.lineWidth=2;sx.beginPath();const tr=hovC?hovC.tr[0]:hovT;const kind=tr?tr.net.length%3:-1;
+for(let i=0;i<400;i++){const u=i/400*12+phase;let v=0;if(!power)v=0;else if(kind===0)v=(Math.sin(u*3.14)>0?1:-1)*.6;else if(kind===1)v=Math.sin(u)*.7;else if(kind===2)v=((u*1.5)%2-1)*.7;else v=(Math.random()-.5)*.08;const y=84-v*60;i?sx.lineTo(i,y):sx.moveTo(i,y)}sx.stroke();document.getElementById('sl').textContent='PROBE · '+(tr?tr.net+' · '+['CLOCK','ANALOG','RAMP'][kind]:'—');
+requestAnimationFrame(f)}requestAnimationFrame(f);
 </script></body></html>
