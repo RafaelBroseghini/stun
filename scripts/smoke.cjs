@@ -29,6 +29,10 @@ function checkStructure(works) {
     else if (t[1] !== w.title) fail(where, `title "${t[1]}" does not match manifest "${w.title}"`);
     if (/<img\b/i.test(html)) fail(where, 'studies must not use bitmap <img> tags');
   }
+  const index = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+  for (const tag of ['twitter:card', 'twitter:image', 'og:image', 'og:title', 'og:description'])
+    if (!index.includes(`"${tag}"`)) fail('index.html', `missing ${tag} meta tag`);
+  if (!fs.existsSync(path.join(ROOT, 'social-card.jpg'))) fail('social-card.jpg', 'missing (run npm run card)');
   const onDisk = fs.readdirSync(path.join(ROOT, 'works')).filter(f => /^\d{3}-.*\.html$/.test(f));
   for (const f of onDisk) if (!works.some(w => w.file === `works/${f}`)) fail(`works/${f}`, 'not listed in manifest');
 }
@@ -66,9 +70,19 @@ async function checkCatalog(browser, base, works) {
   if (plates !== works.length) fail('catalog', `rendered ${plates} plates, expected ${works.length}`);
   await page.getByRole('button', { name: /^Sound/ }).click();
   const sound = works.filter(w => w.cat === 'Sound').length;
-  const shown = await page.locator('.plate:not([hidden])').count();
+  const shown = await page.locator('.plate').evaluateAll(els => els.filter(e => e.getClientRects().length > 0).length);
   if (shown !== sound) fail('catalog', `Sound filter shows ${shown}, expected ${sound}`);
+  const rowsShown = await page.evaluate(() => { document.getElementById('vList').click(); const n = [...document.querySelectorAll('.row')].filter(e => e.getClientRects().length > 0).length; document.getElementById('vGrid').click(); return n; });
+  if (rowsShown !== sound) fail('catalog', `Sound filter shows ${rowsShown} list rows, expected ${sound}`);
+  await page.fill('#q', 'lighthouse');
+  const found = await page.locator('.plate').evaluateAll(els => els.filter(e => e.getClientRects().length > 0).length);
+  if (found !== 0) fail('catalog', `search inside Sound found ${found}, expected 0`);
+  await page.fill('#q', '');
   await page.getByRole('button', { name: /^All/ }).click();
+  await page.fill('#q', 'lighthouse');
+  const lh = await page.locator('.plate').evaluateAll(els => els.filter(e => e.getClientRects().length > 0).length);
+  if (lh !== 1) fail('catalog', `search "lighthouse" shows ${lh} plates, expected 1`);
+  await page.fill('#q', '');
   await page.evaluate(() => { location.hash = 'no-042'; });
   await page.waitForTimeout(400);
   if (!(await page.locator('#room').isVisible())) fail('catalog', 'viewer did not open for #no-042');
