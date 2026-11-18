@@ -1,20 +1,46 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Brass Kaleidoscope</title>
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#120d08;display:grid;place-items:center}
-.tube{width:min(94vmin,900px);aspect-ratio:1;border-radius:50%;padding:3.5%;background:conic-gradient(from 30deg,#8a5a1f,#f0c472,#8a5a1f,#5a3a12,#d9a54f,#8a5a1f);box-shadow:0 0 80px rgba(240,196,114,.25),0 30px 60px #000}
-canvas{width:100%;height:100%;border-radius:50%;display:block;box-shadow:inset 0 0 40px #000}
-p{position:fixed;bottom:3vh;color:#d9a54f;font:italic 14px Georgia,serif;letter-spacing:.08em}</style></head><body>
-<div class="tube"><canvas id="c"></canvas></div><p>Move to turn the barrel · click to shake the glass</p>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500&family=Cinzel:wght@500&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}
+body{background:radial-gradient(circle at 50% 45%,#2a1a0c,#120d08 60%,#070503);display:grid;place-items:center;user-select:none;-webkit-user-select:none}
+.tube{position:relative;width:min(90vmin,880px);aspect-ratio:1;border-radius:50%;padding:4.2%;background:conic-gradient(from 30deg,#8a5a1f,#f0c472,#8a5a1f,#5a3a12,#d9a54f,#8a5a1f);box-shadow:0 0 90px rgba(240,196,114,.22),0 40px 70px #000,inset 0 0 0 2px rgba(255,230,170,.3);cursor:grab;touch-action:none;animation:in 1.4s cubic-bezier(.2,.8,.2,1) both}
+.tube:active{cursor:grabbing}@keyframes in{from{opacity:0;transform:scale(.9) rotate(-30deg)}}
+.tube svg.eng{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+canvas{width:100%;height:100%;border-radius:50%;display:block;box-shadow:inset 0 0 40px #000,0 0 0 3px #3a240c}
+.glare{position:absolute;inset:4.2%;border-radius:50%;pointer-events:none;background:radial-gradient(40% 30% at 32% 24%,rgba(255,255,255,.16),transparent 70%),radial-gradient(circle,transparent 62%,rgba(0,0,0,.6));mix-blend-mode:screen}
+.cap{position:fixed;bottom:3vh;left:0;right:0;text-align:center;color:#d9a54f;font:italic 500 16px 'Cormorant Garamond',serif;letter-spacing:.06em;pointer-events:none}
+.mir{position:fixed;top:4vh;right:4vw;text-align:right;color:#d9a54f;font:500 11px Cinzel,serif;letter-spacing:.3em;pointer-events:none}.mir b{display:block;font-size:30px;letter-spacing:.06em;color:#f0c472}
+</style></head><body>
+<div class="tube" id="tube"><canvas id="c"></canvas><div class="glare"></div><svg class="eng" viewBox="-100 -100 200 200" id="eng"></svg></div>
+<div class="mir">Mirrors<b id="mn">12</b></div>
+<div class="cap">Drag to turn the barrel — the glass tumbles · scroll to change mirrors · click to shake</div>
 <script>
-const c=document.getElementById('c'),x=c.getContext('2d');let S,R,w=document.createElement('canvas'),wx=w.getContext('2d'),bits=[],rot=0,tr=0;const SEG=12;
-function size(){S=c.width=c.height=Math.min(c.clientWidth,1200)*Math.min(devicePixelRatio,2);R=S/2;w.width=R;w.height=R}size();addEventListener('resize',size);
-const hues=[350,30,48,170,200,265,310];
-function shake(){bits=Array.from({length:46},()=>({x:Math.random(),y:Math.random(),r:.02+Math.random()*.09,h:hues[Math.random()*hues.length|0],k:Math.random()*3|0,a:Math.random()*7,vx:(Math.random()-.5)*.0015,vy:(Math.random()-.5)*.0015,va:(Math.random()-.5)*.02}))}shake();c.onclick=shake;
-addEventListener('pointermove',e=>tr=(e.clientX/innerWidth-.5)*Math.PI*1.5+(e.clientY/innerHeight-.5));
-function f(t){rot+=(tr-rot)*.04;wx.globalCompositeOperation='source-over';wx.fillStyle='#0d0805';wx.fillRect(0,0,R,R);wx.globalCompositeOperation='lighter';
-for(const b of bits){b.x=(b.x+b.vx+1)%1;b.y=(b.y+b.vy+1)%1;b.a+=b.va;const px=b.x*R,py=b.y*R,r=b.r*R;wx.save();wx.translate(px,py);wx.rotate(b.a+rot);
-const g=wx.createRadialGradient(0,0,0,0,0,r);g.addColorStop(0,`hsla(${b.h},95%,75%,.95)`);g.addColorStop(1,`hsla(${b.h+20},90%,45%,.6)`);wx.fillStyle=g;wx.beginPath();
-if(b.k===0)wx.arc(0,0,r,0,7);else if(b.k===1){wx.moveTo(0,-r);wx.lineTo(r*.87,r*.5);wx.lineTo(-r*.87,r*.5)}else{wx.ellipse(0,0,r*1.4,r*.35,0,0,7)}wx.fill();wx.strokeStyle='rgba(255,255,255,.5)';wx.lineWidth=1;wx.stroke();wx.restore()}
-x.clearRect(0,0,S,S);x.save();x.translate(R,R);x.rotate(rot*.3);const ang=Math.PI*2/SEG;
-for(let i=0;i<SEG;i++){x.save();x.rotate(i*ang);if(i%2)x.scale(1,-1);x.beginPath();x.moveTo(0,0);x.arc(0,0,R*1.02,-ang/2-.01,ang/2+.01);x.closePath();x.clip();x.rotate(-ang/2);x.drawImage(w,0,0);x.restore()}x.restore();
-const v=x.createRadialGradient(R,R,R*.6,R,R,R);v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,.7)');x.fillStyle=v;x.fillRect(0,0,S,S);requestAnimationFrame(f)}requestAnimationFrame(f);
+const c=document.getElementById('c'),x=c.getContext('2d');let S,R,w=document.createElement('canvas'),wx=w.getContext('2d'),bits=[],rot=0,vr=.004;let SEG=12;
+const eng=document.getElementById('eng');{let s='';for(let i=0;i<120;i++){const a=i/120*Math.PI*2,r1=98,r2=i%10?96:93.5;s+=`<line x1="${Math.cos(a)*r1}" y1="${Math.sin(a)*r1}" x2="${Math.cos(a)*r2}" y2="${Math.sin(a)*r2}" stroke="#3a240c" stroke-width="${i%10?.3:.6}"/>`}eng.innerHTML=s}
+function size(){S=c.width=c.height=Math.min(c.clientWidth,1100)*Math.min(devicePixelRatio||1,2);R=S/2;w.width=R;w.height=R}size();addEventListener('resize',size);
+const hues=[350,30,48,170,200,265,310,12,140];
+function shake(){bits=Array.from({length:150},()=>{const a=Math.random()*6.28,r=Math.sqrt(Math.random())*.85;return{x:Math.cos(a)*r,y:Math.sin(a)*r,vx:(Math.random()-.5)*.05,vy:(Math.random()-.5)*.05,r:.05+Math.random()*.08,h:hues[Math.random()*hues.length|0],k:Math.random()*4|0,a:Math.random()*7,va:(Math.random()-.5)*.1}})}shake();
+// drag to turn, inertia; the glass falls toward the barrel's "down"
+let drag=null,moved=0;const tube=document.getElementById('tube');const ang=e=>{const r=tube.getBoundingClientRect();return Math.atan2(e.clientY-r.top-r.height/2,e.clientX-r.left-r.width/2)};
+tube.addEventListener('pointerdown',e=>{tube.setPointerCapture(e.pointerId);drag={a:ang(e)};moved=0});
+tube.addEventListener('pointermove',e=>{if(!drag)return;const a=ang(e);let d=a-drag.a;if(d>Math.PI)d-=6.283;if(d<-Math.PI)d+=6.283;drag.a=a;rot+=d;vr=d;moved+=Math.abs(d)});
+tube.addEventListener('pointerup',()=>{if(drag&&moved<.02){bits.forEach(b=>{b.vx+=(Math.random()-.5)*.25;b.vy+=(Math.random()-.5)*.25;b.va+=(Math.random()-.5)*.5});clink()}drag=null});
+tube.addEventListener('wheel',e=>{e.preventDefault();const opts=[6,8,10,12,16,20];let i=opts.indexOf(SEG);i=Math.max(0,Math.min(opts.length-1,i+(e.deltaY>0?1:-1)));SEG=opts[i];document.getElementById('mn').textContent=SEG},{passive:false});
+addEventListener('keydown',e=>{if(e.key==='ArrowLeft')vr-=.02;if(e.key==='ArrowRight')vr+=.02;if(e.key===' '){e.preventDefault();tube.dispatchEvent(new PointerEvent('pointerup'))}});
+let ac;function clink(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();for(let i=0;i<7;i++){const o=ac.createOscillator(),g=ac.createGain(),t=ac.currentTime+Math.random()*.25;o.type='sine';o.frequency.value=2400+Math.random()*3200;g.gain.setValueAtTime(.025,t);g.gain.exponentialRampToValueAtTime(.0001,t+.25);o.connect(g).connect(ac.destination);o.start(t);o.stop(t+.3)}}catch(e){}}
+function f(){if(!drag){rot+=vr;vr*=.985;if(Math.abs(vr)<.002)vr+=(.003*Math.sign(vr||1)-vr)*.02}
+// gravity in the chamber frame
+const gx=Math.sin(rot)*.00025,gy=Math.cos(rot)*.00025;const lag=-vr*.7,cl=Math.cos(lag),sl=Math.sin(lag);
+for(const b of bits){const ox=b.x;b.x=ox*cl-b.y*sl;b.y=ox*sl+b.y*cl;b.a+=lag;b.vx+=gx;b.vy+=gy;b.vx*=.94;b.vy*=.94;b.va*=.96;b.a+=b.va;b.x+=b.vx;b.y+=b.vy;const d=Math.hypot(b.x,b.y),lim=.98-b.r*.6;if(d>lim){const nx=b.x/d,ny=b.y/d;b.x=nx*lim;b.y=ny*lim;const vn=b.vx*nx+b.vy*ny;if(vn>0){b.vx-=1.6*vn*nx;b.vy-=1.6*vn*ny}b.va+=(b.vx*ny-b.vy*nx)*2}}
+for(let i=0;i<bits.length;i++)for(let j=i+1;j<bits.length;j++){const A=bits[i],B=bits[j],dx=B.x-A.x,dy=B.y-A.y,d=Math.hypot(dx,dy)||1e-4,m=(A.r+B.r)*.62;if(d<m){const p=(m-d)*.25;A.x-=dx/d*p;A.y-=dy/d*p;B.x+=dx/d*p;B.y+=dy/d*p}}
+wx.globalCompositeOperation='source-over';wx.fillStyle='#0d0805';wx.fillRect(0,0,R,R);wx.globalCompositeOperation='lighter';
+for(const b of bits){const px=R*.5+b.x*R*.5,py=R*.5+b.y*R*.5,r=b.r*R*.5;wx.save();wx.translate(px,py);wx.rotate(b.a);
+const g=wx.createRadialGradient(-r*.3,-r*.3,0,0,0,r*1.2);g.addColorStop(0,`hsla(${b.h},95%,82%,.95)`);g.addColorStop(.6,`hsla(${b.h},92%,55%,.75)`);g.addColorStop(1,`hsla(${b.h+20},90%,35%,.5)`);wx.fillStyle=g;wx.beginPath();
+if(b.k===0)wx.arc(0,0,r,0,7);else if(b.k===1){wx.moveTo(0,-r);wx.lineTo(r*.87,r*.5);wx.lineTo(-r*.87,r*.5)}else if(b.k===2){wx.ellipse(0,0,r*1.4,r*.35,0,0,7)}else{for(let k=0;k<6;k++){const a=k/6*6.283;wx.lineTo(Math.cos(a)*r*.8,Math.sin(a)*r*.8)}}
+wx.fill();wx.strokeStyle='rgba(255,255,255,.55)';wx.lineWidth=1.2;wx.stroke();wx.restore()}
+x.clearRect(0,0,S,S);x.save();x.translate(R,R);x.rotate(rot);const ang2=Math.PI*2/SEG;
+for(let i=0;i<SEG;i++){x.save();x.rotate(i*ang2);if(i%2)x.scale(1,-1);x.beginPath();x.moveTo(0,0);x.arc(0,0,R*1.02,-ang2/2-.01,ang2/2+.01);x.closePath();x.clip();x.rotate(-ang2/2);x.drawImage(w,-R,-R,R*2,R*2);x.restore()}x.restore();
+x.globalCompositeOperation='lighter';const cg=x.createRadialGradient(R,R,0,R,R,R*.35);cg.addColorStop(0,'rgba(255,240,200,.12)');cg.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=cg;x.fillRect(0,0,S,S);x.globalCompositeOperation='source-over';
+const v=x.createRadialGradient(R,R,R*.62,R,R,R);v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,.72)');x.fillStyle=v;x.fillRect(0,0,S,S);
+eng.style.transform=`rotate(${rot}rad)`;requestAnimationFrame(f)}requestAnimationFrame(f);
 </script></body></html>
