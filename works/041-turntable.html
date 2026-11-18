@@ -1,27 +1,68 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Walnut Turntable</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@500&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#d9cbb8;display:grid;place-items:center;font-family:'DM Sans',sans-serif}
-.plinth{position:relative;width:min(92vw,128vh);aspect-ratio:1.33;border-radius:14px;background:linear-gradient(115deg,#5a3418,#7a4a24 20%,#5e381a 40%,#8a5a30 60%,#5a3418 80%);box-shadow:0 40px 80px rgba(60,30,10,.5),inset 0 2px 0 rgba(255,255,255,.2)}
-.plinth::before{content:"";position:absolute;inset:0;border-radius:14px;background:repeating-linear-gradient(100deg,rgba(0,0,0,.06) 0 2px,transparent 2px 9px);opacity:.8}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}
+body{--lx:30%;--ly:20%;background:radial-gradient(70% 60% at 50% 30%,#e7dbca,#c9b8a2);display:grid;place-items:center;font-family:'DM Sans',sans-serif;user-select:none;-webkit-user-select:none}
+.plinth{position:relative;width:min(92vw,128vh);aspect-ratio:1.33;border-radius:14px;background:linear-gradient(115deg,#5a3418,#7a4a24 20%,#5e381a 40%,#8a5a30 60%,#5a3418 80%);box-shadow:0 40px 80px rgba(60,30,10,.5),inset 0 2px 0 rgba(255,255,255,.2),inset 0 -4px 0 rgba(0,0,0,.25);animation:in 1.1s cubic-bezier(.2,.8,.2,1) both}
+@keyframes in{from{opacity:0;transform:translateY(30px) scale(.97)}}
+.plinth::before{content:"";position:absolute;inset:0;border-radius:14px;background:repeating-linear-gradient(100deg,rgba(0,0,0,.06) 0 2px,transparent 2px 9px),radial-gradient(40% 50% at var(--lx) var(--ly),rgba(255,230,190,.25),transparent 70%);opacity:.9}
 .plat{position:absolute;left:6%;top:8%;height:84%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#999 0 1%,#333 1.5% 47%,#c8c8c8 48% 49%,#777 50%);box-shadow:0 10px 30px rgba(0,0,0,.5)}
 .strobe{position:absolute;inset:0;border-radius:50%;background:repeating-conic-gradient(#ddd 0 1.5deg,#888 1.5deg 3deg);-webkit-mask:radial-gradient(closest-side,transparent 96%,#000 96.5%);mask:radial-gradient(closest-side,transparent 96%,#000 96.5%)}
-.rec{position:absolute;inset:3.5%;border-radius:50%;background:radial-gradient(circle,#111 0 2%,transparent 2.2%),radial-gradient(circle,transparent 0 33%,#0d0d0d 33.5% 35%,transparent 35.5%),repeating-radial-gradient(circle,#141414 0 1px,#1d1d1d 1px 2px,#101010 2px 3px);animation:spin 1.8s linear infinite;animation-play-state:paused}
-.rec::before{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 20deg,transparent 0 10%,rgba(255,255,255,.12) 15%,transparent 22% 55%,rgba(255,255,255,.1) 62%,transparent 70%)}
+.rec{position:absolute;inset:3.5%;border-radius:50%;background:radial-gradient(circle,#111 0 2%,transparent 2.2%),radial-gradient(circle,transparent 0 33%,#0d0d0d 33.5% 35%,transparent 35.5%),repeating-radial-gradient(circle,#141414 0 1px,#1d1d1d 1px 2px,#101010 2px 3px);cursor:grab;touch-action:none;will-change:transform}
+.rec:active{cursor:grabbing}
+.sheen{position:absolute;inset:3.5%;border-radius:50%;pointer-events:none;background:conic-gradient(from var(--sa,20deg),transparent 0 8%,rgba(255,255,255,.14) 13%,transparent 20% 55%,rgba(255,255,255,.11) 62%,transparent 70%);-webkit-mask:radial-gradient(circle,transparent 33%,#000 34%);mask:radial-gradient(circle,transparent 33%,#000 34%)}
 .lbl{position:absolute;inset:34%;border-radius:50%;background:radial-gradient(circle,#d9cbb8 0 4%,#e14b2a 4.5%);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff3e0;text-align:center}
 .lbl b{font:italic 400 clamp(10px,1.7vw,20px) 'DM Serif Display',serif}.lbl small{font-size:clamp(6px,.8vw,10px);letter-spacing:.2em;margin-top:3px}
-@keyframes spin{to{transform:rotate(360deg)}}.on .rec{animation-play-state:running}
-.arm{position:absolute;right:13%;top:10%;width:4%;aspect-ratio:1;transform-origin:50% 50%;transform:rotate(-14deg);transition:transform 1.6s cubic-bezier(.5,0,.3,1)}
+.arm{position:absolute;right:13%;top:10%;width:4%;aspect-ratio:1;transform-origin:50% 50%;z-index:3}
 .arm .piv{position:absolute;inset:-60%;border-radius:50%;background:radial-gradient(circle at 40% 35%,#eee,#777);box-shadow:0 6px 10px rgba(0,0,0,.4)}
 .arm .rod{position:absolute;left:40%;top:50%;width:22%;height:1050%;background:linear-gradient(90deg,#999,#fff,#888);border-radius:4px;transform-origin:top;transform:rotate(22deg);box-shadow:6px 10px 10px rgba(0,0,0,.35)}
-.arm .head{position:absolute;bottom:-6%;left:-150%;width:400%;height:8%;background:#222;border-radius:3px;transform:rotate(-30deg)}
-.on .arm{transform:rotate(14deg)}
+.arm .head{position:absolute;bottom:-6%;left:-150%;width:400%;height:8%;background:#222;border-radius:3px;transform:rotate(-30deg);cursor:grab}.arm .head::after{content:"";position:absolute;right:-30%;top:-60%;width:40%;height:220%;background:#c9a35a;border-radius:2px}
+.rest{position:absolute;right:9.5%;top:52%;width:2.4%;height:5%;background:linear-gradient(#ccc,#777);border-radius:3px;box-shadow:0 4px 6px rgba(0,0,0,.4)}
 .ctl{position:absolute;right:5%;bottom:9%;display:flex;flex-direction:column;gap:14px;align-items:flex-end}
-.btn{display:flex;gap:8px}.btn button{font:500 12px 'DM Sans';letter-spacing:.15em;padding:10px 14px;border-radius:6px;border:0;background:#2a1a0e;color:#d9cbb8;cursor:pointer;box-shadow:0 3px 0 #120a04}.btn button.on{background:#e14b2a;color:#fff}
-.now{color:#f6e8d4;text-align:right;font-size:12px;letter-spacing:.1em}.now b{display:block;font:400 clamp(16px,2vw,26px) 'DM Serif Display',serif;letter-spacing:0}</style></head><body>
-<div class="plinth on" id="p"><div class="plat"><div class="strobe"></div><div class="rec" id="rec"><div class="lbl"><b>Tidewater</b><small>SIDE A · 33⅓</small></div></div></div>
-<div class="arm"><div class="piv"></div><div class="rod"><div class="head"></div></div></div>
-<div class="ctl"><div class="now"><span>NOW SPINNING</span><b>Ines Calder — Tidewater</b></div><div class="btn"><button class="on" data-s="1.8">33</button><button data-s="1.33">45</button><button id="pl">STOP</button></div></div></div>
+.btn{display:flex;gap:8px}.btn button{font:500 12px 'DM Sans';letter-spacing:.15em;padding:10px 14px;border-radius:6px;border:0;background:#2a1a0e;color:#d9cbb8;cursor:pointer;box-shadow:0 3px 0 #120a04;transition:transform .08s,box-shadow .08s}.btn button:active{transform:translateY(2px);box-shadow:0 1px 0 #120a04}.btn button.on{background:#e14b2a;color:#fff}
+.now{color:#f6e8d4;text-align:right;font-size:12px;letter-spacing:.1em}.now b{display:block;font:400 clamp(16px,2vw,26px) 'DM Serif Display',serif;letter-spacing:0}
+.led{display:inline-block;width:7px;height:7px;border-radius:50%;background:#3a1a0a;margin-right:6px;vertical-align:middle;transition:background .3s,box-shadow .3s}.led.on{background:#ff4a2a;box-shadow:0 0 8px #ff4a2a}
+.hint{position:absolute;left:6%;bottom:-6%;font:400 12px 'DM Sans';letter-spacing:.12em;color:#6b4a2a}
+</style></head><body>
+<div class="plinth" id="p"><div class="plat" id="plat"><div class="strobe" id="strobe"></div><div class="rec" id="rec"><div class="lbl"><b>Tidewater</b><small>SIDE A · 33⅓</small></div></div><div class="sheen" id="sheen"></div></div>
+<div class="rest"></div><div class="arm" id="arm"><div class="piv"></div><div class="rod"><div class="head" id="head"></div></div></div>
+<div class="ctl"><div class="now"><span><i class="led" id="led"></i>NOW SPINNING</span><b id="np">Ines Calder — Tidewater</b></div><div class="btn"><button class="on" data-s="33">33</button><button data-s="45">45</button><button id="pl">PLAY</button></div></div>
+<div class="hint">Drop the needle by dragging the arm · drag the record to scratch</div></div>
 <script>
-const p=document.getElementById('p'),rec=document.getElementById('rec');document.getElementById('pl').onclick=e=>{p.classList.toggle('on');e.target.textContent=p.classList.contains('on')?'STOP':'PLAY'};
-document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{rec.style.animationDuration=b.dataset.s+'s';document.querySelectorAll('[data-s]').forEach(o=>o.classList.toggle('on',o===b))});
+const $=id=>document.getElementById(id);const rec=$('rec'),arm=$('arm'),p=$('p');
+let ang=0,omega=0,motor=false,rpm=33,armA=-14,armT=-14,needle=false,scratch=null,lastA=0;
+const ARM_OUT=8,ARM_IN=27;
+// audio: an 8-bar lo-fi loop rendered offline, played at a rate that follows the platter
+let AC,src,gain,crackG,buf,ready=false;
+async function audio(){if(AC)return;AC=new (window.AudioContext||window.webkitAudioContext)();gain=AC.createGain();gain.gain.value=0;const lp=AC.createBiquadFilter();lp.type='lowpass';lp.frequency.value=3800;gain.connect(lp).connect(AC.destination);
+const sr=AC.sampleRate,len=sr*16;const oc=new OfflineAudioContext(2,len,sr);const m=oc.createGain();m.gain.value=.6;m.connect(oc.destination);const bpm=80,b=60/bpm;
+const chords=[[57,60,64,67],[53,57,60,64],[55,59,62,65],[52,55,59,62]];const hz=n=>440*Math.pow(2,(n-69)/12);
+for(let bar=0;bar<8;bar++){const t0=bar*b*4/2;const ch=chords[bar%4];ch.forEach(n=>{const o=oc.createOscillator(),g=oc.createGain();o.type='triangle';o.frequency.value=hz(n);g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(.06,t0+.08);g.gain.linearRampToValueAtTime(0,t0+b*2);o.connect(g).connect(m);o.start(t0);o.stop(t0+b*2+.1)});
+for(let k=0;k<4;k++){const tt=t0+k*b/2;const o=oc.createOscillator(),g=oc.createGain();o.frequency.setValueAtTime(110,tt);o.frequency.exponentialRampToValueAtTime(40,tt+.2);g.gain.setValueAtTime(k%2?0:.5,tt);g.gain.exponentialRampToValueAtTime(.001,tt+.3);o.connect(g).connect(m);o.start(tt);o.stop(tt+.35);
+const nb=oc.createBuffer(1,sr*.05,sr),nd=nb.getChannelData(0);for(let i=0;i<nd.length;i++)nd[i]=(Math.random()*2-1)*(1-i/nd.length);const ns=oc.createBufferSource(),nf=oc.createBiquadFilter(),ng=oc.createGain();ns.buffer=nb;nf.type='highpass';nf.frequency.value=k%2?2000:7000;ng.gain.value=k%2?.25:.06;ns.connect(nf).connect(ng).connect(m);ns.start(tt+b/4)}
+const mel=[ch[3]+12,ch[2]+12,ch[1]+12,ch[2]+12];mel.forEach((n,k)=>{const tt=t0+k*b/2;const o=oc.createOscillator(),g=oc.createGain();o.type='sine';o.frequency.value=hz(n);g.gain.setValueAtTime(.05,tt);g.gain.exponentialRampToValueAtTime(.001,tt+b*.45);o.connect(g).connect(m);o.start(tt);o.stop(tt+b/2)})}
+buf=await oc.startRendering();src=AC.createBufferSource();src.buffer=buf;src.loop=true;src.loopEnd=8*b*2;src.playbackRate.value=0;src.connect(gain);src.start();
+const cb=AC.createBuffer(1,sr*2,sr),cd=cb.getChannelData(0);for(let i=0;i<cd.length;i++)cd[i]=(Math.random()<.0009?(Math.random()*2-1):0)+(Math.random()*2-1)*.012;const cs=AC.createBufferSource();cs.buffer=cb;cs.loop=true;crackG=AC.createGain();crackG.gain.value=0;cs.connect(crackG).connect(AC.destination);cs.start();ready=true}
+function scratchNoise(v){if(!AC)return;const n=AC.createBufferSource(),b=AC.createBuffer(1,AC.sampleRate*.04,AC.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.sin(i/d.length*Math.PI);n.buffer=b;const f=AC.createBiquadFilter();f.type='bandpass';f.frequency.value=600+Math.min(3000,Math.abs(v)*90);const g=AC.createGain();g.gain.value=Math.min(.25,Math.abs(v)*.02);n.connect(f).connect(g).connect(AC.destination);n.start()}
+// controls
+$('pl').onclick=()=>{audio();if(motor){motor=false;armT=-14;needle=false;$('pl').textContent='PLAY'}else{motor=true;armT=ARM_OUT;$('pl').textContent='STOP'}};
+document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{rpm=+b.dataset.s;document.querySelectorAll('[data-s]').forEach(o=>o.classList.toggle('on',o===b));document.querySelector('.lbl small').textContent='SIDE A · '+(rpm===33?'33⅓':'45')});
+const recA=e=>{const r=rec.getBoundingClientRect();return Math.atan2(e.clientY-r.top-r.height/2,e.clientX-r.left-r.width/2)*180/Math.PI};
+rec.addEventListener('pointerdown',e=>{audio();rec.setPointerCapture(e.pointerId);scratch={a:recA(e),t:performance.now()};omega=0});
+rec.addEventListener('pointermove',e=>{if(!scratch)return;const a=recA(e);let d=a-scratch.a;if(d>180)d-=360;if(d<-180)d+=360;const now=performance.now(),dt=Math.max(1,now-scratch.t);ang+=d;omega=d/dt*16.67;scratch.a=a;scratch.t=now;if(needle&&Math.abs(d)>.5)scratchNoise(omega)});
+rec.addEventListener('pointerup',()=>scratch=null);
+// tonearm: drag the head across the record
+const head=$('head');let armDrag=false;head.addEventListener('pointerdown',e=>{e.stopPropagation();audio();head.setPointerCapture(e.pointerId);armDrag=true});
+head.addEventListener('pointermove',e=>{if(!armDrag)return;const r=arm.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;const a=Math.atan2(e.clientY-cy,e.clientX-cx)*180/Math.PI-90-22;armT=Math.max(-14,Math.min(ARM_IN+2,a+25));armA=armT});
+head.addEventListener('pointerup',()=>{armDrag=false;if(armA>ARM_OUT-3&&armA<ARM_IN+1){motor=true;$('pl').textContent='STOP'}else{armT=-14}});
+addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();$('pl').click()}});
+addEventListener('pointermove',e=>{const r=p.getBoundingClientRect();p.style.setProperty('--lx',((e.clientX-r.left)/r.width*100)+'%');p.style.setProperty('--ly',((e.clientY-r.top)/r.height*100)+'%')});
+let last=performance.now();
+(function f(now){const dt=Math.min(50,now-last)/16.67;last=now;const target=motor?rpm*6/60:0;// degrees per frame at 60fps
+if(!scratch)omega+=(target-omega)*(motor?.04:.02)*dt;ang+=scratch?0:omega*dt;rec.style.transform=`rotate(${ang}deg)`;$('strobe').style.transform=`rotate(${ang*(omega>target*.99&&omega<target*1.01?0:1)}deg)`;
+if(!armDrag){armA+=(armT-armA)*.05*dt;if(needle&&motor)armT=Math.min(ARM_IN,armT+.0016*dt)}arm.style.transform=`rotate(${armA}deg)`;
+needle=!armDrag&&armA>ARM_OUT-3&&armA<ARM_IN+1&&Math.abs(armT-armA)<1.5;$('led').classList.toggle('on',motor);
+if(ready){const rate=needle?Math.max(0,omega/(33*6/60)):0;src.playbackRate.setTargetAtTime(Math.min(3,rate*(rpm===45?1.35:1)/(rpm===45?1.364:1)),AC.currentTime,.03);gain.gain.setTargetAtTime(needle?.9:0,AC.currentTime,.05);crackG.gain.setTargetAtTime(needle?.6:0,AC.currentTime,.05)}
+$('sheen').style.setProperty('--sa',(20+(parseFloat(p.style.getPropertyValue('--lx'))||30)*.8)+'deg');
+requestAnimationFrame(f)})(last);
 </script></body></html>

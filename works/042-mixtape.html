@@ -1,28 +1,62 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Summer Mixtape 94</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Rubik+Mono+One&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#ff9bb3 repeating-linear-gradient(45deg,transparent 0 30px,rgba(255,255,255,.12) 30px 60px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4vh;font-family:'Rubik Mono One',monospace}
-.tape{position:relative;width:min(640px,92vw);aspect-ratio:1.6;border-radius:18px;background:#2b2b33;box-shadow:0 30px 50px rgba(120,20,60,.4),inset 0 2px 0 #4a4a55;padding:4%;transform:rotate(-3deg)}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Rubik+Mono+One&family=Caveat:wght@600&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}
+body{background:#ff9bb3 repeating-linear-gradient(45deg,transparent 0 30px,rgba(255,255,255,.12) 30px 60px);display:flex;align-items:center;justify-content:center;gap:4vw;font-family:'Rubik Mono One',monospace;perspective:1400px;user-select:none;-webkit-user-select:none}
+.col{display:flex;flex-direction:column;align-items:center;gap:3.4vh}
+.tape{position:relative;width:min(600px,62vw);aspect-ratio:1.6;transform-style:preserve-3d;transition:transform .9s cubic-bezier(.5,0,.2,1);transform:rotate(-3deg)}
+.tape.b{transform:rotate(-3deg) rotateY(180deg)}
+.face{position:absolute;inset:0;border-radius:18px;background:#2b2b33;box-shadow:0 30px 50px rgba(120,20,60,.4),inset 0 2px 0 #4a4a55;padding:4%;backface-visibility:hidden}
+.face.bk{transform:rotateY(180deg);background:#33333c}
 .screw{position:absolute;width:3%;aspect-ratio:1;border-radius:50%;background:radial-gradient(#999,#444);box-shadow:inset 0 0 0 1px #222}.screw::after{content:"";position:absolute;left:15%;right:15%;top:45%;height:10%;background:#222}
 .label{position:relative;height:66%;border-radius:8px;background:linear-gradient(#fff6d8 0 22%,#ff5f7e 22% 30%,#fff6d8 30% 34%,#ffb03b 34% 42%,#fff6d8 42%);padding:3% 5%;overflow:hidden}
-.label h2{font:400 clamp(16px,3.6vw,30px) 'Permanent Marker',cursive;color:#2433a8;transform:rotate(-1.5deg)}.label .side{position:absolute;right:5%;top:4%;font-size:clamp(14px,3vw,26px);color:#2b2b33}
+.bk .label{background:linear-gradient(#fff6d8 0 22%,#2bc4b4 22% 30%,#fff6d8 30% 34%,#7a5cff 34% 42%,#fff6d8 42%)}
+.label h2{font:400 clamp(14px,3.2vw,28px) 'Permanent Marker',cursive;color:#2433a8;transform:rotate(-1.5deg)}.label .side{position:absolute;right:5%;top:4%;font-size:clamp(14px,3vw,26px);color:#2b2b33}
 .win{position:absolute;left:18%;right:18%;top:48%;height:40%;border-radius:40px;background:#1a1a1f;box-shadow:inset 0 3px 8px #000;overflow:hidden}
-.win::after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,rgba(255,255,255,.15),transparent 40%);pointer-events:none}
-.reel{position:absolute;top:50%;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,#ddd 0 26%,transparent 27%),radial-gradient(circle,#5a3a22 0 60%,#3d2716 100%);transition:width .3s linear}
-.hub{position:absolute;top:50%;width:12%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:#eee;animation:spin 2s linear infinite;animation-play-state:var(--ps)}
+.win::after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,rgba(255,255,255,.18),transparent 40%);pointer-events:none}
+.reel{position:absolute;top:50%;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,#ddd 0 26%,transparent 27%),repeating-radial-gradient(circle,#5a3a22 0 1px,#4a2f1b 1px 2px)}
+.hub{position:absolute;top:50%;width:12%;aspect-ratio:1;margin:-6% 0 0 -6%;border-radius:50%;background:#eee}
 .hub::before{content:"";position:absolute;inset:18%;background:repeating-conic-gradient(#eee 0 30deg,#333 30deg 60deg);border-radius:50%;-webkit-mask:radial-gradient(circle,transparent 30%,#000 31%);mask:radial-gradient(circle,transparent 30%,#000 31%)}
-@keyframes spin{to{transform:translate(-50%,-50%) rotate(-360deg)}}
+.strip{position:absolute;left:27%;right:27%;bottom:6%;height:3px;background:#3d2716}
 .bot{position:absolute;left:26%;right:26%;bottom:0;height:20%;background:#3a3a44;clip-path:polygon(8% 0,92% 0,100% 100%,0 100%)}.bot i{position:absolute;bottom:20%;width:7%;aspect-ratio:1;border-radius:50%;background:#1a1a1f}
-.deck{display:flex;gap:10px}.deck button{font:400 14px 'Rubik Mono One';padding:14px 20px;border:0;border-radius:10px;background:#2b2b33;color:#fff6d8;cursor:pointer;box-shadow:0 6px 0 #111}.deck button:active,.deck button.on{transform:translateY(4px);box-shadow:0 2px 0 #111;background:#2433a8}
-.tr{font:400 clamp(16px,2.5vw,22px) 'Permanent Marker',cursive;color:#2b2b33;text-align:center;min-height:1.5em}</style></head><body>
-<div class="tape" id="tape" style="--ps:running"><span class="screw" style="left:2%;top:4%"></span><span class="screw" style="right:2%;top:4%"></span><span class="screw" style="left:2%;bottom:4%"></span><span class="screw" style="right:2%;bottom:4%"></span>
-<div class="label"><h2>summer mix '94 ♥ for J.</h2><span class="side">A</span><div class="win"><div class="reel" id="r1" style="left:27%"></div><div class="reel" id="r2" style="left:73%"></div><div class="hub" style="left:27%"></div><div class="hub" style="left:73%"></div></div></div>
-<div class="bot"><i style="left:12%"></i><i style="right:12%"></i></div></div>
-<div class="tr" id="tr"></div><div class="deck"><button id="rw" aria-label="rewind">◀◀</button><button id="pl" class="on" aria-label="play">▶</button><button id="st" aria-label="stop">■</button><button id="ff" aria-label="fast forward">▶▶</button></div>
+.deck{display:flex;gap:10px}.deck button{font:400 13px 'Rubik Mono One';padding:13px 18px;border:0;border-radius:10px;background:#2b2b33;color:#fff6d8;cursor:pointer;box-shadow:0 6px 0 #111;transition:transform .06s,box-shadow .06s}.deck button:active,.deck button.on{transform:translateY(4px);box-shadow:0 2px 0 #111;background:#2433a8}
+.ctr{display:flex;gap:2px;background:#111;padding:4px;border-radius:4px}.ctr span{width:18px;height:26px;background:#f6f0e0;color:#111;font:400 14px/26px 'Rubik Mono One';text-align:center;border-radius:2px;overflow:hidden}
+.card{width:min(290px,28vw);background:#fff6d8;padding:20px 20px 16px;transform:rotate(3deg);box-shadow:0 20px 40px rgba(120,20,60,.35);font:600 clamp(16px,1.6vw,22px)/1.25 Caveat,cursive;color:#2433a8;background-image:repeating-linear-gradient(transparent 0 27px,rgba(36,51,168,.15) 27px 28px);animation:drop 1s .2s cubic-bezier(.2,.9,.3,1.3) both}
+@keyframes drop{from{transform:rotate(12deg) translateY(-30px);opacity:0}}
+.card h3{font:400 clamp(16px,1.6vw,20px) 'Permanent Marker';color:#ff5f7e;margin-bottom:8px}.card ol{padding-left:1.4em}.card li{cursor:pointer;transition:color .2s}.card li:hover{color:#ff5f7e}.card li.on{color:#ff5f7e;text-decoration:underline wavy}
+@media(max-width:760px){body{flex-direction:column;gap:2vh}.card{width:86vw;font-size:16px;padding:12px 16px}.tape{width:88vw}}
+</style></head><body>
+<div class="col"><div class="tape" id="tape">
+<div class="face"><span class="screw" style="left:2%;top:4%"></span><span class="screw" style="right:2%;top:4%"></span><span class="screw" style="left:2%;bottom:4%"></span><span class="screw" style="right:2%;bottom:4%"></span><div class="label"><h2>summer mix '94 ♥ for J.</h2><span class="side">A</span><div class="win"><div class="reel r1"></div><div class="reel r2"></div><div class="strip"></div><div class="hub h1" style="left:27%"></div><div class="hub h2" style="left:73%"></div></div></div><div class="bot"><i style="left:12%"></i><i style="right:12%"></i></div></div>
+<div class="face bk"><span class="screw" style="left:2%;top:4%"></span><span class="screw" style="right:2%;top:4%"></span><span class="screw" style="left:2%;bottom:4%"></span><span class="screw" style="right:2%;bottom:4%"></span><div class="label"><h2>side B — don't skip #9</h2><span class="side">B</span><div class="win"><div class="reel r1"></div><div class="reel r2"></div><div class="strip"></div><div class="hub h1" style="left:27%"></div><div class="hub h2" style="left:73%"></div></div></div><div class="bot"><i style="left:12%"></i><i style="right:12%"></i></div></div></div>
+<div class="deck"><button id="rw" aria-label="Rewind">◀◀</button><button id="pl" aria-label="Play">▶</button><button id="st" class="on" aria-label="Stop">■</button><button id="ff" aria-label="Fast forward">▶▶</button><button id="fl" aria-label="Flip tape">⟲</button><div class="ctr" id="ctr"><span>0</span><span>0</span><span>0</span></div></div></div>
+<div class="card"><h3 id="ch">side A</h3><ol id="tl"></ol><div style="margin-top:10px;font-size:.8em;opacity:.7">press play · it’s all synthesised, hiss included</div></div>
 <script>
-const T=['1. the long drive to the coast','2. that song from the ferry','3. your sister’s favourite','4. rain on the tin roof','5. 3am, kitchen floor','6. the one we danced to'];let pos=.18,sp=1;
-const r1=document.getElementById('r1'),r2=document.getElementById('r2'),tape=document.getElementById('tape'),tr=document.getElementById('tr');
-function draw(){r1.style.width=(84-pos*44)+'%';r2.style.width=(40+pos*44)+'%';tr.textContent='♪ '+T[Math.min(T.length-1,Math.floor(pos*T.length))];tape.style.setProperty('--ps',sp?'running':'paused');document.querySelectorAll('.hub').forEach(h=>h.style.animationDuration=(Math.abs(sp)>1?.4:2)+'s');document.querySelectorAll('.hub').forEach(h=>h.style.animationDirection=sp<0?'reverse':'normal')}
-setInterval(()=>{pos=Math.max(0,Math.min(1,pos+sp*.0015));if(pos<=0||pos>=1)sp=0;draw()},100);
-const set=(v,id)=>{sp=v;document.querySelectorAll('.deck button').forEach(b=>b.classList.toggle('on',b.id===id))};
-document.getElementById('pl').onclick=()=>set(1,'pl');document.getElementById('st').onclick=()=>set(0,'st');document.getElementById('ff').onclick=()=>set(8,'ff');document.getElementById('rw').onclick=()=>set(-8,'rw');draw();
+const SIDES=[['the long drive to the coast','that song from the ferry','your sister’s favourite','rain on the tin roof','5am, kitchen floor','the one we danced to'],['postcards we never sent','the arcade on the pier','slow bus home','lighthouse at the end','#9 (the good one)','see you next summer']];
+let side=0,pos=[.12,0],sp=0,cur=-1;const tl=document.getElementById('tl');
+function list(){cur=-1;tl.innerHTML='';SIDES[side].forEach((t,i)=>{const li=document.createElement('li');li.textContent=t;li.onclick=()=>{pos[side]=i/6+.002;set(1,'pl')};tl.appendChild(li)});document.getElementById('ch').textContent='side '+(side?'B':'A');tl.start=side*6+1;tl.setAttribute('start',side*6+1)}list();
+// synth voice for each track: a tiny progression with wow & flutter
+let AC,out,hiss,hg,wow,nextT=0,beat=0,sched;
+function audio(){if(AC)return;AC=new (window.AudioContext||window.webkitAudioContext)();out=AC.createGain();out.gain.value=.5;const lp=AC.createBiquadFilter();lp.type='lowpass';lp.frequency.value=4200;const sat=AC.createWaveShaper();const cv=new Float32Array(512);for(let i=0;i<512;i++){const v=i/256-1;cv[i]=Math.tanh(v*1.6)}sat.curve=cv;out.connect(sat).connect(lp).connect(AC.destination);
+wow=AC.createOscillator();wow.frequency.value=.6;const wg=AC.createGain();wg.gain.value=6;wow.connect(wg);wow.start();wow.g=wg;
+const b=AC.createBuffer(1,AC.sampleRate*2,AC.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;hiss=AC.createBufferSource();hiss.buffer=b;hiss.loop=true;const hf=AC.createBiquadFilter();hf.type='highpass';hf.frequency.value=5000;hg=AC.createGain();hg.gain.value=0;hiss.connect(hf).connect(hg).connect(AC.destination);hiss.start()}
+const hz=n=>440*Math.pow(2,(n-69)/12);
+const PROG=[[0,5,7,3],[0,-4,-2,-5],[0,3,-2,5],[0,-3,5,7],[0,7,9,5],[0,4,7,2]],ROOT=[57,52,55,60,53,58];
+function note(n,t,d,type,v){const o=AC.createOscillator(),g=AC.createGain();o.type=type;o.frequency.value=hz(n);wow.g.connect(o.detune);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(out);o.start(t);o.stop(t+d+.05)}
+function tick(){const tr=side*6+Math.min(5,Math.floor(pos[side]*6)),k=tr%6,bpm=78+k*9,b=60/bpm/2;while(nextT<AC.currentTime+.15){const bar=Math.floor(beat/8)%4,s=beat%8,r=ROOT[k]+PROG[(k+side)%6][bar];
+if(s===0)[0,4+(k%2?-1:0),7,11].forEach(i=>note(r+i-12,nextT,b*8,'triangle',.035));if(s%2===0)note(r-24,nextT,b*1.6,'sine',.16);
+const mel=[12,16,19,16,14,12,9,7];if((s+k)%3!==2)note(r+mel[(s+bar*2+side*3)%8],nextT,b*.9,side?'square':'sawtooth',side?.018:.022);if(s%4===2){const n=AC.createBufferSource(),bf=AC.createBuffer(1,AC.sampleRate*.04,AC.sampleRate),dd=bf.getChannelData(0);for(let i=0;i<dd.length;i++)dd[i]=(Math.random()*2-1)*(1-i/dd.length);n.buffer=bf;const g=AC.createGain();g.gain.value=.12;n.connect(g).connect(out);n.start(nextT)}
+nextT+=b;beat++}}
+function clunk(){if(!AC)return;const o=AC.createOscillator(),g=AC.createGain();o.type='square';o.frequency.setValueAtTime(140,AC.currentTime);o.frequency.exponentialRampToValueAtTime(60,AC.currentTime+.05);g.gain.setValueAtTime(.12,AC.currentTime);g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+.08);o.connect(g).connect(AC.destination);o.start();o.stop(AC.currentTime+.1)}
+function set(v,id){audio();clunk();sp=v;document.querySelectorAll('.deck button').forEach(b=>b.classList.toggle('on',b.id===id));clearInterval(sched);if(v===1){AC.resume();nextT=AC.currentTime+.08;sched=setInterval(tick,40)}hg.gain.setTargetAtTime(v===0?0:v===1?.018:.04,AC.currentTime,.05);out.gain.setTargetAtTime(v===1?.5:0,AC.currentTime,.03)}
+document.getElementById('pl').onclick=()=>set(1,'pl');document.getElementById('st').onclick=()=>set(0,'st');document.getElementById('ff').onclick=()=>set(8,'ff');document.getElementById('rw').onclick=()=>set(-8,'rw');
+document.getElementById('fl').onclick=()=>{const was=sp;set(0,'st');side=1-side;document.getElementById('tape').classList.toggle('b',side===1);list();if(was===1)setTimeout(()=>set(1,'pl'),950)};
+addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();sp===1?set(0,'st'):set(1,'pl')}if(e.key==='ArrowRight')set(8,'ff');if(e.key==='ArrowLeft')set(-8,'rw');if(e.key==='f')document.getElementById('fl').click()});
+let rot=0,last=performance.now();const ctr=document.getElementById('ctr');
+(function f(now){const dt=Math.min(.05,(now-last)/1000);last=now;pos[side]=Math.max(0,Math.min(1,pos[side]+sp*dt*.0045));if((pos[side]<=0&&sp<0)||(pos[side]>=1&&sp>0))set(0,'st');
+const P=pos[side];rot+=sp*dt*360*.6;const face=document.querySelectorAll('.face')[side];face.querySelector('.r1').style.width=(84-P*44)+'%';face.querySelector('.r2').style.width=(40+P*44)+'%';face.querySelector('.r1').style.left='27%';face.querySelector('.r2').style.left='73%';
+face.querySelectorAll('.hub').forEach((h,i)=>h.style.transform=`rotate(${-rot*(i?1.4-P*.6:.8+P*.6)}deg)`);
+const c=String(Math.floor(P*999)).padStart(3,'0');[...ctr.children].forEach((s,i)=>s.textContent=c[i]);
+const t=Math.min(5,Math.floor(P*6));if(t!==cur){cur=t;[...tl.children].forEach((li,i)=>li.classList.toggle('on',i===t))}
+requestAnimationFrame(f)})(last);
 </script></body></html>
