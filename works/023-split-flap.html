@@ -1,29 +1,55 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Departures Board</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500;700&family=Barlow+Condensed:wght@600&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#141516;display:grid;place-items:center;font-family:'Roboto Mono',monospace;color:#f5d000}
-.board{background:#1d1e20;padding:clamp(10px,2vw,28px);border-radius:10px;box-shadow:0 30px 70px #000,inset 0 1px #333;max-width:98vw}
-.hd{display:flex;justify-content:space-between;align-items:end;margin-bottom:14px;font-family:'Barlow Condensed',sans-serif;color:#fff;letter-spacing:.12em}.hd h1{font-size:clamp(22px,3.5vw,44px);font-weight:600}.hd h1 span{color:#f5d000}.hd b{font-size:clamp(18px,2.6vw,34px);font-weight:600;font-variant-numeric:tabular-nums}
-.row{display:flex;gap:1.1em;margin:5px 0;font-size:clamp(7px,1.5vw,22px)}.cols{display:flex;gap:1.1em;font-size:clamp(7px,1.5vw,22px);color:#888;font-family:'Barlow Condensed',sans-serif;letter-spacing:.2em;margin-bottom:6px}.cols span{font-size:.6em}
-.cell{display:flex;gap:0;flex:none}.cell .f{margin-right:2px}
-.f{position:relative;width:1.25em;height:1.7em;perspective:200px;font-weight:700}.f span{position:absolute;left:0;right:0;height:50%;overflow:hidden;background:#2a2b2e;display:flex;justify-content:center;border-radius:2px}
-.f .t{top:0;align-items:flex-end;border-bottom:1px solid #000}.f .b{bottom:0;align-items:flex-start}.f span i{font-style:normal;line-height:0}
-.f .t i{transform:translateY(.02em)}.f .b i{transform:translateY(-.02em)}
-.f .fl{top:0;align-items:flex-end;transform-origin:bottom;backface-visibility:hidden;z-index:2;animation:flip .09s linear forwards;border-bottom:1px solid #000}@keyframes flip{to{transform:rotateX(-90deg);filter:brightness(.4)}}
-.in{display:flex;gap:10px;margin-top:16px}.in input{flex:1;min-width:0;background:#111;border:1px solid #333;border-radius:6px;color:#f5d000;font:700 clamp(12px,1.4vw,18px) 'Roboto Mono',monospace;padding:10px 12px;letter-spacing:.15em;text-transform:uppercase}.in input::placeholder{color:#6b5d00}.in button{background:#f5d000;color:#111;border:0;border-radius:6px;padding:0 18px;font:600 clamp(12px,1.3vw,16px) 'Barlow Condensed',sans-serif;letter-spacing:.2em;cursor:pointer}
-.row.g .f span{color:#37d67a}.row.r .f span{color:#ff5a4f}</style></head><body>
-<div class="board"><div class="hd"><h1>Abfahrt <span>Departures</span></h1><b id="clk">00:00</b></div><div class="cols" id="cols"><span>TIME</span><span>DESTINATION</span><span>FLIGHT</span><span>GATE</span><span>REMARKS</span></div><div id="rows"></div><form class="in" id="fm"><input id="msg" maxlength="14" placeholder="Send a flight anywhere" autocomplete="off" aria-label="Destination"><button>DEPART</button></form></div>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500;700&family=Barlow+Condensed:wght@500;600&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}
+body{background:radial-gradient(80% 70% at 50% 30%,#2a2c30,#0d0e10);display:grid;place-items:center;font-family:'Roboto Mono',monospace;color:#f5d000}
+.board{position:relative;background:linear-gradient(#26272a,#1a1b1d);padding:clamp(12px,2vw,30px) clamp(12px,2vw,30px) clamp(12px,1.6vw,22px);border-radius:10px;box-shadow:0 40px 80px #000,inset 0 1px #3a3b3e,0 0 0 6px #111,0 0 0 7px #333;max-width:98vw;animation:in 1s cubic-bezier(.2,.8,.2,1) both}
+@keyframes in{from{opacity:0;transform:translateY(20px) scale(.98)}}
+.board::before,.board::after{content:"";position:absolute;top:10px;width:8px;height:8px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#999,#333)}.board::before{left:10px}.board::after{right:10px}
+.hd{display:flex;justify-content:space-between;align-items:end;margin-bottom:14px;font-family:'Barlow Condensed',sans-serif;color:#fff;letter-spacing:.12em;gap:20px}
+.hd h1{font-size:clamp(22px,3.5vw,44px);font-weight:600;display:flex;align-items:center;gap:.4em}.hd h1 svg{width:1em;height:1em;fill:#f5d000;transition:transform .6s cubic-bezier(.2,.8,.2,1)}.hd h1 span{color:#f5d000}
+.hd .tg{display:flex;gap:4px}.hd .tg button{font:600 clamp(11px,1.1vw,14px) 'Barlow Condensed';letter-spacing:.2em;color:#888;background:#111;border:1px solid #333;padding:6px 10px;border-radius:4px;cursor:pointer}.hd .tg button[aria-pressed="true"]{color:#111;background:#f5d000;border-color:#f5d000}
+.hd b{font-size:clamp(18px,2.6vw,34px);font-weight:600;font-variant-numeric:tabular-nums}.hd b i{font-style:normal;animation:bl 1s steps(1) infinite}@keyframes bl{50%{opacity:.2}}
+.row{display:flex;gap:1.1em;margin:4px 0;font-size:clamp(7px,1.5vw,22px);padding:2px 4px;border-radius:4px;transition:background .2s;cursor:default}.row:hover{background:rgba(245,208,0,.06)}
+.cols{display:flex;gap:1.1em;font-size:clamp(7px,1.5vw,22px);color:#888;font-family:'Barlow Condensed',sans-serif;letter-spacing:.2em;margin-bottom:6px;padding:0 4px}.cols span{font-size:.6em}
+.cell{display:flex;gap:2px;flex:none}
+.f{position:relative;width:1.25em;height:1.75em;perspective:220px;font-weight:700}
+.f>span{position:absolute;left:0;right:0;height:50%;overflow:hidden;background:linear-gradient(#323337,#2a2b2e);display:flex;justify-content:center;border-radius:2px;backface-visibility:hidden}
+.f>span i{font-style:normal;font-size:1.32em;line-height:1.326em;height:1.326em;display:block;transform:translateY(-.07em)}
+.f .t,.f .ft{top:0;border-bottom:1px solid #0b0b0b}.f .b,.f .fb{bottom:0;background:linear-gradient(#26272a,#2e2f33)}.f .b i,.f .fb i{margin-top:-.663em}
+.f .ft{transform-origin:bottom;z-index:3;animation:ft .05s ease-in forwards}@keyframes ft{to{transform:rotateX(-90deg);filter:brightness(.5)}}
+.f .fb{transform-origin:top;z-index:3;transform:rotateX(90deg);animation:fb .05s .05s ease-out forwards}@keyframes fb{to{transform:rotateX(0)}}
+.f::after{content:"";position:absolute;left:-1px;right:-1px;top:50%;height:2px;margin-top:-1px;background:#0b0b0b;z-index:4}
+.f::before{content:"";position:absolute;inset:0;z-index:5;pointer-events:none;background:linear-gradient(rgba(255,255,255,.06),transparent 40%,transparent 60%,rgba(0,0,0,.2));border-radius:2px}
+.row.g .f i{color:#37d67a}.row.r .f i{color:#ff5a4f}
+.in{display:flex;gap:10px;margin-top:16px}.in input{flex:1;min-width:0;background:#111;border:1px solid #333;border-radius:6px;color:#f5d000;font:700 clamp(12px,1.4vw,18px) 'Roboto Mono',monospace;padding:10px 12px;letter-spacing:.15em;text-transform:uppercase}.in input:focus{outline:1px solid #f5d000}.in input::placeholder{color:#6b5d00}
+.in button{background:#f5d000;color:#111;border:0;border-radius:6px;padding:0 18px;font:600 clamp(12px,1.3vw,16px) 'Barlow Condensed',sans-serif;letter-spacing:.2em;cursor:pointer;transition:transform .15s}.in button:active{transform:scale(.96)}
+.ft2{display:flex;justify-content:space-between;margin-top:10px;font:500 clamp(9px,.9vw,12px) 'Barlow Condensed';letter-spacing:.24em;color:#666;text-transform:uppercase}
+</style></head><body>
+<div class="board"><div class="hd"><h1><svg viewBox="0 0 24 24" id="pl"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg><span id="lbl">Abfahrt</span> <span id="lbl2" style="color:#fff">Departures</span></h1><div class="tg"><button id="tD" aria-pressed="true">DEP</button><button id="tA" aria-pressed="false">ARR</button></div><b id="clk">00<i>:</i>00</b></div>
+<div class="cols" id="cols"><span>TIME</span><span>DESTINATION</span><span>FLIGHT</span><span>GATE</span><span>REMARKS</span></div><div id="rows"></div>
+<form class="in" id="fm"><input id="msg" maxlength="14" placeholder="Send a flight anywhere" autocomplete="off" aria-label="Destination"><button>DEPART</button></form>
+<div class="ft2"><span>Terminal 2 · Halle B</span><span>Click the board for sound</span></div></div>
 <script>
 const CH=' ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:-.';const W=[5,14,6,4,9];
-const dest=['LISBON','REYKJAVIK','KYOTO','MONTEVIDEO','TBILISI','HONOLULU','MARRAKECH','OSLO','CAPE TOWN','VALPARAISO','HANOI','QUEBEC','PALERMO','ULAANBAATAR','TROMSO','ZANZIBAR'];
-const rem=['ON TIME','BOARDING','DELAYED','GATE OPEN','FINAL CALL','DEPARTED'];
-const R=[],root=document.getElementById('rows');
-function mkRow(){const r=document.createElement('div');r.className='row';const cells=W.map(w=>{const c=document.createElement('div');c.className='cell';const fs=[];for(let i=0;i<w;i++){const f=document.createElement('div');f.className='f';f.innerHTML='<span class="t"><i> </i></span><span class="b"><i> </i></span>';f.cur=' ';c.appendChild(f);fs.push(f)}r.appendChild(c);return fs});root.appendChild(r);return{el:r,cells}}
-function flipTo(f,ch){if(f.cur===ch)return;let i=CH.indexOf(f.cur);const step=()=>{i=(i+1)%CH.length;const nc=CH[i];const old=f.cur;const fl=document.createElement('span');fl.className='fl';fl.innerHTML='<i>'+old+'</i>';f.appendChild(fl);f.querySelector('.t i').textContent=nc;setTimeout(()=>{f.querySelector('.b i').textContent=nc;fl.remove()},90);f.cur=nc;if(nc!==ch)setTimeout(step,70)};step()}
-function setRow(r,vals,cls){r.el.className='row '+(cls||'');vals.forEach((v,ci)=>{const s=v.padEnd(W[ci]).slice(0,W[ci]);r.cells[ci].forEach((f,k)=>setTimeout(()=>flipTo(f,s[k]),k*40+ci*60))})}
-let base=new Date();base.setMinutes(Math.ceil(base.getMinutes()/5)*5);
-function data(i){const t=new Date(base.getTime()+i*7*60000);const d=dest[(i*7+Math.floor(Math.random()*3))%dest.length];const rm=i===0?'BOARDING':rem[Math.random()*rem.length|0];return[[String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0'),d,['NA','KL','SV','TP','AY'][i%5]+(100+Math.random()*900|0),String.fromCharCode(65+i%4)+(1+Math.random()*30|0),rm],rm==='DELAYED'?'r':rm==='BOARDING'||rm==='GATE OPEN'?'g':'']}
-for(let i=0;i<10;i++){R.push(mkRow());if(i===0)[...document.getElementById('cols').children].forEach((sp,k)=>{sp.style.width=R[0].el.children[k].offsetWidth+'px';sp.style.flex='none'});setTimeout(()=>{const [v,c]=data(i);setRow(R[i],v,c)},i*200)}
-let mine=0;document.getElementById('fm').addEventListener('submit',e=>{e.preventDefault();const m=document.getElementById('msg');const txt=[...m.value.toUpperCase()].filter(ch=>CH.includes(ch)).join('').trim();if(!txt)return;const k=mine++%3;const [v]=data(k);setRow(R[k],[v[0],txt,'YOU'+(1+k),'Z'+(9-k),'BOARDING'],'g');m.value=''});
-setInterval(()=>{const i=3+(Math.random()*7|0);const [v,c]=data(i);setRow(R[i],v,c)},3500);
-const ck=()=>{const d=new Date();document.getElementById('clk').textContent=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};ck();setInterval(ck,5000);
+const dest=['LISBON','REYKJAVIK','KYOTO','MONTEVIDEO','TBILISI','HONOLULU','MARRAKECH','OSLO','CAPE TOWN','VALPARAISO','HANOI','QUEBEC','PALERMO','ULAANBAATAR','TROMSO','ZANZIBAR','ASMARA','LA PAZ','SAPPORO','DAKAR'];
+const rem=['ON TIME','BOARDING','DELAYED','GATE OPEN','FINAL CALL','DEPARTED'],remA=['LANDED','ON TIME','DELAYED','BAGGAGE 4','EXPECTED','DIVERTED'];
+const R=[],root=document.getElementById('rows');let mode='D';
+let ac,lastClick=0;function clack(){if(!ac)return;const n=ac.currentTime;if(n-lastClick<.012)return;lastClick=n;const b=ac.createBuffer(1,ac.sampleRate*.012,ac.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,3);const s=ac.createBufferSource(),f=ac.createBiquadFilter(),g=ac.createGain();s.buffer=b;f.type='bandpass';f.frequency.value=2500+Math.random()*1800;g.gain.value=.12;s.connect(f).connect(g).connect(ac.destination);s.start()}
+document.querySelector('.board').addEventListener('pointerdown',()=>{if(!ac)try{ac=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}});
+function mkRow(){const r=document.createElement('div');r.className='row';const cells=W.map(w=>{const c=document.createElement('div');c.className='cell';const fs=[];for(let i=0;i<w;i++){const f=document.createElement('div');f.className='f';f.innerHTML='<span class="t"><i> </i></span><span class="b"><i> </i></span>';f.cur=' ';f.tgt=' ';c.appendChild(f);fs.push(f)}r.appendChild(c);return fs});root.appendChild(r);return{el:r,cells}}
+function flipTo(f,ch){f.tgt=ch;if(f.busy||f.cur===ch)return;f.busy=true;const step=()=>{const i=CH.indexOf(f.cur);const nc=CH[(i+1)%CH.length];const old=f.cur;
+const ft=document.createElement('span');ft.className='ft';ft.innerHTML='<i>'+old+'</i>';const fb=document.createElement('span');fb.className='fb';fb.innerHTML='<i>'+nc+'</i>';f.appendChild(ft);f.appendChild(fb);f.querySelector('.t i').textContent=nc;clack();
+setTimeout(()=>{f.querySelector('.b i').textContent=nc;ft.remove();fb.remove();f.cur=nc;if(nc!==f.tgt)step();else f.busy=false},100)};step()}
+function setRow(r,vals,cls){r.el.className='row '+(cls||'');vals.forEach((v,ci)=>{const s=v.padEnd(W[ci]).slice(0,W[ci]);r.cells[ci].forEach((f,k)=>setTimeout(()=>flipTo(f,s[k]),k*35+ci*50))})}
+let base=new Date();base.setMinutes(Math.ceil(base.getMinutes()/5)*5);let off=0;
+function data(i){const t=new Date(base.getTime()+(i+off)*7*60000);const d=dest[((i+off)*7+Math.floor(Math.random()*3))%dest.length];const L=mode==='D'?rem:remA;const rm=i===0?(mode==='D'?'BOARDING':'LANDED'):L[Math.random()*L.length|0];return[[String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0'),d,['NA','KL','SV','TP','AY','LX'][(i+off)%6]+(100+((i+off)*137)%900),String.fromCharCode(65+(i+off)%4)+(1+((i+off)*11)%30),rm],/DELAYED|DIVERTED/.test(rm)?'r':/BOARDING|GATE OPEN|LANDED/.test(rm)?'g':'']}
+for(let i=0;i<10;i++){R.push(mkRow());if(i===0)[...document.getElementById('cols').children].forEach((sp,k)=>{sp.style.width=R[0].el.children[k].offsetWidth+'px';sp.style.flex='none'});setTimeout(()=>{const [v,c]=data(i);setRow(R[i],v,c)},300+i*220)}
+let mine=0;document.getElementById('fm').addEventListener('submit',e=>{e.preventDefault();if(!ac)try{ac=new (window.AudioContext||window.webkitAudioContext)()}catch(er){}const m=document.getElementById('msg');const txt=[...m.value.toUpperCase()].filter(ch=>CH.includes(ch)).join('').trim();if(!txt)return;const k=mine++%3;const [v]=data(k);setRow(R[k],[v[0],txt,'YOU'+(1+k),'Z'+(9-k),mode==='D'?'BOARDING':'LANDED'],'g');m.value=''});
+function setMode(m){mode=m;document.getElementById('tD').setAttribute('aria-pressed',m==='D');document.getElementById('tA').setAttribute('aria-pressed',m==='A');document.getElementById('lbl').textContent=m==='D'?'Abfahrt':'Ankunft';document.getElementById('lbl2').textContent=m==='D'?'Departures':'Arrivals';document.getElementById('pl').style.transform=m==='D'?'':'rotate(180deg)';document.querySelectorAll('#cols span')[1].textContent=m==='D'?'DESTINATION':'ORIGIN';R.forEach((r,i)=>setTimeout(()=>{const [v,c]=data(i);setRow(r,v,c)},i*120))}
+document.getElementById('tD').onclick=()=>setMode('D');document.getElementById('tA').onclick=()=>setMode('A');
+setInterval(()=>{const i=3+(Math.random()*7|0);const [v,c]=data(i);setRow(R[i],v,c)},3800);
+// every minute the first flight leaves and the board rolls up one line
+setInterval(()=>{off++;R.forEach((r,i)=>setTimeout(()=>{const [v,c]=data(i);setRow(r,v,c)},i*140))},60000);
+const ck=()=>{const d=new Date();document.getElementById('clk').innerHTML=String(d.getHours()).padStart(2,'0')+'<i>:</i>'+String(d.getMinutes()).padStart(2,'0')};ck();setInterval(ck,5000);
 </script></body></html>
