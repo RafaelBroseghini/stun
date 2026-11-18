@@ -1,23 +1,61 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Rose Window</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#17130f;display:grid;place-items:center;font-family:UnifrakturMaguntia,serif}
-.win{height:min(92vh,150vw);aspect-ratio:.6;max-width:94vw;padding:1.6%;background:linear-gradient(90deg,#4a4038,#7a6c5c,#4a4038);border-radius:50% 50% 0 0/30% 30% 0 0;box-shadow:0 0 0 12px #2a241e,0 40px 80px #000}
-canvas{width:100%;height:100%;display:block;border-radius:50% 50% 0 0/30% 30% 0 0}
-h1{position:fixed;left:4vw;top:4vh;color:#c9a96a;font-weight:400;font-size:clamp(24px,3.2vw,44px);opacity:.85}</style></head><body>
-<h1>Lux in Tenebris</h1><div class="win"><canvas id="c"></canvas></div>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Cormorant+Garamond:ital@1&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}
+body{background:radial-gradient(70% 60% at 50% 35%,#2a221a,#110e0b 70%);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:3vh;font-family:UnifrakturMaguntia,serif;user-select:none;-webkit-user-select:none}
+.wall{position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,255,255,.015) 0 2px,transparent 2px 46px),repeating-linear-gradient(90deg,rgba(0,0,0,.12) 0 2px,transparent 2px 90px)}
+.win{position:relative;height:min(74vh,130vw);aspect-ratio:.6;max-width:90vw;padding:1.6%;background:linear-gradient(90deg,#3a3028,#7a6c5c 30%,#5a4c3e 70%,#3a3028);border-radius:50% 50% 0 0/30% 30% 0 0;box-shadow:0 0 0 12px #2a241e,0 0 0 14px #4a4038,0 40px 80px #000;z-index:2;animation:in 2s ease both}
+@keyframes in{from{filter:brightness(.1)}}
+canvas#c{width:100%;height:100%;display:block;border-radius:50% 50% 0 0/30% 30% 0 0;cursor:none}
+.halo{position:absolute;inset:-20%;pointer-events:none;background:radial-gradient(closest-side,rgba(255,200,120,var(--hl,.15)),transparent);filter:blur(30px);z-index:-1}
+canvas#fl{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(140vw,1500px);height:24vh;pointer-events:none;mix-blend-mode:screen;opacity:.75;filter:blur(6px);z-index:1}
+.floor{position:fixed;left:0;right:0;bottom:0;height:24vh;background:linear-gradient(#1d1915,#0d0b09);z-index:0}
+h1{position:fixed;left:4vw;top:4vh;color:#c9a96a;font-weight:400;font-size:clamp(24px,3.2vw,44px);opacity:.85;z-index:3;pointer-events:none}
+h1 small{display:block;font:italic 15px 'Cormorant Garamond',serif;letter-spacing:.06em;margin-top:6px;opacity:.8}
+.hr{position:fixed;right:4vw;top:4vh;z-index:3;display:flex;flex-direction:column;gap:6px}
+.hr button{font:italic 15px 'Cormorant Garamond',serif;color:#c9a96a;background:rgba(20,16,12,.7);border:1px solid rgba(201,169,106,.3);padding:6px 14px;cursor:pointer;letter-spacing:.06em;text-align:right}.hr button[aria-pressed="true"]{background:#c9a96a;color:#17130f}
+@media (max-width:640px){.hr{flex-direction:row;top:auto;bottom:2vh}}
+</style></head><body><div class="wall"></div><div class="floor"></div><canvas id="fl"></canvas>
+<h1>Lux in Tenebris<small>move the sun across the glass</small></h1>
+<div class="hr" id="hr"><button data-h="0" aria-pressed="true">Prime · dawn</button><button data-h="1">Sext · noon</button><button data-h="2">Vespers · dusk</button><button data-h="3">Compline · candle</button></div>
+<div class="win"><div class="halo" id="halo"></div><canvas id="c"></canvas></div>
 <script>
-const c=document.getElementById('c'),x=c.getContext('2d');let W,H,idx,sites,img,edge;const RES=3;let L={x:.3,y:.3},T={x:.3,y:.3};
+const c=document.getElementById('c'),x=c.getContext('2d'),fl=document.getElementById('fl'),fx=fl.getContext('2d');let W,H,idx,sites,img,edge,shade;const RES=3;let L={x:.5,y:.3},T={x:.5,y:.3};
 const pal=[[180,20,40],[20,60,170],[230,170,30],[30,120,70],[120,30,140],[200,80,20],[40,140,170],[160,20,90]];
+const LIGHT=[[255,190,150],[255,250,235],[255,150,90],[255,170,80]];let hour=0;
+const h=(i)=>{let s=Math.sin(i*127.1)*43758.5453;return s-Math.floor(s)};
 function build(){const r=c.getBoundingClientRect();W=Math.floor(r.width/RES);H=Math.floor(r.height/RES);c.width=W;c.height=H;sites=[];
-for(let i=0;i<150;i++){const y=Math.random()*H,x0=Math.random()*W;sites.push({x:x0,y,c:pal[(Math.random()*pal.length)|0]})}
-const cx=W/2,cy=H*.33,rr=W*.36;for(let k=0;k<16;k++){const a=k/16*Math.PI*2;sites.push({x:cx+Math.cos(a)*rr*.7,y:cy+Math.sin(a)*rr*.7,c:pal[k%2?0:2]});sites.push({x:cx+Math.cos(a+.2)*rr*.35,y:cy+Math.sin(a+.2)*rr*.35,c:pal[1]})}sites.push({x:cx,y:cy,c:[240,200,80]});
-idx=new Int16Array(W*H);for(let y=0;y<H;y++)for(let X=0;X<W;X++){let b=0,bd=1e9;for(let i=0;i<sites.length;i++){const dx=X-sites[i].x,dy=y-sites[i].y,d=dx*dx+dy*dy;if(d<bd){bd=d;b=i}}idx[y*W+X]=b}
-edge=new Uint8Array(W*H);for(let y=1;y<H-1;y++)for(let X=1;X<W-1;X++){const i=y*W+X,v=idx[i];if(idx[i+1]!==v||idx[i+W]!==v||idx[i-1]!==v||idx[i-W]!==v)edge[i]=1}
-for(let y=0;y<H;y++)for(let X=0;X<W;X++){const d=Math.hypot(X-cx,y-cy);if(Math.abs(d-rr)<1.2||Math.abs(d-rr*.5)<1)edge[y*W+X]=1;if(Math.abs(X-W/2)<1&&y>H*.62)edge[y*W+X]=1;if(Math.abs(y-H*.62)<1)edge[y*W+X]=1}
+const cx=W/2,cy=H*.31,rr=W*.43,K=16,wedge=Math.PI*2/K;
+// rose: sites defined in one wedge, mirrored for symmetry
+const rose=[];for(let i=0;i<9;i++){rose.push({r:rr*(.18+Math.random()*.8),a:Math.random()*wedge/2,c:pal[(Math.random()*pal.length)|0]})}rose.push({r:rr*.06,a:0,c:[240,200,80]});rose.push({r:rr*.55,a:0,c:pal[0]});rose.push({r:rr*.85,a:wedge/2*.9,c:pal[1]});
+// lancets: two tall panels below
+const lan=[];for(let p=0;p<2;p++)for(let i=0;i<34;i++)lan.push({x:W*(.08+p*.46)+Math.random()*W*.38,y:H*.64+Math.random()*H*.36,c:pal[(Math.random()*pal.length)|0],p});
+idx=new Int16Array(W*H);edge=new Uint8Array(W*H);shade=new Float32Array(W*H);
+for(let y=0;y<H;y++)for(let X=0;X<W;X++){const i=y*W+X,dx=X-cx,dy=y-cy,d=Math.hypot(dx,dy);
+if(d<rr){let a=Math.atan2(dy,dx);a=((a%wedge)+wedge)%wedge;if(a>wedge/2)a=wedge-a;let b=0,bd=1e9;for(let k=0;k<rose.length;k++){const s=rose[k],px=Math.cos(s.a)*s.r,py=Math.sin(s.a)*s.r,qx=Math.cos(a)*d,qy=Math.sin(a)*d,dd=(px-qx)**2+(py-qy)**2;if(dd<bd){bd=dd;b=k}}idx[i]=b;shade[i]=0}
+else if(y>H*.62){let b=0,bd=1e9;for(let k=0;k<lan.length;k++){const s=lan[k],dd=(X-s.x)**2+(y-s.y)**2;if(dd<bd){bd=dd;b=k}}idx[i]=rose.length+b}else idx[i]=-1}
+sites=rose.concat(lan);
+for(let y=1;y<H-1;y++)for(let X=1;X<W-1;X++){const i=y*W+X,v=idx[i];if(v<0){edge[i]=2;continue}if(idx[i+1]!==v||idx[i+W]!==v||idx[i-1]!==v||idx[i-W]!==v)edge[i]=1}
+for(let y=0;y<H;y++)for(let X=0;X<W;X++){const i=y*W+X,d=Math.hypot(X-cx,y-cy);if(Math.abs(d-rr)<1.4||Math.abs(d-rr*.5)<1||Math.abs(d-rr*.12)<1)edge[i]=1;const a=Math.atan2(y-cy,X-cx);if(d<rr&&d>rr*.12&&Math.abs(((a/(Math.PI*2/16))%1+1)%1-.5)>.485)edge[i]=1;if(y>H*.62&&(Math.abs(X-W/2)<1.4||X<W*.06||X>W*.94))edge[i]=1;if(Math.abs(y-H*.62)<1.2)edge[i]=1;
+if(y>H*.62&&!edge[i]){const px=X<W/2?W*.27:W*.73,ty=H*.66;if(y<ty+W*.2&&Math.hypot(X-px,y-(ty+W*.2))>W*.2)edge[i]=2}}
 img=x.createImageData(W,H);for(const s of sites)s.n=Math.random()*.4}
-build();addEventListener('resize',build);addEventListener('pointermove',e=>{T.x=e.clientX/innerWidth;T.y=e.clientY/innerHeight});
-function f(t){L.x+=(T.x-L.x)*.05;L.y+=(T.y-L.y)*.05;const lx=L.x*W,ly=L.y*H,d=img.data;
-for(let y=0;y<H;y++)for(let X=0;X<W;X++){const i=y*W+X,o=i*4;if(edge[i]){d[o]=18;d[o+1]=16;d[o+2]=14;d[o+3]=255;continue}const s=sites[idx[i]];const dist=Math.hypot(X-lx,y-ly)/W;
-const b=.35+1.1*Math.exp(-dist*dist*6)+s.n*.6+Math.sin(t*.001+idx[i])*.05;const gr=((X*13+y*7)%5)*.03;d[o]=Math.min(255,s.c[0]*(b+gr));d[o+1]=Math.min(255,s.c[1]*(b+gr));d[o+2]=Math.min(255,s.c[2]*(b+gr));d[o+3]=255}
-x.putImageData(img,0,0);requestAnimationFrame(f)}requestAnimationFrame(f);
+build();addEventListener('resize',build);
+c.addEventListener('pointermove',e=>{const r=c.getBoundingClientRect();T.x=(e.clientX-r.left)/r.width;T.y=(e.clientY-r.top)/r.height});
+addEventListener('pointermove',e=>{if(e.target!==c){T.x=e.clientX/innerWidth;T.y=e.clientY/innerHeight*.8}});
+document.querySelectorAll('#hr button').forEach(b=>b.onclick=()=>{hour=+b.dataset.h;document.querySelectorAll('#hr button').forEach(o=>o.setAttribute('aria-pressed',o===b))});
+c.addEventListener('click',()=>{hour=(hour+1)%4;document.querySelectorAll('#hr button').forEach((o,i)=>o.setAttribute('aria-pressed',i===hour))});
+let LC=[...LIGHT[0]],lvl=1;
+function f(t){L.x+=(T.x-L.x)*.05;L.y+=(T.y-L.y)*.05;const tg=LIGHT[hour];for(let k=0;k<3;k++)LC[k]+=(tg[k]-LC[k])*.03;const tl=hour===3?.55:hour===1?1.15:1;lvl+=(tl-lvl)*.03;
+const lx=L.x*W,ly=L.y*H,d=img.data,flick=hour===3?(.85+.15*Math.sin(t*.013)*Math.sin(t*.007)):1;
+for(let y=0;y<H;y++)for(let X=0;X<W;X++){const i=y*W+X,o=i*4;const e=edge[i];if(e===2||idx[i]<0){d[o]=22;d[o+1]=19;d[o+2]=16;d[o+3]=255;continue}if(e===1){const hl=((X+y)%3===0)?8:0;d[o]=30+hl;d[o+1]=27+hl;d[o+2]=24+hl;d[o+3]=255;continue}
+const s=sites[idx[i]];const dist=Math.hypot(X-lx,y-ly)/W;const bub=h(i*.37)>.995?.5:0;
+const b=(.28+1.15*Math.exp(-dist*dist*5)*flick+s.n*.6+Math.sin(t*.001+idx[i])*.05+bub)*lvl;const gr=((X*13+y*7)%5)*.03;
+d[o]=Math.min(255,s.c[0]*(b+gr)*LC[0]/255+b*18);d[o+1]=Math.min(255,s.c[1]*(b+gr)*LC[1]/255+b*12);d[o+2]=Math.min(255,s.c[2]*(b+gr)*LC[2]/255+b*8);d[o+3]=255}
+x.putImageData(img,0,0);
+// sun disc seen through the glass
+const sg=x.createRadialGradient(lx,ly,0,lx,ly,W*.12);sg.addColorStop(0,`rgba(${LC[0]|0},${LC[1]|0},${LC[2]|0},.35)`);sg.addColorStop(1,'rgba(0,0,0,0)');x.globalCompositeOperation='lighter';x.fillStyle=sg;x.fillRect(0,0,W,H);x.globalCompositeOperation='source-over';
+// coloured light cast onto the floor
+const fr=fl.getBoundingClientRect();if(fl.width!==Math.round(fr.width/3)){fl.width=Math.round(fr.width/3);fl.height=Math.round(fr.height/3)}fx.clearRect(0,0,fl.width,fl.height);fx.save();fx.globalAlpha=.9*lvl;const sk=(L.x-.5)*-1.2;fx.setTransform(1,0,sk,1,0,0);fx.translate(fl.width*.5-fl.height*sk*.5,0);fx.scale(fl.width*.45/W,-fl.height/H*1.05);fx.drawImage(c,-W/2,-H);fx.restore();
+document.getElementById('halo').style.setProperty('--hl',(.1+.12*lvl).toFixed(2));
+requestAnimationFrame(f)}requestAnimationFrame(f);
 </script></body></html>
