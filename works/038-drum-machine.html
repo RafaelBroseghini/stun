@@ -1,27 +1,61 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Beat Garden 16</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;800&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#c8f0dc;font-family:Rubik,sans-serif;color:#0f3b2e;display:grid;place-items:center}
-.m{width:min(980px,96vw);background:#0f3b2e;border-radius:26px;padding:clamp(14px,2.5vw,28px);box-shadow:0 24px 0 #0a2a20,0 40px 60px rgba(15,59,46,.4)}
-.hd{display:flex;align-items:center;gap:16px;margin-bottom:18px;color:#c8f0dc;flex-wrap:wrap}.hd h1{font-weight:800;font-size:clamp(20px,3vw,34px);flex:1;letter-spacing:-.02em}
-.play{width:62px;height:62px;border-radius:50%;border:0;background:#ffcf4a;font-size:22px;cursor:pointer;box-shadow:0 5px 0 #c99a1a;color:#0f3b2e}.play:active{transform:translateY(3px);box-shadow:0 2px 0 #c99a1a}
-.bpm{display:flex;align-items:center;gap:8px;font-weight:500}.bpm input{accent-color:#ffcf4a;width:120px}
-.g{display:grid;grid-template-columns:70px repeat(16,minmax(0,1fr));gap:5px}.lab{color:#c8f0dc;font-weight:500;font-size:12px;display:flex;align-items:center;letter-spacing:.1em}
-.s{aspect-ratio:1;border-radius:8px;background:#1d5a47;border:0;cursor:pointer;transition:transform .08s}.s:nth-child(17n+6),.s:nth-child(17n+7),.s:nth-child(17n+8),.s:nth-child(17n+9),.s:nth-child(17n+14),.s:nth-child(17n+15),.s:nth-child(17n+16),.s:nth-child(17n+17){background:#174d3d}
-.s.on{background:var(--c)!important;box-shadow:0 0 14px var(--c)}.s.cur{outline:3px solid #fff;outline-offset:-3px}.s.hit{transform:scale(.86)}
-.foot{margin-top:14px;color:#7fbfa5;font-size:12px}@media(max-width:620px){.g{grid-template-columns:44px repeat(16,minmax(0,1fr));gap:2px}.s{border-radius:4px}.lab{font-size:9px}}</style></head><body>
-<div class="m"><div class="hd"><button class="play" id="pl" aria-label="play">▶</button><h1>Beat Garden 16</h1><label class="bpm">BPM <input id="bpm" type="range" min="70" max="170" value="104"><b id="bv">104</b></label></div><div class="g" id="g"></div><div class="foot">Synthesised in your browser — no samples. Tap pads to edit the pattern.</div></div>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;800&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}
+body{background:radial-gradient(90% 80% at 50% 20%,#dcfae9,#a9e3c6);font-family:Rubik,sans-serif;color:#0f3b2e;display:grid;place-items:center;user-select:none;-webkit-user-select:none}
+.m{width:min(1000px,96vw);background:#0f3b2e;border-radius:28px;padding:clamp(14px,2.4vw,26px);box-shadow:0 22px 0 #0a2a20,0 40px 70px rgba(15,59,46,.4);animation:in .9s cubic-bezier(.2,.9,.3,1.2) both}
+@keyframes in{from{opacity:0;transform:translateY(30px) scale(.97)}}
+.gd{height:clamp(70px,13vh,120px);border-radius:16px;margin-bottom:14px;background:linear-gradient(#174d3d,#0f3b2e);overflow:hidden;position:relative}.gd canvas{width:100%;height:100%;display:block}
+.hd{display:flex;align-items:center;gap:14px;margin-bottom:14px;color:#c8f0dc;flex-wrap:wrap}.hd h1{font-weight:800;font-size:clamp(18px,2.4vw,28px);flex:1;letter-spacing:-.02em;white-space:nowrap}
+.play{width:60px;height:60px;border-radius:50%;border:0;background:#ffcf4a;font-size:20px;cursor:pointer;box-shadow:0 5px 0 #c99a1a;color:#0f3b2e;transition:transform .08s,box-shadow .08s}.play:active{transform:translateY(3px);box-shadow:0 2px 0 #c99a1a}.play.on{background:#ff7a59;box-shadow:0 5px 0 #c4502f}
+.sl{display:flex;align-items:center;gap:8px;font-weight:500;font-size:13px}.sl input{accent-color:#ffcf4a;width:100px}.sl b{min-width:2.2em;font-variant-numeric:tabular-nums}
+.bank{display:flex;gap:4px}.bank button{font:500 12px Rubik;padding:7px 10px;border-radius:10px;border:0;background:#1d5a47;color:#c8f0dc;cursor:pointer}.bank button[aria-pressed="true"]{background:#c8f0dc;color:#0f3b2e}
+.g{display:grid;grid-template-columns:86px repeat(16,minmax(0,1fr));gap:5px}
+.lab{color:#c8f0dc;font-weight:500;font-size:11px;display:flex;align-items:center;gap:6px;letter-spacing:.1em;cursor:pointer}.lab i{width:10px;height:10px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c);flex:none}.lab.mute{opacity:.35}.lab.mute i{box-shadow:none}
+.s{position:relative;aspect-ratio:1;border-radius:9px;background:#1d5a47;border:0;cursor:pointer;transition:transform .12s cubic-bezier(.2,.9,.3,1.6)}.s.q{background:#174d3d}
+.s::after{content:"";position:absolute;inset:22%;border-radius:50%;background:var(--c);transform:scale(0);transition:transform .25s cubic-bezier(.2,.9,.3,1.6)}
+.s.on::after{transform:scale(1)}.s.on{background:color-mix(in srgb,var(--c) 22%,#1d5a47)}
+.s.cur{outline:2px solid rgba(255,255,255,.7);outline-offset:-2px}.s.hit{transform:scale(.84)}.s.hit::after{transform:scale(1.5);box-shadow:0 0 18px var(--c)}
+.foot{margin-top:12px;color:#7fbfa5;font-size:12px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+@media(max-width:620px){.g{grid-template-columns:48px repeat(16,minmax(0,1fr));gap:2px}.s{border-radius:4px}.lab{font-size:8px;gap:3px}.sl input{width:70px}}
+</style></head><body>
+<div class="m"><div class="gd"><canvas id="gc"></canvas></div>
+<div class="hd"><button class="play" id="pl" aria-label="Play">▶</button><h1>Beat Garden 16</h1>
+<div class="bank" id="bank"><button data-b="0" aria-pressed="true">Sprout</button><button data-b="1">Bloom</button><button data-b="2">Bossa</button><button data-b="3">Empty</button></div>
+<label class="sl">BPM <input id="bpm" type="range" min="70" max="170" value="104"><b id="bv">104</b></label><label class="sl">Swing <input id="sw" type="range" min="0" max="60" value="12"><b id="swv">12%</b></label></div>
+<div class="g" id="g"></div>
+<div class="foot"><span>Synthesised in your browser — no samples. Tap pads to plant; tap a name to mute.</span><span>Space play · 1–6 finger drum</span></div></div>
 <script>
-const T=[['KICK','#ff7a59','x...x.....x.x...'],['SNARE','#ffcf4a','....x.......x...'],['CLAP','#ff5fa2','............x..x'],['HAT','#7fe3ff','x.x.x.x.x.x.xxx.'],['TOM','#b38cff','......x.......x.'],['BELL','#8dffb0','..x.......x.....']];
-const g=document.getElementById('g'),cells=[];T.forEach(([n,c,p],r)=>{const l=document.createElement('div');l.className='lab';l.textContent=n;g.appendChild(l);cells[r]=[];for(let i=0;i<16;i++){const b=document.createElement('button');b.className='s'+(p[i]==='x'?' on':'');b.style.setProperty('--c',c);b.onclick=()=>b.classList.toggle('on');g.appendChild(b);cells[r].push(b)}});
-let A,noise,play=false,step=0,next=0;
-function init(){A=new AudioContext();noise=A.createBuffer(1,A.sampleRate,A.sampleRate);const d=noise.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}
-function env(node,t,a,dcy){const g=A.createGain();g.gain.setValueAtTime(a,t);g.gain.exponentialRampToValueAtTime(.001,t+dcy);node.connect(g);g.connect(A.destination);return g}
+const T=[['KICK','#ff7a59'],['SNARE','#ffcf4a'],['CLAP','#ff5fa2'],['HAT','#7fe3ff'],['TOM','#b38cff'],['BELL','#8dffb0']];
+const BANKS=[['x...x.....x.x...','....x.......x...','............x..x','x.x.x.x.x.x.xxx.','......x.......x.','..x.......x.....'],['x...x...x...x...','....x.......x...','....x.......x...','..x...x...x...xx','.............x.x','x......x..x.....'],['x..x..x.x..x..x.','...x.......x....','......x.......x.','xxxxxxxxxxxxxxxx','..x.....x.......','....x.......x..x'],['................','................','................','................','................','................']];
+const g=document.getElementById('g'),cells=[],labs=[],mute=new Set();
+T.forEach(([n,c],r)=>{const l=document.createElement('div');l.className='lab';l.style.setProperty('--c',c);l.innerHTML=`<i></i>${n}`;l.onclick=()=>{mute.has(r)?mute.delete(r):mute.add(r);l.classList.toggle('mute')};g.appendChild(l);labs.push(l);cells[r]=[];
+for(let i=0;i<16;i++){const b=document.createElement('button');b.className='s'+((i>>2)%2?' q':'');b.style.setProperty('--c',c);b.setAttribute('aria-label',`${n} step ${i+1}`);b.onclick=()=>{b.classList.toggle('on');if(b.classList.contains('on')){init();V[r](A.currentTime);sprout(r,i)}};g.appendChild(b);cells[r].push(b)}});
+function load(k){BANKS[k].forEach((p,r)=>cells[r].forEach((b,i)=>setTimeout(()=>b.classList.toggle('on',p[i]==='x'),i*14+r*20)));document.querySelectorAll('#bank button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.b===k))}
+document.querySelectorAll('#bank button').forEach(b=>b.onclick=()=>load(+b.dataset.b));load(0);
+let A,noise,out,play=false,step=0,next=0;
+function init(){if(A)return;A=new (window.AudioContext||window.webkitAudioContext)();noise=A.createBuffer(1,A.sampleRate,A.sampleRate);const d=noise.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;out=A.createDynamicsCompressor();out.connect(A.destination)}
+function env(node,t,a,dcy){const g=A.createGain();g.gain.setValueAtTime(a,t);g.gain.exponentialRampToValueAtTime(.001,t+dcy);node.connect(g);g.connect(out);return g}
 function nz(t,type,f,a,d){const s=A.createBufferSource();s.buffer=noise;const fl=A.createBiquadFilter();fl.type=type;fl.frequency.value=f;s.connect(fl);env(fl,t,a,d);s.start(t);s.stop(t+d)}
 function osc(t,type,f0,f1,a,d){const o=A.createOscillator();o.type=type;o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(f1,t+d);env(o,t,a,d);o.start(t);o.stop(t+d)}
-const V=[t=>osc(t,'sine',150,40,1,.45),t=>{nz(t,'highpass',1200,.5,.18);osc(t,'triangle',220,120,.3,.1)},t=>{[0,.012,.024].forEach(o=>nz(t+o,'bandpass',1500,.5,.12))},t=>nz(t,'highpass',8000,.25,.05),t=>osc(t,'sine',220,90,.6,.3),t=>{osc(t,'square',800,800,.12,.25);osc(t,'square',540,540,.12,.25)}];
-function sched(){while(next<A.currentTime+.1){const s=step;T.forEach((_,r)=>{if(cells[r][s].classList.contains('on'))V[r](next)});const when=(next-A.currentTime)*1000;setTimeout(()=>{cells.forEach((row,r)=>row.forEach((b,i)=>{b.classList.toggle('cur',i===s);if(i===s&&b.classList.contains('on')){b.classList.add('hit');setTimeout(()=>b.classList.remove('hit'),90)}}))},when);
-next+=60/document.getElementById('bpm').value/4;step=(step+1)%16}if(play)setTimeout(sched,25)}
-document.getElementById('pl').onclick=e=>{if(!A)init();play=!play;e.currentTarget.textContent=play?'❚❚':'▶';if(play){A.resume();next=A.currentTime+.05;sched()}};
-document.getElementById('bpm').oninput=e=>document.getElementById('bv').textContent=e.target.value;
-let vs=0;const idle=setInterval(()=>{if(play){clearInterval(idle);return}cells.forEach(row=>row.forEach((b,i)=>b.classList.toggle('cur',i===vs)));vs=(vs+1)%16},230);
+const V=[t=>osc(t,'sine',150,40,1,.45),t=>{nz(t,'highpass',1200,.5,.18);osc(t,'triangle',220,120,.3,.1)},t=>{[0,.012,.024].forEach(o=>nz(t+o,'bandpass',1500,.5,.12))},t=>nz(t,'highpass',8000,.25,.05),t=>osc(t,'sine',220,90,.6,.3),t=>{osc(t,'square',800,800,.1,.25);osc(t,'square',540,540,.1,.25)}];
+function sched(){const bpm=+document.getElementById('bpm').value,sw=+document.getElementById('sw').value/100;while(next<A.currentTime+.1){const s=step;const hits=[];T.forEach((_,r)=>{if(!mute.has(r)&&cells[r][s].classList.contains('on')){V[r](next);hits.push(r)}});const when=(next-A.currentTime)*1000;
+setTimeout(()=>{cells.forEach((row,r)=>row.forEach((b,i)=>{b.classList.toggle('cur',i===s);if(i===s&&hits.includes(r)){b.classList.add('hit');setTimeout(()=>b.classList.remove('hit'),110);sprout(r,s)}}));if(hits.includes(0))kick=1},when);
+const base=60/bpm/4;next+=base*(s%2===0?1+sw:1-sw);step=(step+1)%16}if(play)setTimeout(sched,25)}
+const pl=document.getElementById('pl');function toggle(){init();play=!play;pl.textContent=play?'❚❚':'▶';pl.classList.toggle('on',play);if(play){A.resume();next=A.currentTime+.05;sched()}}
+pl.onclick=toggle;
+document.getElementById('bpm').oninput=e=>document.getElementById('bv').textContent=e.target.value;document.getElementById('sw').oninput=e=>document.getElementById('swv').textContent=e.target.value+'%';
+addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();toggle()}const n=+e.key;if(n>=1&&n<=6){init();V[n-1](A.currentTime);sprout(n-1,(step+15)%16);cells[n-1][(step+15)%16].classList.add('hit');setTimeout(()=>cells[n-1].forEach(b=>b.classList.remove('hit')),110)}});
+// the garden: each hit plants a flower above its step
+const gc=document.getElementById('gc'),gx=gc.getContext('2d');const dpr=Math.min(devicePixelRatio||1,2);let flowers=[],kick=0;
+function sprout(r,s){flowers.push({x:(s+.5)/16+(Math.random()-.5)*.03,h:.25+r*.1+Math.random()*.15,c:T[r][1],t:0,k:r,a:(Math.random()-.5)*.4});if(flowers.length>90)flowers.shift()}
+let vs=0,lastV=0;
+(function f(now){const W=gc.clientWidth*dpr,H=gc.clientHeight*dpr;if(gc.width!==W){gc.width=W;gc.height=H}gx.clearRect(0,0,W,H);kick*=.9;
+gx.fillStyle='rgba(200,240,220,.06)';for(let i=0;i<16;i++)if(i%4===0)gx.fillRect(i/16*W,0,W/16,H);
+gx.strokeStyle='#2f7a5f';gx.lineWidth=1.4*dpr;gx.beginPath();for(let i=0;i<120;i++){const X=i/120*W,b=Math.sin(now*.002+i)*3*dpr+kick*6*dpr;gx.moveTo(X,H);gx.quadraticCurveTo(X+b*.5,H-8*dpr,X+b,H-(10+(i*37)%12)*dpr)}gx.stroke();
+for(const fl of flowers){fl.t=Math.min(1,fl.t+.04);const e=1-Math.pow(1-fl.t,3),X=fl.x*W,top=H-fl.h*H*e*(1+kick*.06),sway=Math.sin(now*.003+fl.x*20)*3*dpr+fl.a*10*dpr;
+gx.strokeStyle='#5fbf8f';gx.lineWidth=1.6*dpr;gx.beginPath();gx.moveTo(X,H);gx.quadraticCurveTo(X,H-(H-top)*.5,X+sway,top);gx.stroke();
+const r=(3+fl.k*.6)*dpr*e;gx.fillStyle=fl.c;for(let p=0;p<5;p++){const a=p/5*6.283+now*.0005;gx.beginPath();gx.ellipse(X+sway+Math.cos(a)*r,top+Math.sin(a)*r,r*.9,r*.55,a,0,7);gx.fill()}gx.fillStyle='#fff6c8';gx.beginPath();gx.arc(X+sway,top,r*.5,0,7);gx.fill()}
+if(!play&&now-lastV>230){lastV=now;cells.forEach(row=>row.forEach((b,i)=>b.classList.toggle('cur',i===vs)));vs=(vs+1)%16}
+requestAnimationFrame(f)})(0);
 </script></body></html>

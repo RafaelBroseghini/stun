@@ -1,20 +1,42 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pulse Garden</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@300;600&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#07060f}canvas{display:block;width:100%;height:100%;cursor:pointer}
-.t{position:fixed;left:0;right:0;top:5vh;text-align:center;color:#e9e6ff;font:300 13px Sora,sans-serif;letter-spacing:.4em;text-transform:uppercase}.t b{display:block;font-weight:600;font-size:clamp(22px,3vw,38px);letter-spacing:.1em;margin-bottom:8px;text-transform:none}</style></head><body>
-<canvas id="c"></canvas><div class="t"><b>Pulse Garden</b><span id="s">21 voices realign every 15 minutes · click for sound</span></div>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#07060f;user-select:none;-webkit-user-select:none}canvas{display:block;width:100%;height:100%;cursor:ew-resize;touch-action:none}
+.t{position:fixed;left:0;right:0;top:5vh;text-align:center;color:#e9e6ff;font:300 12px Sora,sans-serif;letter-spacing:.4em;text-transform:uppercase;pointer-events:none}
+.t b{display:block;font-weight:600;font-size:clamp(22px,3vw,38px);letter-spacing:.1em;margin-bottom:8px;text-transform:none;animation:in 2s both}@keyframes in{from{opacity:0;letter-spacing:.5em}}
+.ui{position:fixed;left:0;right:0;bottom:4vh;display:flex;justify-content:center;gap:10px;flex-wrap:wrap;padding:0 16px}
+.ui button{font:400 11px Sora;letter-spacing:.2em;text-transform:uppercase;color:#e9e6ff;background:rgba(233,230,255,.06);border:1px solid rgba(233,230,255,.2);padding:9px 14px;border-radius:99px;cursor:pointer;transition:background .2s,border-color .2s}
+.ui button:hover{border-color:#e9e6ff}.ui button[aria-pressed="true"]{background:#e9e6ff;color:#07060f}
+.clock{position:fixed;right:4vw;top:5vh;text-align:right;color:#e9e6ff;font:300 11px Sora;letter-spacing:.24em;text-transform:uppercase;pointer-events:none;opacity:.8}.clock b{display:block;font:600 26px Sora;letter-spacing:.04em;font-variant-numeric:tabular-nums;margin-top:4px}
+@media (max-width:640px){.clock{display:none}}
+</style></head><body>
+<canvas id="c"></canvas><div class="t"><b>Pulse Garden</b><span id="s">21 voices realign every 15 minutes · drag to travel in time</span></div>
+<div class="clock">Realignment in<b id="rl">15:00</b></div>
+<div class="ui"><button id="snd" aria-pressed="false">Sound</button><button data-sp="1" aria-pressed="true">×1</button><button data-sp="10">×10</button><button data-sp="60">×60</button><button id="wv" aria-pressed="true">Wave line</button></div>
 <script>
-const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio,2);let W,H,A=null,snd=false;const N=21,start=performance.now();const last=new Array(N).fill(0);
+const c=document.getElementById('c'),x=c.getContext('2d');const dpr=Math.min(devicePixelRatio||1,2);let W,H,A=null,snd=false,rev;const N=21,CYC=900;let T=0,speed=1,line=true;const lastK=new Array(N).fill(null),glow=new Array(N).fill(0);
 const scale=[0,2,4,7,9];const freq=i=>220*Math.pow(2,(scale[i%5]+12*Math.floor(i/5))/12);
 function size(){W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr}size();addEventListener('resize',size);
-c.onclick=()=>{if(!A)A=new AudioContext();snd=!snd;document.getElementById('s').textContent=snd?'sound on · click to mute':'21 voices realign every 15 minutes · click for sound'};
-function ping(i){if(!snd||!A)return;const o=A.createOscillator(),g=A.createGain();o.type='sine';o.frequency.value=freq(i);g.gain.setValueAtTime(.08,A.currentTime);g.gain.exponentialRampToValueAtTime(.0001,A.currentTime+2.2);o.connect(g);g.connect(A.destination);o.start();o.stop(A.currentTime+2.3)}
-function f(now){const t=(now-start)/1000;x.fillStyle='rgba(7,6,15,.35)';x.fillRect(0,0,W,H);const cx=W/2,cy=H*.86,R0=Math.min(W*.46,H*.78),r0=R0*.12;
-x.strokeStyle='rgba(233,230,255,.4)';x.lineWidth=dpr;x.beginPath();x.moveTo(cx-R0*1.04,cy);x.lineTo(cx+R0*1.04,cy);x.stroke();
-for(let i=0;i<N;i++){const r=r0+(R0-r0)*i/(N-1);const loops=50-i;const v=Math.PI*2*loops/900;const a=Math.PI+(t*v)%(Math.PI*2);const ang=a<=Math.PI*2?a:Math.PI*4-a;
-const dist=Math.PI+((t*v)%(Math.PI*2));const theta=dist%(Math.PI*2);const ph=theta<=Math.PI?Math.PI+theta:Math.PI*2-(theta-Math.PI)+Math.PI;
-const p=(t*v)%(Math.PI*2),aa=p<Math.PI?Math.PI+p:Math.PI*3-p;const hue=260-i*11;const since=(now-last[i])/1000;const glow=Math.max(0,1-since*1.2);
-x.strokeStyle=`hsla(${hue},80%,${50+glow*30}%,${.25+glow*.6})`;x.lineWidth=(1.2+glow*2)*dpr;x.beginPath();x.arc(cx,cy,r,Math.PI,Math.PI*2);x.stroke();
-const px=cx+Math.cos(aa)*r,py=cy+Math.sin(aa)*r;x.fillStyle=`hsl(${hue},90%,${70+glow*20}%)`;x.shadowColor=`hsl(${hue},90%,60%)`;x.shadowBlur=(8+glow*20)*dpr;x.beginPath();x.arc(px,py,(3+glow*3)*dpr,0,7);x.fill();x.shadowBlur=0;
-const k=Math.floor(t*v/Math.PI);if(k!==(last[i+100]||0)){last[i+100]=k;last[i]=now;ping(i)}}requestAnimationFrame(f)}requestAnimationFrame(f);
+function audio(){if(A)return;A=new (window.AudioContext||window.webkitAudioContext)();rev=A.createConvolver();const len=A.sampleRate*2.6,b=A.createBuffer(2,len,A.sampleRate);for(let ch=0;ch<2;ch++){const d=b.getChannelData(ch);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.6)}rev.buffer=b;const wg=A.createGain();wg.gain.value=.5;rev.connect(wg).connect(A.destination)}
+const sb=document.getElementById('snd');sb.onclick=()=>{audio();snd=!snd;sb.setAttribute('aria-pressed',snd);A.resume()};
+document.querySelectorAll('[data-sp]').forEach(b=>b.onclick=()=>{speed=+b.dataset.sp;document.querySelectorAll('[data-sp]').forEach(o=>o.setAttribute('aria-pressed',o===b))});
+const wv=document.getElementById('wv');wv.onclick=()=>{line=!line;wv.setAttribute('aria-pressed',line)};
+function ping(i){if(!snd||!A||speed>10)return;const o=A.createOscillator(),g=A.createGain();o.type='sine';o.frequency.value=freq(i);g.gain.setValueAtTime(.0001,A.currentTime);g.gain.exponentialRampToValueAtTime(.07,A.currentTime+.01);g.gain.exponentialRampToValueAtTime(.0001,A.currentTime+2.2);o.connect(g);g.connect(A.destination);g.connect(rev);o.start();o.stop(A.currentTime+2.3)}
+let drag=null;c.addEventListener('pointerdown',e=>{c.setPointerCapture(e.pointerId);drag={x:e.clientX,t:T}});c.addEventListener('pointermove',e=>{if(drag)T=Math.max(0,drag.t+(e.clientX-drag.x)/innerWidth*CYC*.5)});c.addEventListener('pointerup',()=>drag=null);
+c.addEventListener('wheel',e=>{T=Math.max(0,T+e.deltaY*.05)},{passive:true});
+addEventListener('keydown',e=>{if(e.key==='ArrowRight')T+=10;if(e.key==='ArrowLeft')T=Math.max(0,T-10);if(e.key===' '){e.preventDefault();sb.click()}});
+let last=performance.now();
+function f(now){const dt=Math.min(.05,(now-last)/1000);last=now;if(!drag)T+=dt*speed;
+x.fillStyle='rgba(7,6,15,.32)';x.fillRect(0,0,W,H);const cx=W/2,cy=H*.84,R0=Math.min(W*.46,H*.74),r0=R0*.12;
+x.strokeStyle='rgba(233,230,255,.35)';x.lineWidth=dpr;x.beginPath();x.moveTo(cx-R0*1.04,cy);x.lineTo(cx+R0*1.04,cy);x.stroke();
+const pts=[];
+for(let i=0;i<N;i++){const r=r0+(R0-r0)*i/(N-1);const loops=50-i;const v=Math.PI*2*loops/CYC;const p=(T*v)%(Math.PI*2),aa=p<Math.PI?Math.PI+p:Math.PI*3-p;const hue=260-i*11;
+const k=Math.floor(T*v/Math.PI);if(lastK[i]!==null&&k!==lastK[i]){glow[i]=1;ping(i)}lastK[i]=k;glow[i]*=.96;const gl=glow[i];
+x.strokeStyle=`hsla(${hue},80%,${50+gl*30}%,${.18+gl*.6})`;x.lineWidth=(1.1+gl*2.4)*dpr;x.beginPath();x.arc(cx,cy,r,Math.PI,Math.PI*2);x.stroke();
+const px=cx+Math.cos(aa)*r,py=cy+Math.sin(aa)*r;pts.push([px,py,hue]);
+if(gl>.5){x.strokeStyle=`hsla(${hue},90%,70%,${(gl-.5)*1.2})`;x.lineWidth=dpr;x.beginPath();x.arc(px,py,(1-gl)*60*dpr,0,7);x.stroke()}
+x.fillStyle=`hsl(${hue},90%,${70+gl*20}%)`;x.shadowColor=`hsl(${hue},90%,60%)`;x.shadowBlur=(8+gl*22)*dpr;x.beginPath();x.arc(px,py,(3+gl*3.5)*dpr,0,7);x.fill();x.shadowBlur=0}
+if(line){x.strokeStyle='rgba(233,230,255,.28)';x.lineWidth=1.2*dpr;x.beginPath();pts.forEach(([a,b],i)=>{if(!i)x.moveTo(a,b);else{const [pa,pb]=pts[i-1];x.quadraticCurveTo(pa,pb,(pa+a)/2,(pb+b)/2)}});x.stroke()}
+const left=CYC-(T%CYC);document.getElementById('rl').textContent=Math.floor(left/60)+':'+String(Math.floor(left%60)).padStart(2,'0');
+requestAnimationFrame(f)}requestAnimationFrame(f);
 </script></body></html>
