@@ -1,23 +1,85 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Café Menu Board</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cabin+Sketch:wght@700&family=Shadows+Into+Light&family=Rye&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#6b4423 repeating-linear-gradient(90deg,#5a381c 0 12px,#6b4423 12px 30px);display:grid;place-items:center}
-.b{position:relative;width:min(96vw,150vh);aspect-ratio:1.5;background:radial-gradient(ellipse at 40% 30%,#3a4a42,#263029 70%,#1c2420);border:clamp(10px,1.8vw,22px) solid #8a5a30;box-shadow:0 30px 60px rgba(0,0,0,.5),inset 0 0 60px rgba(0,0,0,.6);padding:3.5% 4.5%;color:#f2f0e8;font-family:'Shadows Into Light',cursive;display:grid;grid-template-columns:1fr 1fr;gap:4%;overflow:hidden}
-.b::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 30% 60%,rgba(255,255,255,.07),transparent 40%),radial-gradient(ellipse at 75% 30%,rgba(255,255,255,.05),transparent 35%);pointer-events:none}
-h1{grid-column:1/-1;text-align:center;font:400 clamp(26px,5vw,70px)/1 Rye,serif;letter-spacing:.04em;text-shadow:0 0 1px #fff}h1 small{display:block;font:400 clamp(12px,1.5vw,20px) 'Shadows Into Light';letter-spacing:.2em;opacity:.8;margin-top:6px}
-h2{font:700 clamp(20px,2.6vw,38px) 'Cabin Sketch',cursive;color:#ffd98a;border-bottom:2px dashed rgba(255,255,255,.4);margin-bottom:2%}
-ul{list-style:none;font-size:clamp(14px,1.7vw,24px);line-height:1.45}li{display:flex;gap:8px}li span{flex:1;border-bottom:2px dotted rgba(255,255,255,.3);margin-bottom:.45em}li i{font-style:normal;color:#ffb3a7}li small{display:block;font-size:.7em;opacity:.7}
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;user-select:none;-webkit-user-select:none}
+body{background:#6b4423 repeating-linear-gradient(90deg,#5a381c 0 12px,#6b4423 12px 30px);display:grid;place-items:center}
+body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse at 50% 20%,rgba(255,220,160,.25),transparent 60%),radial-gradient(ellipse at 50% 120%,rgba(0,0,0,.5),transparent 60%);pointer-events:none}
+.wrap{position:relative;width:min(94vw,126vh);margin-bottom:3vh;animation:hang 1.6s cubic-bezier(.3,1.5,.5,1) backwards;transform-origin:50% -20%}@keyframes hang{from{transform:rotate(-2.5deg) translateY(-30px);opacity:0}}
+.b{position:relative;width:100%;aspect-ratio:1.5;background:#263029;border:clamp(10px,1.8vw,22px) solid #8a5a30;border-image:linear-gradient(135deg,#9a6a3a,#6a4020 40%,#a87440 60%,#5a3418) 1;box-shadow:0 30px 60px rgba(0,0,0,.5),inset 0 0 60px rgba(0,0,0,.6);color:#f2f0e8;font-family:'Shadows Into Light',cursive;overflow:hidden}
+.b canvas{position:absolute;inset:0;width:100%;height:100%}#bg{z-index:0}#wet{z-index:1}#ink{z-index:3;cursor:none;touch-action:none}
+.menu{position:absolute;inset:0;padding:3.5% 4.5%;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto 1fr;gap:0 4%;z-index:2;filter:url(#rough)}
+h1{grid-column:1/-1;text-align:center;font:400 clamp(26px,5vw,70px)/1 Rye,serif;letter-spacing:.04em;text-shadow:0 0 1px #fff,0 0 12px rgba(255,255,255,.15)}h1 small{display:block;font:400 clamp(12px,1.5vw,20px) 'Shadows Into Light';letter-spacing:.2em;opacity:.8;margin-top:6px}
+h2{font:700 clamp(20px,2.6vw,38px) 'Cabin Sketch',cursive;color:#ffd98a;border-bottom:2px dashed rgba(255,255,255,.4);margin:3% 0 2%}
+ul{list-style:none;font-size:clamp(14px,1.7vw,24px);line-height:1.45}li{display:flex;gap:8px;position:relative}li span{flex:1;border-bottom:2px dotted rgba(255,255,255,.3);margin-bottom:.45em}li i{font-style:normal;color:#ffb3a7}li small{display:block;font-size:.7em;opacity:.7}
+li b{font-weight:400;position:relative;transition:color .3s}li b svg{position:absolute;left:-30%;top:-28%;width:160%;height:156%;overflow:visible}li b path{fill:none;stroke:#ffd98a;stroke-width:2.4;stroke-linecap:round;stroke-dasharray:200;stroke-dashoffset:200;transition:stroke-dashoffset .6s}li.hov b{color:#ffd98a}li.hov b path{stroke-dashoffset:0}
 .sp{color:#9fe0c8;transform:rotate(-4deg);font-size:clamp(16px,2vw,28px);margin-top:4%;border:2px solid #9fe0c8;padding:2% 4%;display:inline-block;border-radius:40% 10%/20% 40%}
-.chalk{filter:url(#rough)}svg.d{position:absolute;stroke:#f2f0e8;fill:none;stroke-width:3;stroke-linecap:round;opacity:.85}</style></head><body>
+.td{position:absolute;right:13%;bottom:8%;transform:rotate(5deg);color:#ffb3a7;font-size:clamp(14px,1.8vw,26px);line-height:1.1;text-align:center;clip-path:inset(0 100% 0 0);animation:write 2.6s 1.4s steps(26) forwards}.td big{display:block;font:700 1.4em 'Cabin Sketch'}@keyframes write{to{clip-path:inset(0 0 0 0)}}
+svg.d{position:absolute;stroke:#f2f0e8;fill:none;stroke-width:3;stroke-linecap:round;opacity:.85}
+.ledge{position:relative;height:clamp(16px,3vw,34px);margin:0 -1.5%;background:linear-gradient(#a87440,#7a4c24 40%,#5a3418);border-radius:0 0 6px 6px;box-shadow:0 14px 20px rgba(0,0,0,.45);display:flex;align-items:flex-start;justify-content:center;gap:clamp(8px,2vw,26px);padding-top:2px;z-index:5}
+.tool{width:clamp(30px,5vw,64px);height:clamp(8px,1.1vw,14px);border-radius:3px 6px 6px 3px;cursor:pointer;margin-top:-2px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.25),0 2px 2px rgba(0,0,0,.4);transition:transform .3s cubic-bezier(.2,.9,.3,1.5)}.tool.on{transform:translateY(-8px) rotate(-6deg)}
+.tool.er{width:clamp(44px,7vw,90px);height:clamp(14px,2vw,26px);margin-top:-12px;background:linear-gradient(#d8c8a8 0 55%,#3a3a3a 55%);border-radius:4px}
+.hint{position:fixed;left:0;right:0;bottom:2vh;text-align:center;font:400 15px 'Shadows Into Light';color:#f2e2c8;letter-spacing:.1em;opacity:.8}
+#fx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:6}
+</style></head><body>
 <svg width="0" height="0" style="position:absolute"><filter id="rough"><feTurbulence baseFrequency=".9" numOctaves="2" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.2"/></filter></svg>
-<div class="b chalk"><h1>The Copper Kettle<small>~ open 7 till 4 · cash &amp; cards ~<br>draw on the board with chalk · double-click to wipe</small></h1>
-<div><h2>Coffee &amp; Tea</h2><ul><li><span>Flat white</span>3.20</li><li><span>Cortado</span>2.90</li><li><span>Filter of the day <small>Huila, Colombia — plum &amp; cocoa</small></span>3.00</li><li><span>Cardamom chai</span>3.40</li><li><span>Pot of Assam</span>2.60</li></ul><div class="sp">oat milk is free ♥</div></div>
-<div><h2>From the Oven</h2><ul><li><span>Cinnamon knot</span>3.10</li><li><span>Sourdough toast, <i>cultured butter</i></span>4.50</li><li><span>Leek &amp; gruyère tart</span>7.80</li><li><span>Rye, smoked trout, dill</span>9.20</li><li><span>Pear &amp; almond cake</span>3.90</li></ul></div>
-<canvas id="ch" style="position:absolute;inset:0;width:100%;height:100%;z-index:3;cursor:crosshair;touch-action:none"></canvas><svg class="d" viewBox="0 0 80 80" style="right:3%;bottom:4%;width:9%"><path d="M15 30h44v26a14 14 0 0 1-14 14H29a14 14 0 0 1-14-14z"/><path d="M59 36c12 0 12 16 0 16"/><path d="M28 22c-4-6 4-8 0-14M38 22c-4-6 4-8 0-14M48 22c-4-6 4-8 0-14"/></svg>
+<div class="wrap" id="wrap"><div class="b" id="b"><canvas id="bg"></canvas><canvas id="wet"></canvas>
+<div class="menu"><h1>The Copper Kettle<small>~ open 7 till 4 · cash &amp; cards ~</small></h1>
+<div><h2>Coffee &amp; Tea</h2><ul><li><span>Flat white</span><b>3.20</b></li><li><span>Cortado</span><b>2.90</b></li><li><span>Filter of the day <small>Huila, Colombia — plum &amp; cocoa</small></span><b>3.00</b></li><li><span>Cardamom chai</span><b>3.40</b></li><li><span>Pot of Assam</span><b>2.60</b></li></ul><div class="sp">oat milk is free ♥</div></div>
+<div><h2>From the Oven</h2><ul><li><span>Cinnamon knot</span><b>3.10</b></li><li><span>Sourdough toast, <i>cultured butter</i></span><b>4.50</b></li><li><span>Leek &amp; gruyère tart</span><b>7.80</b></li><li><span>Rye, smoked trout, dill</span><b>9.20</b></li><li><span>Pear &amp; almond cake</span><b>3.90</b></li></ul></div>
+<div class="td">today only!<big>Plum crumble</big>w/ custard 4.20</div>
+<svg class="d" viewBox="0 0 80 80" style="right:3%;bottom:4%;width:9%"><path d="M15 30h44v26a14 14 0 0 1-14 14H29a14 14 0 0 1-14-14z"/><path d="M59 36c12 0 12 16 0 16"/><path class="stm" d="M28 22c-4-6 4-8 0-14M38 22c-4-6 4-8 0-14M48 22c-4-6 4-8 0-14"/></svg>
 <svg class="d" viewBox="0 0 80 50" style="left:42%;bottom:5%;width:12%"><path d="M5 40c10-30 60-30 70 0z"/><path d="M20 30c4-6 8-6 12 0M40 26c4-6 8-6 12 0"/></svg></div>
+<canvas id="ink"></canvas></div>
+<div class="ledge" id="ledge"></div><canvas id="fx"></canvas></div>
+<div class="hint">draw with chalk · pick a stick or the eraser (1–5, E) · double-click to sponge the board</div>
 <script>
-const cv=document.getElementById('ch'),x=cv.getContext('2d'),d=Math.min(devicePixelRatio,2);function sz(){const r=cv.getBoundingClientRect();cv.width=r.width*d;cv.height=r.height*d}sz();addEventListener('resize',sz);
-const cols=['#f2f0e8','#ffd98a','#ffb3a7','#9fe0c8'];let col=0,L=null;cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);L=[e.offsetX*d,e.offsetY*d];if(e.button===2||e.shiftKey)col=(col+1)%cols.length});cv.addEventListener('pointerup',()=>{L=null;col=(col+1)%cols.length});
-cv.addEventListener('pointermove',e=>{if(!L)return;const X=e.offsetX*d,Y=e.offsetY*d,dist=Math.hypot(X-L[0],Y-L[1]),n=Math.max(1,dist/1.2|0);x.fillStyle=cols[col];for(let i=0;i<n;i++){const t=i/n,px=L[0]+(X-L[0])*t,py=L[1]+(Y-L[1])*t;for(let k=0;k<5;k++){x.globalAlpha=.25+Math.random()*.5;x.fillRect(px+(Math.random()-.5)*5*d,py+(Math.random()-.5)*5*d,1.4*d,1.4*d)}}x.globalAlpha=1;L=[X,Y]});
-cv.addEventListener('dblclick',()=>{let a=0;const iv=setInterval(()=>{x.globalCompositeOperation='destination-out';x.fillStyle='rgba(0,0,0,.25)';x.fillRect(0,0,cv.width,cv.height);x.globalCompositeOperation='source-over';if(++a>12){x.clearRect(0,0,cv.width,cv.height);clearInterval(iv)}},40)});
+const $=id=>document.getElementById(id);const d=Math.min(devicePixelRatio||1,2);
+const bg=$('bg'),wet=$('wet'),ink=$('ink'),fx=$('fx'),bx=bg.getContext('2d'),wx=wet.getContext('2d'),ix=ink.getContext('2d'),fxx=fx.getContext('2d');let W,H,FW,FH;
+const COLS=['#f4f2ea','#ffd98a','#ffb3a7','#9fe0c8','#b9c8ff'];let tool=0;const PAT=[];
+function grain(col){const c=document.createElement('canvas');c.width=c.height=220;const g=c.getContext('2d'),id=g.createImageData(220,220),D=id.data,[r,gg,b]=[1,3,5].map(i=>parseInt(col.slice(i,i+2),16));
+for(let i=0;i<220*220;i++){const x=i%220,y=i/220|0;const n=Math.random()*.6+.4*Math.sin(x*.7+Math.sin(y*.3)*3)*Math.sin(y*.9);const a=Math.max(0,Math.min(1,(n-.28)*2.2));D[i*4]=r;D[i*4+1]=gg;D[i*4+2]=b;D[i*4+3]=a*255}g.putImageData(id,0,0);return c}
+function slate(){const g=bx;const s=g.createRadialGradient(W*.4,H*.3,0,W*.4,H*.3,W*.8);s.addColorStop(0,'#3a4a42');s.addColorStop(.7,'#263029');s.addColorStop(1,'#1c2420');g.fillStyle=s;g.fillRect(0,0,W,H);
+// old wipes: faint ghost arcs from years of sponging
+for(let k=0;k<40;k++){g.strokeStyle=`rgba(255,255,255,${.012+Math.random()*.02})`;g.lineWidth=(20+Math.random()*60)*d;g.lineCap='round';g.beginPath();const cx=Math.random()*W,cy=Math.random()*H,r=(60+Math.random()*200)*d,a=Math.random()*6;g.arc(cx,cy,r,a,a+1+Math.random()*2);g.stroke()}
+for(let k=0;k<14;k++){g.fillStyle=`rgba(255,255,255,${.015+Math.random()*.02})`;g.font=`${(20+Math.random()*30)*d}px "Shadows Into Light"`;g.fillText(['soup 4.00','scone','latte 3.10','closed mon','♥','flapjack'][k%6],Math.random()*W*.9,Math.random()*H)}}
+function size(){const r=ink.getBoundingClientRect();W=Math.round(r.width*d);H=Math.round(r.height*d);const keep=ix.canvas.width?ix.getImageData(0,0,ix.canvas.width,ix.canvas.height):null;[bg,wet,ink].forEach(c=>{c.width=W;c.height=H});slate();if(keep)ix.putImageData(keep,0,0);
+const f=fx.getBoundingClientRect();FW=fx.width=Math.round(f.width*d);FH=fx.height=Math.round(f.height*d);pile=new Float32Array(Math.ceil(FW/(3*d))+1)}
+let pile=new Float32Array(1);size();COLS.forEach(c=>PAT.push(ix.createPattern(grain(c),'repeat')));setTimeout(slate,800);
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(size,150)});
+document.querySelectorAll('li b').forEach(b=>b.insertAdjacentHTML('beforeend','<svg viewBox="0 0 100 50" preserveAspectRatio="none"><path d="M12 30C6 8 88 2 93 22C98 44 20 50 8 30C4 22 20 12 34 10" pathLength="200"/></svg>'));
+// tray
+const ledge=$('ledge');[...COLS,'er'].forEach((c,i)=>{const t=document.createElement('div');t.className='tool'+(c==='er'?' er':'')+(i===0?' on':'');if(c!=='er')t.style.background=`linear-gradient(${c},${c} 60%,rgba(0,0,0,.15))`;t.title=c==='er'?'Eraser':'Chalk';t.onclick=()=>pick(i);ledge.appendChild(t)});
+function pick(i){tool=i;[...ledge.children].forEach((t,k)=>t.classList.toggle('on',k===i))}
+// audio: chalk scratch, squeaks, sponge
+let ac,sg,sf;function A(){if(ac)return;try{ac=new (window.AudioContext||window.webkitAudioContext)()}catch(e){return}const b=ac.createBuffer(1,ac.sampleRate*2,ac.sampleRate),D=b.getChannelData(0);for(let i=0;i<D.length;i++)D[i]=(Math.random()*2-1)*(Math.random()<.3?1:.3);const s=ac.createBufferSource();s.buffer=b;s.loop=true;sf=ac.createBiquadFilter();sf.type='bandpass';sf.frequency.value=3200;sf.Q.value=1.2;sg=ac.createGain();sg.gain.value=0;s.connect(sf).connect(sg).connect(ac.destination);s.start()}
+function squeak(){if(!ac)return;const t=ac.currentTime,o=ac.createOscillator(),g=ac.createGain();o.frequency.setValueAtTime(2400+Math.random()*900,t);o.frequency.linearRampToValueAtTime(2900+Math.random()*600,t+.09);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.025,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.12);o.connect(g).connect(ac.destination);o.start(t);o.stop(t+.13)}
+// drawing
+let L=null,lastT=0,dust=[];const cur={x:-99,y:-99};
+function pos(e){const r=ink.getBoundingClientRect();return[(e.clientX-r.left)*d,(e.clientY-r.top)*d]}
+ink.addEventListener('pointerdown',e=>{A();ink.setPointerCapture(e.pointerId);L=pos(e);lastT=performance.now();if(e.button===2)pick((tool+1)%6);dab(L[0],L[1],1)});
+addEventListener('pointerup',()=>{L=null;if(sg)sg.gain.setTargetAtTime(0,ac.currentTime,.03)});
+function dab(x,y,w){if(tool===5){ix.globalCompositeOperation='destination-out';const r=24*d,g=ix.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,'rgba(0,0,0,.35)');g.addColorStop(1,'rgba(0,0,0,0)');ix.fillStyle=g;ix.fillRect(x-r,y-r,r*2,r*2);ix.globalCompositeOperation='source-over';bx.fillStyle='rgba(255,255,255,.006)';bx.beginPath();bx.arc(x,y,r*.8,0,7);bx.fill();return}
+ix.fillStyle=PAT[tool];ix.globalAlpha=.5+Math.random()*.4;ix.beginPath();ix.ellipse(x,y,w*4.2*d,w*3*d,.6,0,7);ix.fill();ix.globalAlpha=1}
+ink.addEventListener('pointermove',e=>{const r=ink.getBoundingClientRect();cur.x=e.clientX-r.left;cur.y=e.clientY-r.top;
+if(!L){const els=document.elementsFromPoint(e.clientX,e.clientY),li=els.find(o=>o.tagName==='LI');document.querySelectorAll('li.hov').forEach(o=>o!==li&&o.classList.remove('hov'));if(li)li.classList.add('hov');return}
+const [X,Y]=pos(e),now=performance.now(),dist=Math.hypot(X-L[0],Y-L[1]),sp=dist/Math.max(1,now-lastT)/d;lastT=now;const w=Math.max(.45,1.15-sp*.25),n=Math.max(1,dist/(1.6*d)|0);
+for(let i=0;i<n;i++){const t=i/n;dab(L[0]+(X-L[0])*t,L[1]+(Y-L[1])*t,w)}
+if(tool<5&&Math.random()<.5){const fr=fx.getBoundingClientRect(),br=ink.getBoundingClientRect();dust.push({x:(X/d+br.left-fr.left)*d,y:(Y/d+br.top-fr.top)*d,vx:(Math.random()-.5)*.6*d,vy:0,c:COLS[tool]})}
+if(sg){sg.gain.setTargetAtTime(Math.min(.14,sp*.06)*(tool===5?.6:1),ac.currentTime,.02);sf.frequency.setTargetAtTime(tool===5?900:2600+sp*600,ac.currentTime,.03);if(tool<5&&sp<.4&&Math.random()<.015)squeak()}L=[X,Y]});
+ink.addEventListener('pointerleave',()=>{cur.x=-99;document.querySelectorAll('li.hov').forEach(o=>o.classList.remove('hov'))});
+ink.addEventListener('contextmenu',e=>e.preventDefault());
+// sponge wipe: a wet band sweeps across, then the water dries
+let sweep=-1;ink.addEventListener('dblclick',()=>{A();sweep=0;if(ac){const t=ac.currentTime,b=ac.createBuffer(1,ac.sampleRate*1.1,ac.sampleRate),D=b.getChannelData(0);for(let i=0;i<D.length;i++)D[i]=(Math.random()*2-1)*Math.sin(Math.PI*i/D.length)*.6;const s=ac.createBufferSource(),f=ac.createBiquadFilter(),g=ac.createGain();s.buffer=b;f.type='lowpass';f.frequency.value=1400;g.gain.value=.4;s.connect(f).connect(g).connect(ac.destination);s.start(t)}});
+addEventListener('keydown',e=>{if(e.key>='1'&&e.key<='5')pick(+e.key-1);if(e.key==='e'||e.key==='E')pick(5)});
+function loop(){fxx.clearRect(0,0,FW,FH);
+if(sweep>=0){const bw=W*.16,x0=sweep*W*1.2-bw;ix.globalCompositeOperation='destination-out';ix.fillStyle='rgba(0,0,0,.5)';ix.fillRect(x0,0,bw,H);ix.globalCompositeOperation='source-over';wx.fillStyle='rgba(8,14,12,.12)';for(let k=0;k<6;k++){wx.beginPath();wx.ellipse(x0+bw/2+(Math.random()-.5)*bw*.4,H*(k+.5)/6,bw*.55,H/9,0,0,7);wx.fill()}sweep+=.022;if(sweep>1.05){sweep=-1;ix.globalCompositeOperation='destination-out';ix.fillStyle='rgba(0,0,0,.7)';ix.fillRect(0,0,W,H);ix.globalCompositeOperation='source-over'}}
+// water dries from the edges in
+wx.globalCompositeOperation='destination-out';wx.fillStyle='rgba(0,0,0,.012)';wx.fillRect(0,0,W,H);wx.globalCompositeOperation='source-over';
+// dust falls onto the ledge and piles up
+const lr=ledge.getBoundingClientRect(),fr=fx.getBoundingClientRect(),ly=(lr.top-fr.top+2)*d;
+dust=dust.filter(p=>{p.vy+=.06*d;p.vy*=.96;p.x+=p.vx+Math.sin(p.y*.05)*.2;p.y+=p.vy;if(p.y>=ly-(pile[(p.x/(3*d))|0]||0)){const k=(p.x/(3*d))|0;if(k>=0&&k<pile.length)pile[k]=Math.min(5*d,pile[k]+.35*d);return false}fxx.fillStyle=p.c;fxx.globalAlpha=.6;fxx.fillRect(p.x,p.y,1.3*d,1.3*d);return true});fxx.globalAlpha=1;
+fxx.fillStyle='rgba(240,236,226,.75)';fxx.beginPath();fxx.moveTo(0,ly);for(let k=0;k<pile.length;k++){const h=(pile[k-1]||0)*.25+pile[k]*.5+(pile[k+1]||0)*.25;fxx.lineTo(k*3*d,ly-h)}fxx.lineTo(FW,ly);fxx.closePath();fxx.fill();
+// a chalk stick in hand follows the pointer
+if(cur.x>-50){const br=ink.getBoundingClientRect(),X=(cur.x+br.left-fr.left)*d,Y=(cur.y+br.top-fr.top)*d;fxx.save();fxx.translate(X,Y);fxx.rotate(-.7);if(tool===5){fxx.fillStyle='#d8c8a8';fxx.fillRect(-26*d,-10*d,52*d,12*d);fxx.fillStyle='#3a3a3a';fxx.fillRect(-26*d,2*d,52*d,9*d)}else{fxx.fillStyle=COLS[tool];fxx.shadowColor='rgba(0,0,0,.4)';fxx.shadowBlur=6*d;fxx.beginPath();fxx.roundRect?fxx.roundRect(0,-5*d,44*d,10*d,3*d):fxx.rect(0,-5*d,44*d,10*d);fxx.fill()}fxx.restore()}
+requestAnimationFrame(loop)}requestAnimationFrame(loop);
 </script>
 </body></html>
