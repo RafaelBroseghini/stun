@@ -1,21 +1,84 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>One Candle</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital@1&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#0b0806;display:grid;place-items:end center;font-family:'EB Garamond',serif}
-.room{position:fixed;inset:0;background:radial-gradient(circle at 50% 52%,rgba(255,170,80,.42),rgba(120,60,20,.12) 35%,transparent 60%);animation:gl .15s infinite alternate;transition:opacity .6s}@keyframes gl{to{opacity:.88;transform:scale(1.01)}}
-.tbl{position:fixed;left:0;right:0;bottom:0;height:22vh;background:linear-gradient(#2a1a10,#120a06)}
-.cd{position:relative;margin-bottom:16vh;width:min(12vh,22vw);height:min(34vh,60vw);background:linear-gradient(90deg,#d8c8a8,#fff8e8 35%,#e8dcc0 60%,#b8a888);border-radius:6px 6px 4px 4px;box-shadow:0 0 40px rgba(255,170,80,.25);cursor:pointer}
-.cd::before{content:"";position:absolute;left:0;right:0;top:-4px;height:14px;border-radius:50%;background:radial-gradient(ellipse,#fffaf0,#e8dcc0)}.cd::after{content:"";position:absolute;left:18%;top:2%;width:14%;height:20%;background:linear-gradient(#fff8e8,#e8dcc0);border-radius:0 0 8px 8px}
-.wk{position:absolute;left:50%;top:-16px;width:3px;height:16px;margin-left:-1.5px;background:#222;border-radius:2px}
-.fl{position:absolute;left:50%;bottom:calc(100% + 8px);width:min(4.4vh,8vw);height:min(11vh,20vw);margin-left:calc(min(4.4vh,8vw)/-2);border-radius:50% 50% 40% 40%/60% 60% 40% 40%;background:radial-gradient(ellipse at 50% 80%,#fff 0 15%,#ffe08a 30%,#ff9a2a 60%,rgba(255,80,0,0) 75%);filter:blur(.6px);transform-origin:50% 90%;animation:fk 2.2s ease-in-out infinite;transition:opacity .3s,transform .3s}
-.fl::after{content:"";position:absolute;left:35%;right:35%;bottom:8%;height:24%;border-radius:50%;background:radial-gradient(#3a7aff,transparent 70%);opacity:.7}
-@keyframes fk{0%,100%{transform:scale(1) rotate(-1deg)}25%{transform:scale(1.03,.97) rotate(2deg)}50%{transform:scale(.97,1.05) rotate(-2deg) skewX(2deg)}75%{transform:scale(1.02,.99) rotate(1deg)}}
-.out .fl{opacity:0;transform:scale(.2)}.out .room{opacity:0}
-canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}.q{position:fixed;top:9vh;left:0;right:0;text-align:center;color:#d9b88a;font:italic clamp(18px,2.4vw,30px)/1.4 'EB Garamond',serif;transition:opacity .6s}.out .q{opacity:.25}
-.h{position:fixed;bottom:3vh;left:0;right:0;text-align:center;color:#6a5440;font:italic 14px 'EB Garamond'}</style></head><body>
-<div class="room"></div><div class="tbl"></div><canvas id="c"></canvas><div class="q">“How far that little candle throws his beams.”</div>
-<div class="cd" id="cd"><div class="wk"></div><div class="fl"></div></div><div class="h">click the candle to blow it out, and again to light it</div>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital@0;1&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#050302;user-select:none;-webkit-user-select:none}canvas{position:fixed;inset:0;width:100%;height:100%;touch-action:none}
+.q{position:fixed;top:9vh;left:0;right:0;text-align:center;color:#d9b88a;font:italic clamp(18px,2.4vw,30px)/1.4 'EB Garamond',serif;pointer-events:none;transition:opacity 1.2s;text-shadow:0 0 20px rgba(255,160,60,.25)}.q small{display:block;font-size:.5em;letter-spacing:.3em;font-style:normal;opacity:.6;margin-top:8px}
+.h{position:fixed;bottom:3vh;left:0;right:0;text-align:center;color:#8a6a4a;font:italic 15px 'EB Garamond';pointer-events:none;transition:color 1s}</style></head><body>
+<canvas id="c"></canvas><div class="q" id="q">“How far that little candle throws his beams.”<small>THE MERCHANT OF VENICE · V.I</small></div>
+<div class="h" id="h">sweep the cursor past the flame to make it dance · click the candle to blow it out</div>
 <script>
-const c=document.getElementById('c'),x=c.getContext('2d');let S=[];function size(){c.width=innerWidth;c.height=innerHeight}size();addEventListener('resize',size);
-document.getElementById('cd').onclick=()=>{document.body.classList.toggle('out');if(document.body.classList.contains('out')){const r=document.querySelector('.wk').getBoundingClientRect();for(let i=0;i<80;i++)S.push({x:r.left+2,y:r.top,vx:(Math.random()-.5)*.5,vy:-1-Math.random(),a:.5,r:2+Math.random()*3,d:i*3})}};
-function f(t){x.clearRect(0,0,c.width,c.height);for(let i=S.length-1;i>=0;i--){const p=S[i];if(p.d-->0)continue;p.x+=p.vx+Math.sin(t*.003+p.y*.02)*.6;p.y+=p.vy;p.r+=.15;p.a*=.985;if(p.a<.01){S.splice(i,1);continue}x.fillStyle=`rgba(180,170,160,${p.a*.3})`;x.beginPath();x.arc(p.x,p.y,p.r,0,7);x.fill()}requestAnimationFrame(f)}requestAnimationFrame(f);
+const c=document.getElementById('c'),x=c.getContext('2d');let W,H,dpr,TY,CX,wall;
+function size(){dpr=Math.min(devicePixelRatio||1,2);W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr;TY=H*.72;CX=W*.5;wall=null}size();addEventListener('resize',size);
+const U=()=>Math.min(W,H*1.3)/1000;
+function makeWall(){wall=document.createElement('canvas');wall.width=W;wall.height=H;const g=wall.getContext('2d');g.fillStyle='#6a4a34';g.fillRect(0,0,W,TY);
+// faint damask stripes
+for(let X=0;X<W;X+=60*U()){g.fillStyle='rgba(0,0,0,.08)';g.fillRect(X,0,30*U(),TY);for(let Y=20*U();Y<TY;Y+=90*U()){g.fillStyle='rgba(255,220,170,.05)';g.beginPath();g.ellipse(X+45*U(),Y,8*U(),16*U(),0,0,7);g.fill()}}
+for(let i=0;i<W*H/900;i++){g.fillStyle=`rgba(${Math.random()<.5?0:255},${Math.random()<.5?0:200},120,${Math.random()*.04})`;g.fillRect(Math.random()*W,Math.random()*TY,2*dpr,2*dpr)}
+// dado rail
+g.fillStyle='#3a2416';g.fillRect(0,TY-H*.2,W,H*.012);g.fillStyle='rgba(255,220,170,.1)';g.fillRect(0,TY-H*.2,W,H*.003);
+// table
+const tg=g.createLinearGradient(0,TY,0,H);tg.addColorStop(0,'#5a3420');tg.addColorStop(1,'#1a0c06');g.fillStyle=tg;g.fillRect(0,TY,W,H-TY);for(let k=0;k<40;k++){g.strokeStyle=`rgba(0,0,0,${.05+Math.random()*.1})`;g.lineWidth=(1+Math.random()*2)*dpr;g.beginPath();const y=TY+Math.random()*(H-TY);g.moveTo(0,y);g.bezierCurveTo(W*.3,y+Math.random()*10*dpr,W*.6,y-Math.random()*10*dpr,W,y);g.stroke()}
+g.fillStyle='rgba(255,220,170,.12)';g.fillRect(0,TY,W,2*dpr)}
+// ---------- objects (shape functions draw into a path; shadows reuse them) ----------
+function books(p){const u=U(),bx=CX-300*u,s=[[150,34,'#5a1a1a'],[130,28,'#1f3a4a'],[160,30,'#3a3a1a'],[120,24,'#4a2a3a']];let y=TY;const out=[];for(const [w,h,col] of s){const ox=(Math.sin(w)*14)*u;out.push([bx-w*u/2+ox,y-h*u,w*u,h*u,col]);y-=h*u}if(p)for(const b of out)p.rect(b[0],b[1],b[2],b[3]);return out}
+function glassPath(p){const u=U(),gx=CX+230*u,b=TY;p.moveTo(gx-36*u,b);p.lineTo(gx+36*u,b);p.quadraticCurveTo(gx+6*u,b-6*u,gx+4*u,b-14*u);p.lineTo(gx+4*u,b-78*u);p.bezierCurveTo(gx+50*u,b-92*u,gx+52*u,b-150*u,gx+46*u,b-190*u);p.lineTo(gx-46*u,b-190*u);p.bezierCurveTo(gx-52*u,b-150*u,gx-50*u,b-92*u,gx-4*u,b-78*u);p.lineTo(gx-4*u,b-14*u);p.quadraticCurveTo(gx-6*u,b-6*u,gx-36*u,b);p.closePath()}
+function vase(p,stems){const u=U(),vx=CX+400*u,b=TY;p.moveTo(vx-30*u,b);p.bezierCurveTo(vx-50*u,b-50*u,vx-34*u,b-90*u,vx-12*u,b-110*u);p.lineTo(vx+12*u,b-110*u);p.bezierCurveTo(vx+34*u,b-90*u,vx+50*u,b-50*u,vx+30*u,b);p.closePath();
+if(stems)for(let k=0;k<6;k++){const a=-1.9+k*.16,L=(160+k*26%70)*u;const sx=vx,sy=b-108*u,ex=sx+(k-2.5)*26*u,ey=sy-L;stems.push([sx,sy,(sx+ex)/2+(k-2.5)*8*u,sy-L*.6,ex,ey])}}
+// ---------- state ----------
+let lit=true,life=1,wind=0,windT=0,flick=1,lean=0,lastP=null,smoke=[],ember=0,match=null,grow=1,t0=performance.now();
+const N=t=>Math.sin(t*1.7)*.5+Math.sin(t*3.1+1)*.3+Math.sin(t*7.3+2)*.2;
+function wick(){const u=U(),h=(240*life+60)*u;return[CX,TY-24*u-h]}
+c.addEventListener('pointermove',e=>{const X=e.clientX*dpr,Y=e.clientY*dpr,n=performance.now();if(lastP){const dt=Math.max(1,n-lastP.t),vx=(X-lastP.x)/dt,[wx,wy]=wick();const d=Math.hypot(X-wx,Y-wy+60*U());const f=Math.max(0,1-d/(260*U()));wind+=vx*f*.9}lastP={x:X,y:Y,t:n}});
+c.addEventListener('pointerdown',e=>{A();const [wx,wy]=wick(),u=U(),X=e.clientX*dpr,Y=e.clientY*dpr;if(Math.abs(X-CX)<90*u&&Y>wy-160*u&&Y<TY+20*u){if(lit)blowOut();else if(!match)strike()}});
+addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();A();if(lit)blowOut();else if(!match)strike()}});
+function blowOut(){lit=false;ember=1;puff();document.getElementById('h').textContent='click the candle again to strike a match';document.getElementById('q').style.opacity=.25;const [wx,wy]=wick();for(let i=0;i<4;i++)smoke.push({x:wx,y:wy,vx:0,vy:-1,a:.5,age:0,seed:Math.random()*10})}
+function strike(){match={t:performance.now()};scratch()}
+// ---------- audio ----------
+let ac;function A(){if(!ac)try{ac=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}
+function noise(dur,f0,f1,q,v,delay=0){if(!ac)return;const t=ac.currentTime+delay,b=ac.createBuffer(1,ac.sampleRate*dur,ac.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.sin(Math.PI*i/d.length);const s=ac.createBufferSource(),f=ac.createBiquadFilter(),g=ac.createGain();s.buffer=b;f.type='bandpass';f.Q.value=q;f.frequency.setValueAtTime(f0,t);f.frequency.exponentialRampToValueAtTime(f1,t+dur);g.gain.value=v;s.connect(f).connect(g).connect(ac.destination);s.start(t)}
+const puff=()=>noise(.5,900,300,.6,.5),scratch=()=>{noise(.18,3000,5000,1.4,.35);noise(.6,600,1600,.5,.3,.18)};
+// ---------- frame ----------
+function frame(now){const t=(now-t0)/1000,u=U();if(!wall)makeWall();
+wind*=.9;windT=windT*.92+Math.abs(wind)*.08;lean+=(Math.max(-1.4,Math.min(1.4,wind*.25))-lean)*.15;if(lit&&windT>5.5&&grow>=1)blowOut();
+life=Math.max(.25,1-t/1800);flick=lit?(.92+N(t*2.3)*.06+(Math.random()-.5)*.04)*(1-Math.min(.5,windT*.05))*grow:0;ember*=.995;
+if(match){const k=(now-match.t)/1000;if(k>.9&&!lit){lit=true;grow=.05;noise(.4,400,900,.5,.25);document.getElementById('h').textContent='sweep the cursor past the flame to make it dance · click the candle to blow it out';document.getElementById('q').style.opacity=1}if(k>1.8)match=null}if(grow<1)grow=Math.min(1,grow+.012);
+const [wx,wy]=wick();const L=flick,lx=wx+lean*20*u+N(t*5)*2*u,ly=wy-50*u;
+x.globalCompositeOperation='source-over';x.drawImage(wall,0,0);
+// moonlight from an unseen window, only noticeable in the dark
+x.globalAlpha=.6;const mw=x.createLinearGradient(W*.06,0,W*.32,TY);mw.addColorStop(0,'rgba(120,150,210,.2)');mw.addColorStop(1,'rgba(120,150,210,0)');x.fillStyle=mw;x.beginPath();x.moveTo(W*.08,H*.1);x.lineTo(W*.2,H*.08);x.lineTo(W*.3,TY*.86);x.lineTo(W*.14,TY*.9);x.fill();x.globalAlpha=1;
+// objects
+const bk=books();for(const [bx2,by,bw,bh,col] of bk){x.fillStyle=col;x.fillRect(bx2,by,bw,bh);x.fillStyle='rgba(255,230,180,.6)';x.fillRect(bx2+bw*.06,by+bh*.25,bw*.02,bh*.5);x.fillStyle='rgba(240,225,190,.9)';x.fillRect(bx2+bw-3*u,by+2*u,3*u,bh-4*u)}
+const vp=new Path2D(),stems=[];vase(vp,stems);x.fillStyle='#2a4a5a';x.fill(vp);x.strokeStyle='#3a2a1a';x.lineWidth=2*u;for(const s of stems){x.beginPath();x.moveTo(s[0],s[1]);x.quadraticCurveTo(s[2],s[3],s[4],s[5]);x.stroke();x.fillStyle='#8a5a3a';x.beginPath();x.ellipse(s[4],s[5],7*u,4*u,.5,0,7);x.fill()}
+const gp=new Path2D();glassPath(gp);x.fillStyle='rgba(200,220,230,.12)';x.fill(gp);x.fillStyle='rgba(120,20,30,.7)';x.save();x.clip(gp);x.fillRect(CX+150*u,TY-150*u,160*u,72*u);x.restore();x.strokeStyle='rgba(255,240,220,.35)';x.lineWidth=1.5*u;x.stroke(gp);
+// candle body, holder and melt pool
+const ch=(240*life+60)*u,cw=56*u,top=TY-24*u-ch;const cg=x.createLinearGradient(CX-cw/2,0,CX+cw/2,0);cg.addColorStop(0,'#c8b898');cg.addColorStop(.38,'#fff8e8');cg.addColorStop(.62,'#eadcc0');cg.addColorStop(1,'#a89878');x.fillStyle=cg;x.fillRect(CX-cw/2,top,cw,ch);
+x.fillStyle='rgba(255,248,232,.95)';for(const [dx2,len] of [[-.32,.18],[.18,.1],[.4,.26]]){x.beginPath();x.moveTo(CX+cw*dx2-4*u,top);x.lineTo(CX+cw*dx2-4*u,top+ch*len);x.arc(CX+cw*dx2,top+ch*len,4*u,Math.PI,0,true);x.lineTo(CX+cw*dx2+4*u,top);x.fill()}
+x.fillStyle=lit?`rgba(255,200,120,${.6*L})`:'rgba(240,230,210,.9)';x.beginPath();x.ellipse(CX,top,cw/2,7*u,0,0,7);x.fill();
+const hg=x.createLinearGradient(CX-120*u,0,CX+120*u,0);hg.addColorStop(0,'#5a3a10');hg.addColorStop(.4,'#f6dc9a');hg.addColorStop(.6,'#c9a15a');hg.addColorStop(1,'#4a2a08');x.fillStyle=hg;x.beginPath();x.ellipse(CX,TY-6*u,120*u,18*u,0,0,7);x.fill();x.fillRect(CX-40*u,TY-26*u,80*u,20*u);x.beginPath();x.ellipse(CX,TY-26*u,40*u,8*u,0,0,7);x.fill();
+// wick
+x.strokeStyle='#1a1008';x.lineWidth=3*u;x.lineCap='round';x.beginPath();x.moveTo(wx,top);x.quadraticCurveTo(wx+lean*4*u,top-10*u,wx+lean*8*u+2*u,top-18*u);x.stroke();if(!lit&&ember>.02){x.fillStyle=`rgba(255,${90+ember*80|0},30,${ember})`;x.shadowColor='#ff5a10';x.shadowBlur=10*dpr*ember;x.beginPath();x.arc(wx+2*u,top-17*u,2.6*u,0,7);x.fill();x.shadowBlur=0}
+// darkness, lit from the flame: light falls off with distance
+const amb=.06+(lit?0:0);const rad=Math.max(W,H)*(.42+L*.35);const dk=x.createRadialGradient(lx,ly,0,lx,ly,rad);dk.addColorStop(0,`rgba(5,3,2,${1-Math.min(1,L*1.05)})`);dk.addColorStop(.35,`rgba(5,3,2,${1-L*.55})`);dk.addColorStop(1,`rgba(5,3,2,${.97-amb})`);x.fillStyle=dk;x.fillRect(0,0,W,H);
+// shadows cast on the wall: each silhouette projected from the flame, swaying with it
+if(L>.02){x.save();x.beginPath();x.rect(0,0,W,TY);x.clip();x.filter=`blur(${(6+lean*lean*4)*dpr}px)`;x.fillStyle=`rgba(5,3,2,${.6*L})`;const k=1.55;x.translate(lx,ly);x.scale(k,k*1.05);x.translate(-lx,-ly);x.translate(0,-(TY-ly)*.42);
+const sp=new Path2D();books(sp);vase(sp);glassPath(sp);x.fill(sp);x.strokeStyle=`rgba(5,3,2,${.6*L})`;x.lineWidth=3*u;for(const s of stems){x.beginPath();x.moveTo(s[0],s[1]);x.quadraticCurveTo(s[2],s[3],s[4],s[5]);x.stroke()}x.filter='none';x.restore()}
+// warm glow
+x.globalCompositeOperation='lighter';if(L>.01){const g1=x.createRadialGradient(lx,ly,0,lx,ly,rad*.55);g1.addColorStop(0,`rgba(255,150,60,${.32*L})`);g1.addColorStop(1,'rgba(255,120,40,0)');x.fillStyle=g1;x.fillRect(0,0,W,H)}
+// highlights on glass and holder catch the flame
+if(L>.01){x.fillStyle=`rgba(255,220,160,${.5*L})`;x.fillRect(CX+230*u-38*u+lean*2*u,TY-180*u,4*u,80*u);x.beginPath();x.ellipse(CX-30*u,TY-8*u,24*u,3*u,0,0,7);x.fill()}
+// the flame
+if(lit){const fh=(92+N(t*4)*8)*u*grow*(1-Math.min(.4,windT*.04)),fw=26*u*grow,tipx=wx+lean*fh*.75+N(t*6+3)*3*u,tipy=top-16*u-fh,bx=wx+lean*6*u,by=top-12*u;
+const halo=x.createRadialGradient(bx,by-fh*.45,0,bx,by-fh*.45,fh*1.8);halo.addColorStop(0,`rgba(255,200,120,${.35*L})`);halo.addColorStop(1,'rgba(255,160,60,0)');x.fillStyle=halo;x.fillRect(bx-fh*2,by-fh*2.4,fh*4,fh*4);
+const fp=new Path2D();fp.moveTo(bx,by+6*u);fp.bezierCurveTo(bx-fw*1.1,by-fh*.1,bx-fw*.6+lean*fh*.2,by-fh*.6,tipx,tipy);fp.bezierCurveTo(bx+fw*.6+lean*fh*.2,by-fh*.6,bx+fw*1.1,by-fh*.1,bx,by+6*u);
+const fg=x.createRadialGradient(bx,by-fh*.18,0,bx+lean*fh*.2,by-fh*.4,fh*.9);fg.addColorStop(0,'rgba(255,255,250,1)');fg.addColorStop(.25,'rgba(255,240,180,.98)');fg.addColorStop(.55,'rgba(255,170,60,.85)');fg.addColorStop(1,'rgba(255,90,20,0)');x.fillStyle=fg;x.fill(fp);
+x.fillStyle='rgba(60,110,255,.55)';x.beginPath();x.ellipse(bx,by,fw*.42,fh*.1,0,0,7);x.fill();x.fillStyle='rgba(120,60,20,.5)';x.beginPath();x.ellipse(bx+lean*3*u,by-fh*.12,fw*.18,fh*.16,lean*.3,0,7);x.fill()}
+x.globalCompositeOperation='source-over';
+// the match
+if(match){const k=(now-match.t)/1000,e=Math.min(1,k/.8),mx=W*.9+(wx+20*u-W*.9)*(1-Math.pow(1-e,3)),my=H*.95+(top-30*u-H*.95)*(1-Math.pow(1-e,3)),fade=k>1.3?Math.max(0,1-(k-1.3)*2):1;x.globalAlpha=fade;
+x.save();x.translate(mx,my);x.rotate(-.6);x.fillStyle='#d8b880';x.fillRect(0,-3*u,110*u,6*u);x.fillStyle='#8a2a1a';x.beginPath();x.ellipse(0,0,8*u,5*u,0,0,7);x.fill();x.restore();
+x.globalCompositeOperation='lighter';const mg=x.createRadialGradient(mx,my-10*u,0,mx,my-10*u,(60+Math.sin(k*30)*6)*u);mg.addColorStop(0,'rgba(255,230,150,.9)');mg.addColorStop(.3,'rgba(255,150,50,.5)');mg.addColorStop(1,'rgba(255,100,20,0)');x.fillStyle=mg;x.fillRect(mx-80*u,my-90*u,160*u,160*u);x.globalCompositeOperation='source-over';x.globalAlpha=1}
+// smoke ribbon from a snuffed wick
+if(!lit&&ember>.2&&Math.random()<.9)smoke.push({x:wx+2*u,y:top-18*u,vx:0,vy:-1.2*dpr,a:.4*ember,age:0,seed:Math.random()*10});
+for(const s of smoke){s.age++;s.vy*=.995;s.x+=Math.sin(s.age*.05+s.seed)*.5*dpr+s.vx+wind*.1;s.y+=s.vy;s.a*=.988}smoke=smoke.filter(s=>s.a>.01&&s.y>0);
+x.lineCap='round';for(let i=1;i<smoke.length;i++){const a=smoke[i-1],b=smoke[i];if(Math.hypot(a.x-b.x,a.y-b.y)>30*dpr)continue;x.strokeStyle=`rgba(200,190,180,${b.a*.6})`;x.lineWidth=(2+b.age*.05)*dpr;x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}
+requestAnimationFrame(frame)}requestAnimationFrame(frame);
 </script></body></html>
