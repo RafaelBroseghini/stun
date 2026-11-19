@@ -149,6 +149,7 @@ body::after{content:"";position:fixed;inset:-50%;z-index:60;pointer-events:none;
 .cur{width:6px;height:6px;background:var(--fg)}
 .cur-r{width:34px;height:34px;border:1px solid var(--fg);display:grid;place-items:center;font:500 9px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--onaccent);transition:width .35s cubic-bezier(.2,.8,.2,1),height .35s cubic-bezier(.2,.8,.2,1),background .3s,border-color .3s,opacity .3s}
 .cur-r span{opacity:0;transition:opacity .2s}
+.cur,.cur-r{opacity:0}body.cur-on .cur,body.cur-on .cur-r{opacity:1}body.cur-on.hov .cur,body.room-open .cur,body.room-open .cur-r{opacity:0}
 body.hov .cur-r{width:76px;height:76px;background:var(--accent);border-color:var(--accent)}body.hov .cur-r span{opacity:1}body.hov .cur{opacity:0}
 body.room-open .cur,body.room-open .cur-r{opacity:0}
 @media (hover:none),(pointer:coarse){.cur,.cur-r{display:none}}
@@ -304,7 +305,7 @@ body.room-open .cur,body.room-open .cur-r{opacity:0}
     p.addEventListener('pointerleave', () => { fr.style.setProperty('--rx', '0deg'); fr.style.setProperty('--ry', '0deg'); }); });
   // custom cursor
   const cur = $('cur'), curR = $('curR'); let cx = -99, cy = -99, rx = -99, ry = -99;
-  if (fine) { addEventListener('pointermove', e => { cx = e.clientX; cy = e.clientY; const t = e.target.closest && e.target.closest('.plate,.row,.now'); document.body.classList.toggle('hov', !!t); }); addEventListener('pointerleave', () => { cx = cy = -99; }); }
+  if (fine) { addEventListener('pointermove', e => { cx = e.clientX; cy = e.clientY; document.body.classList.add('cur-on'); const t = e.target.closest && e.target.closest('.plate,.row,.now'); document.body.classList.toggle('hov', !!t); }); addEventListener('pointerleave', () => { cx = cy = -99; }); }
   // the wordmark leans away from the cursor
   const L = [...document.querySelectorAll('.mark span')].map(el => ({ el, x: 0, y: 0, r: 0, vx: 0, vy: 0, vr: 0 })); let mx = -1e4, my = -1e4;
   document.querySelector('.mast').addEventListener('pointermove', e => { mx = e.clientX; my = e.clientY; });
