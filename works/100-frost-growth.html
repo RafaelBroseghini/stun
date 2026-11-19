@@ -1,18 +1,67 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Frost Growth</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen&family=Spectral:ital,wght@1,300&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#0a1220}canvas{display:block;width:100%;height:100%;image-rendering:pixelated;cursor:crosshair}
-.t{position:fixed;right:24px;bottom:20px;text-align:right;color:#cfe8ff;font:italic 300 clamp(26px,3.5vw,48px)/1 Spectral,serif}.t small{display:block;font:400 10px Silkscreen,monospace;letter-spacing:.15em;margin-top:10px;opacity:.75;font-style:normal}</style></head><body>
-<canvas id="c"></canvas><div class="t">Frost, growing<small>diffusion-limited aggregation · <span id="n">0</span> crystals · click to seed</small></div>
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#0a1220;user-select:none;-webkit-user-select:none}
+canvas{position:fixed;inset:0;width:100%;height:100%;touch-action:none}#bg{filter:blur(0)}#fr{cursor:crosshair;filter:drop-shadow(0 0 1.5px rgba(210,235,255,.7)) drop-shadow(0 0 6px rgba(150,200,255,.25))}#fg{pointer-events:none}#sp{pointer-events:none}
+.frame{position:fixed;inset:0;pointer-events:none;border:clamp(16px,2.6vw,30px) solid #3a2818;border-image:linear-gradient(135deg,#5a3c24,#2a1a0e 40%,#4a3020 60%,#1e1208) 1;box-shadow:inset 0 0 0 2px rgba(0,0,0,.6),inset 0 0 40px rgba(0,0,0,.6)}
+.mv,.mh{position:fixed;background:linear-gradient(90deg,#2a1a0e,#5a3c24 50%,#2a1a0e);pointer-events:none;box-shadow:0 0 12px rgba(0,0,0,.6)}.mv{left:50%;top:0;bottom:0;width:clamp(10px,1.4vw,18px);transform:translateX(-50%)}.mh{top:52%;left:0;right:0;height:clamp(10px,1.4vw,18px);transform:translateY(-50%);background:linear-gradient(#2a1a0e,#5a3c24 50%,#2a1a0e)}
+.t{position:fixed;right:clamp(30px,4vw,54px);bottom:clamp(30px,4vw,50px);text-align:right;color:#e4f2ff;font:italic 300 clamp(26px,3.5vw,48px)/1 Spectral,serif;text-shadow:0 2px 16px rgba(0,10,30,.9);pointer-events:none}.t small{display:block;font:400 10px Silkscreen,monospace;letter-spacing:.15em;margin-top:10px;opacity:.85;font-style:normal;line-height:1.8}
+.ctl{position:fixed;left:clamp(30px,4vw,54px);bottom:clamp(30px,4vw,50px);color:#cfe8ff;font:400 10px Silkscreen,monospace;letter-spacing:.12em;display:flex;align-items:center;gap:10px;background:rgba(10,18,32,.6);padding:8px 12px;border-radius:4px}.ctl input{width:130px;accent-color:#9fd4ff}</style></head><body>
+<canvas id="bg"></canvas><canvas id="fr"></canvas><canvas id="fg"></canvas><canvas id="sp"></canvas>
+<div class="mv"></div><div class="mh"></div><div class="frame"></div>
+<div class="t">Frost, growing<small>diffusion-limited aggregation · <span id="n">0</span> crystals<br>hold &amp; drag to melt with your breath · tap to seed</small></div>
+<label class="ctl">−2°C<input type="range" id="tp" min="2" max="25" value="12">−25°C <span id="tv">−12°C</span></label>
 <script>
-const c=document.getElementById('c'),x=c.getContext('2d');let W,H,G,img,u32,seeds,R,cnt=0;
-function init(){const s=.42;W=c.width=Math.floor(innerWidth*s);H=c.height=Math.floor(innerHeight*s);G=new Int32Array(W*H);img=x.createImageData(W,H);u32=new Uint32Array(img.data.buffer);u32.fill(0xff201208);seeds=[];cnt=0;seed(W/2|0,H/2|0);seed(W*.22|0,H*.7|0);seed(W*.8|0,H*.3|0)}
-function col(age){const t=Math.min(1,age/9000);const r=200+55*t,g=232-60*t,b=255-40*t;return 0xff000000|(b<<16)|(g<<8)|r}
-function stick(X,Y){G[Y*W+X]=++cnt;u32[Y*W+X]=col(cnt)}
-function seed(X,Y){seeds.push({x:X,y:Y,r:2});stick(X,Y)}
-init();addEventListener('resize',init);c.addEventListener('click',e=>seed(Math.floor(e.clientX/innerWidth*W),Math.floor(e.clientY/innerHeight*H)));
-function walk(){const s=seeds[Math.random()*seeds.length|0];const a=Math.random()*Math.PI*2;let X=Math.round(s.x+Math.cos(a)*(s.r+4)),Y=Math.round(s.y+Math.sin(a)*(s.r+4));
-for(let k=0;k<1200;k++){X+=(Math.random()*3|0)-1;Y+=(Math.random()*3|0)-1;if(X<1||Y<1||X>=W-1||Y>=H-1)return;const d=Math.hypot(X-s.x,Y-s.y);if(d>s.r+14)return;
-if(G[Y*W+X-1]||G[Y*W+X+1]||G[(Y-1)*W+X]||G[(Y+1)*W+X]){stick(X,Y);if(d>s.r)s.r=d;return}}}
-function f(){for(let i=0;i<5000;i++)walk();x.putImageData(img,0,0);document.getElementById('n').textContent=cnt.toLocaleString('en');requestAnimationFrame(f)}
-for(let i=0;i<120000;i++)walk();f();
+const $=id=>document.getElementById(id);const bg=$('bg'),fr=$('fr'),fg=$('fg'),sp=$('sp'),bx=bg.getContext('2d'),fx=fr.getContext('2d'),gx=fg.getContext('2d'),sx=sp.getContext('2d');
+const SC=.42;let W,H,G,img,u32,cells,nc=0,cnt=0,dpr,PW,PH,fog;
+function scene(){dpr=Math.min(devicePixelRatio||1,2);PW=bg.width=sp.width=fg.width=innerWidth*dpr;PH=bg.height=sp.height=fg.height=innerHeight*dpr;
+// a blurred night street seen through the glass
+const g=bx.createLinearGradient(0,0,0,PH);g.addColorStop(0,'#050a18');g.addColorStop(.6,'#13203a');g.addColorStop(1,'#1e2236');bx.fillStyle=g;bx.fillRect(0,0,PW,PH);
+bx.filter=`blur(${10*dpr}px)`;bx.fillStyle='#0a0e1c';for(let i=0;i<9;i++){const w=PW*(.08+Math.random()*.1),h=PH*(.25+Math.random()*.35);bx.fillRect(i/9*PW,PH*.75-h,w,h+PH)}
+for(let i=0;i<70;i++){const X=Math.random()*PW,Y=PH*(.3+Math.random()*.5),r=(6+Math.random()*26)*dpr;const warm=Math.random()<.7;const c=warm?`rgba(255,${170+Math.random()*60|0},${80+Math.random()*60|0},${.25+Math.random()*.5})`:`rgba(140,190,255,${.2+Math.random()*.4})`;bx.fillStyle=c;bx.beginPath();bx.arc(X,Y,r,0,7);bx.fill()}
+const lg=bx.createRadialGradient(PW*.7,PH*.35,0,PW*.7,PH*.35,PH*.35);lg.addColorStop(0,'rgba(255,200,120,.5)');lg.addColorStop(1,'rgba(255,200,120,0)');bx.fillStyle=lg;bx.fillRect(0,0,PW,PH);bx.filter='none';
+for(let i=0;i<260;i++){bx.fillStyle=`rgba(255,255,255,${Math.random()*.6})`;bx.fillRect(Math.random()*PW,Math.random()*PH,1.4*dpr,1.4*dpr)}}
+function init(){scene();W=fr.width=Math.floor(innerWidth*SC);H=fr.height=Math.floor(innerHeight*SC);G=new Int32Array(W*H);img=fx.createImageData(W,H);u32=new Uint32Array(img.data.buffer);cells=new Int32Array(W*H);nc=0;cnt=0;
+// seeds sprout from the frame and mullions, sparsely, so separate ferns grow
+const fw=Math.max(7,Math.round(Math.min(30,innerWidth*.026)*SC)),mw=Math.round(Math.min(18,innerWidth*.014)*SC/2)+1,cx=W/2|0,cy=H*.52|0;
+const edge=[];for(let X=fw;X<W-fw;X++){edge.push([X,fw],[X,H-fw-1],[X,cy-mw],[X,cy+mw])}for(let Y=fw;Y<H-fw;Y++){edge.push([fw,Y],[W-fw-1,Y],[cx-mw,Y],[cx+mw,Y])}
+for(const [X,Y] of edge)if(Math.random()<.05)stick(X,Y);for(const [X,Y] of edge)mask(X,Y);
+fog=new Float32Array(W*H)}
+const BLOCK=-1;function mask(X,Y){}
+function col(age){const t=Math.min(1,age/14000);const r=225-40*t,g=242-30*t,b=255;const a=240-t*60;return(a<<24)|(b<<16)|(g<<8)|r}
+function stick(X,Y){const i=Y*W+X;if(G[i])return;G[i]=++cnt;u32[i]=col(cnt);cells[nc++]=i}
+function melt(X,Y,r){const r2=r*r;for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){if(dx*dx+dy*dy>r2)continue;const xx=X+dx,yy=Y+dy;if(xx<1||yy<1||xx>=W-1||yy>=H-1)continue;const i=yy*W+xx;if(G[i]&&(dx*dx+dy*dy<r2*.6||Math.random()<.4)){G[i]=0;u32[i]=0}fog[i]=Math.min(1,fog[i]+.08)}}
+function walk(){if(!nc)return;const i0=cells[Math.random()*nc|0];if(!G[i0])return;const a=Math.random()*Math.PI*2,d=6+Math.random()*10;let X=Math.round(i0%W+Math.cos(a)*d),Y=Math.round((i0/W|0)+Math.sin(a)*d);
+for(let k=0;k<160;k++){X+=(Math.random()*3|0)-1;Y+=(Math.random()*3|0)-1;if(X<1||Y<1||X>=W-1||Y>=H-1)return;const i=Y*W+X;if(G[i])return;if(fog[i]>.25)return;
+const n=(G[i-1]?1:0)+(G[i+1]?1:0)+(G[i-W]?1:0)+(G[i+W]?1:0);if(n&&(n===1||Math.random()<.4)){stick(X,Y);return}}}
+init();let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(init,200)});
+// ---------- interaction ----------
+let down=null,breath=0;const toG=e=>[Math.floor(e.clientX/innerWidth*W),Math.floor(e.clientY/innerHeight*H)];
+fr.addEventListener('pointerdown',e=>{A();fr.setPointerCapture(e.pointerId);down={t:performance.now(),x:e.clientX,y:e.clientY,moved:0}});
+fr.addEventListener('pointermove',e=>{if(!down)return;down.moved+=Math.hypot(e.clientX-down.x,e.clientY-down.y);down.x=e.clientX;down.y=e.clientY});
+addEventListener('pointerup',e=>{if(!down)return;if(down.moved<6&&performance.now()-down.t<300){const [X,Y]=toG(e);for(let k=0;k<5;k++)stick(Math.max(1,Math.min(W-2,X+(k?Math.round(Math.random()*4-2):0))),Math.max(1,Math.min(H-2,Y+(k?Math.round(Math.random()*4-2):0))));sparkle(e.clientX*dpr,e.clientY*dpr,30);tink(1)}down=null});
+addEventListener('keydown',e=>{if(e.key==='Enter'){for(let k=0;k<8;k++)stick(2+Math.random()*(W-4)|0,2+Math.random()*(H-4)|0)}if(e.key===' '){e.preventDefault();breathAt(innerWidth/2,innerHeight/2,40)}});
+const tp=$('tp');tp.oninput=()=>$('tv').textContent='−'+tp.value+'°C';
+function breathAt(cx,cy,r){const X=Math.floor(cx/innerWidth*W),Y=Math.floor(cy/innerHeight*H);melt(X,Y,r)}
+// ---------- sparkles & audio ----------
+const spk=[];function sparkle(X,Y,n){for(let k=0;k<n;k++)spk.push({x:X+(Math.random()-.5)*30*dpr,y:Y+(Math.random()-.5)*30*dpr,l:1,s:Math.random()*3+1})}
+let ac,bg2;function A(){if(ac)return;try{ac=new (window.AudioContext||window.webkitAudioContext)()}catch(e){return}const b=ac.createBuffer(1,ac.sampleRate*2,ac.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;const s=ac.createBufferSource();s.buffer=b;s.loop=true;const f=ac.createBiquadFilter();f.type='bandpass';f.frequency.value=900;f.Q.value=.5;bg2=ac.createGain();bg2.gain.value=0;s.connect(f).connect(bg2).connect(ac.destination);s.start()}
+function tink(v=.4){if(!ac)return;const t=ac.currentTime,f0=3000+Math.random()*4000,o=ac.createOscillator(),g=ac.createGain();o.frequency.value=f0;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.03*v,t+.003);g.gain.exponentialRampToValueAtTime(.0001,t+.25);o.connect(g).connect(ac.destination);o.start(t);o.stop(t+.26)}
+// ---------- loop ----------
+let lastN=0,tinkT=0;
+function frame(now){const temp=+tp.value;const fill=cnt/(W*H);const n=Math.round((300+temp*45)*Math.max(.04,1-fill/.5));for(let i=0;i<n;i++)walk();
+if(down&&(down.moved>6||performance.now()-down.t>300)){breathAt(down.x,down.y,Math.round(22*SC*2));breath=Math.min(1,breath+.08)}else breath*=.92;if(bg2)bg2.gain.setTargetAtTime(breath*.12,ac.currentTime,.05);
+// fog of breath evaporates; frost can only regrow once the glass is dry and cold again
+for(let i=0;i<fog.length;i+=1){if(fog[i]>0)fog[i]=Math.max(0,fog[i]-.0016*(temp/12))}
+fx.putImageData(img,0,0);
+// condensation layer
+gx.clearRect(0,0,PW,PH);if(down||breath>.01||fogAny()){const fi=fogImg();gx.imageSmoothingEnabled=true;gx.drawImage(fi,0,0,PW,PH)}
+// sparkles where light catches new crystals
+sx.clearRect(0,0,PW,PH);if(cnt>lastN&&Math.random()<.6){for(let k=0;k<3;k++){const i=cells[Math.max(0,nc-1-(Math.random()*200|0))];if(i!==undefined&&G[i])spk.push({x:(i%W+.5)/W*PW,y:((i/W|0)+.5)/H*PH,l:1,s:Math.random()*2+1})}}
+if(ac&&cnt-lastN>0&&now-tinkT>120&&Math.random()<.3){tink(.25);tinkT=now}lastN=cnt;
+sx.globalCompositeOperation='lighter';for(let k=spk.length-1;k>=0;k--){const s=spk[k];s.l-=.03;if(s.l<=0){spk.splice(k,1);continue}const r=s.s*dpr*s.l*3;sx.strokeStyle=`rgba(230,245,255,${s.l})`;sx.lineWidth=dpr;sx.beginPath();sx.moveTo(s.x-r,s.y);sx.lineTo(s.x+r,s.y);sx.moveTo(s.x,s.y-r);sx.lineTo(s.x,s.y+r);sx.stroke();sx.fillStyle=`rgba(255,255,255,${s.l})`;sx.beginPath();sx.arc(s.x,s.y,dpr*1.2,0,7);sx.fill()}sx.globalCompositeOperation='source-over';
+$('n').textContent=cnt.toLocaleString('en');requestAnimationFrame(frame)}
+let fogC,fogX,fogD,fogDirty=0;function fogAny(){return fogDirty>0}
+function fogImg(){if(!fogC||fogC.width!==W){fogC=document.createElement('canvas');fogC.width=W;fogC.height=H;fogX=fogC.getContext('2d');fogD=fogX.createImageData(W,H)}const d=new Uint32Array(fogD.data.buffer);let any=0;for(let i=0;i<fog.length;i++){const a=fog[i];if(a>0){any=1;d[i]=((a*150|0)<<24)|0x00f4ece0}else d[i]=0}fogDirty=any;fogX.putImageData(fogD,0,0);return fogC}
+const _melt=melt;melt=function(X,Y,r){fogDirty=1;_melt(X,Y,r)};
+for(let i=0;i<30000;i++)walk();requestAnimationFrame(frame);
 </script></body></html>

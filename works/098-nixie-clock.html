@@ -1,20 +1,57 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Nixie Clock</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fjalla+One&display=swap">
-<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{background:#141210 radial-gradient(ellipse at 50% 60%,#2a2018,#0c0a08 70%);display:grid;place-items:center;font-family:'Fjalla One',sans-serif}
-.base{display:flex;gap:clamp(6px,1.2vw,16px);align-items:flex-end;padding:clamp(14px,2vw,26px) clamp(16px,3vw,40px) clamp(20px,3vw,36px);background:linear-gradient(#3a2416,#1f130b);border-radius:12px;box-shadow:0 30px 60px #000,inset 0 2px 0 #5a3a22}
-.tube{position:relative;width:clamp(44px,9vw,110px);aspect-ratio:.52;border-radius:46% 46% 8px 8px/22% 22% 8px 8px;background:linear-gradient(90deg,rgba(255,255,255,.12),rgba(255,255,255,.02) 30%,rgba(255,255,255,.0) 70%,rgba(255,255,255,.1));box-shadow:inset 0 0 0 1px rgba(255,255,255,.18),inset 0 -14px 20px rgba(0,0,0,.5);overflow:hidden}
-.tube::before{content:"";position:absolute;inset:16% 10% 10%;background-image:linear-gradient(rgba(140,120,100,.25) 1px,transparent 1px),linear-gradient(90deg,rgba(140,120,100,.25) 1px,transparent 1px);background-size:6px 6px}
-.tube::after{content:"";position:absolute;left:0;right:0;bottom:0;height:9%;background:linear-gradient(#555,#222)}
-.d{position:absolute;inset:14% 0 10%;display:grid;place-items:center;font-size:clamp(46px,10vw,124px);line-height:1}.d span{grid-area:1/1;color:rgba(120,90,60,.18)}.d span.on{color:#ffb35c;text-shadow:0 0 4px #fff3c0,0 0 10px #ff7a1a,0 0 24px #ff5a00,0 0 50px #ff5a00}
-.col{display:flex;flex-direction:column;gap:clamp(10px,2vw,24px);padding-bottom:clamp(30px,5vw,60px)}.col i{width:clamp(6px,1vw,12px);aspect-ratio:1;border-radius:50%;background:#ffb35c;box-shadow:0 0 10px #ff5a00,0 0 20px #ff5a00;animation:b 1s steps(1) infinite}@keyframes b{50%{opacity:.15}}
-.lbl{position:fixed;bottom:5vh;color:#8a6a4a;letter-spacing:.4em;font-size:12px}</style></head><body>
-<div class="base" id="b"></div><div class="lbl">IN-14 TUBES · <span id="md">TIME</span> · <span id="tz"></span> · CLICK TO CHANGE MODE</div>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=IBM+Plex+Mono:wght@400&display=swap">
+<style>*{margin:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;user-select:none;-webkit-user-select:none}
+body{--fl:1;background:#141210 radial-gradient(ellipse at 50% 64%,#3a2618,#120c08 62%,#060403);display:grid;place-items:center;font-family:'Fjalla One',sans-serif;color:#c89a6a}
+.desk{position:fixed;left:0;right:0;bottom:0;height:34vh;background:linear-gradient(#24160c,#0a0604);box-shadow:inset 0 2px 0 rgba(255,180,100,.08)}
+.dev{position:relative;display:flex;flex-direction:column;align-items:center;transform:translateY(-3vh)}
+.row{display:flex;gap:clamp(6px,1.3vw,18px);align-items:flex-end;padding:0 clamp(16px,3vw,40px);position:relative;z-index:2}
+.tube{position:relative;width:clamp(44px,9.5vw,116px);aspect-ratio:.5;perspective:420px}
+.glass{position:absolute;inset:0;border-radius:48% 48% 10px 10px/20% 20% 10px 10px;background:linear-gradient(90deg,rgba(255,255,255,.14),rgba(255,255,255,.03) 24%,rgba(255,255,255,0) 62%,rgba(255,255,255,.12) 88%,rgba(255,255,255,.04));box-shadow:inset 0 0 0 1px rgba(255,255,255,.2),inset 0 -18px 24px rgba(0,0,0,.55),inset 0 10px 14px rgba(200,200,210,.08);z-index:3;pointer-events:none}
+.glass::before{content:"";position:absolute;left:18%;right:18%;top:3%;height:9%;border-radius:50%;background:radial-gradient(ellipse at 50% 60%,rgba(220,220,230,.5),rgba(120,120,130,.2) 60%,transparent 70%)}
+.glass::after{content:"";position:absolute;left:10%;top:14%;width:7%;height:62%;border-radius:20px;background:linear-gradient(rgba(255,255,255,.35),rgba(255,255,255,0))}
+.mesh{position:absolute;inset:15% 9% 12%;background-image:radial-gradient(circle,transparent 1.4px,rgba(150,130,110,.32) 1.6px,transparent 2.2px);background-size:6px 5.2px;z-index:2;pointer-events:none;transform:translateZ(14px)}
+.stack{position:absolute;inset:15% 12% 12%;transform-style:preserve-3d;transition:transform .4s cubic-bezier(.2,.8,.2,1)}
+.stack svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}.stack path{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke:rgba(150,128,104,.3);stroke-width:2;transition:stroke .08s}
+.stack svg.on path{stroke:#ffe2b0;stroke-width:3;opacity:var(--fl)}.stack svg.on{filter:drop-shadow(0 0 2px #ffa040) drop-shadow(0 0 6px #ff6a10) drop-shadow(0 0 16px #ff4a00)}
+.stack svg.ghost path{stroke:rgba(255,140,60,.45)}
+.pins{position:absolute;left:12%;right:12%;bottom:-4%;height:6%;background:repeating-linear-gradient(90deg,#888 0 2px,transparent 2px 9px);z-index:1}
+.sock{position:absolute;left:-6%;right:-6%;bottom:-9%;height:9%;border-radius:4px;background:linear-gradient(#3a3a3a,#111);box-shadow:0 0 30px 6px rgba(255,100,20,.18)}
+.col{display:flex;flex-direction:column;gap:clamp(12px,2.6vw,32px);padding-bottom:clamp(36px,6vw,70px);z-index:2}.col i{position:relative;width:clamp(8px,1.2vw,14px);aspect-ratio:.6;border-radius:50% 50% 30% 30%;background:rgba(255,255,255,.1);box-shadow:inset 0 0 0 1px rgba(255,255,255,.2)}.col i::after{content:"";position:absolute;inset:28%;border-radius:50%;background:#ffb35c;box-shadow:0 0 8px #ff5a00,0 0 18px #ff5a00;opacity:var(--blink,1);transition:opacity .15s}
+.base{position:relative;margin-top:-1px;width:calc(100% + 2vw);padding:clamp(16px,2.6vw,30px) clamp(20px,3vw,40px);background:repeating-linear-gradient(90deg,rgba(0,0,0,.08) 0 3px,transparent 3px 11px),linear-gradient(#5a3420,#3a2012 40%,#24140a);border-radius:10px;box-shadow:0 40px 60px rgba(0,0,0,.7),inset 0 2px 0 rgba(255,200,140,.25),inset 0 -6px 12px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:space-between;gap:20px}
+.base::before{content:"";position:absolute;left:0;right:0;top:0;height:40%;background:radial-gradient(ellipse 60% 100% at 50% 0,rgba(255,120,40,.22),transparent);pointer-events:none}
+.plate{padding:6px 14px;background:linear-gradient(#f6dc9a,#b8893a);border-radius:3px;color:#3a2208;font:400 clamp(10px,1.2vw,14px) 'IBM Plex Mono',monospace;letter-spacing:.14em;box-shadow:0 2px 0 #3a2208,inset 0 1px 0 #fff6d6;text-align:center;line-height:1.5}
+.sw{display:flex;gap:clamp(10px,1.8vw,22px)}.tg{display:flex;flex-direction:column;align-items:center;gap:6px;font:400 10px 'IBM Plex Mono';letter-spacing:.14em;color:#d8b080;cursor:pointer}.tg b{position:relative;width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#eee,#777 60%,#333);box-shadow:0 2px 4px #000}
+.tg b::after{content:"";position:absolute;left:50%;top:50%;width:6px;height:22px;margin-left:-3px;border-radius:3px;background:linear-gradient(90deg,#999,#fff,#888);transform-origin:50% 0;transform:rotate(180deg) translateY(-2px);transition:transform .18s cubic-bezier(.3,1.6,.5,1);box-shadow:0 3px 4px rgba(0,0,0,.5)}.tg.on b::after{transform:rotate(0deg) translateY(-2px)}
+.lbl{position:fixed;bottom:4vh;left:0;right:0;text-align:center;color:#8a6a4a;letter-spacing:.34em;font-size:12px}
+@media(max-width:640px){.base{flex-direction:column;gap:12px}}</style></head><body>
+<div class="desk"></div>
+<div class="dev"><div class="row" id="row"></div><div class="base"><div class="plate">IN-14 · SIX TUBE<br><span id="md">TIME</span></div><div class="sw"><div class="tg on" data-m="0"><b></b>TIME</div><div class="tg" data-m="1"><b></b>DATE</div><div class="tg" data-m="2"><b></b>STOP</div><div class="tg" id="snd"><b></b>SOUND</div></div><div class="plate" id="tz">--</div></div></div>
+<div class="lbl">MOVE TO PEER INTO THE CATHODE STACK · SPACE STARTS / STOPS THE STOPWATCH</div>
 <script>
-const b=document.getElementById('b'),T=[];const order=[1,6,2,7,5,0,4,9,8,3];
-for(let i=0;i<6;i++){if(i===2||i===4){const c=document.createElement('div');c.className='col';c.innerHTML='<i></i><i></i>';b.appendChild(c)}const t=document.createElement('div');t.className='tube';const d=document.createElement('div');d.className='d';order.forEach(n=>{const s=document.createElement('span');s.textContent=n;s.dataset.n=n;d.appendChild(s)});t.appendChild(d);b.appendChild(t);T.push(d)}
-let prev='',mode=0,sw0=0;const p2=v=>String(v).padStart(2,'0');const MD=['TIME','DATE','STOPWATCH'];
-function str(){const n=new Date();if(mode===1)return [n.getDate(),n.getMonth()+1,n.getFullYear()%100].map(p2).join('');if(mode===2){const e=(performance.now()-sw0)/10|0;return [Math.floor(e/6000)%100,Math.floor(e/100)%60,e%100].map(p2).join('')}return [n.getHours(),n.getMinutes(),n.getSeconds()].map(p2).join('')}
-addEventListener('click',()=>{mode=(mode+1)%3;sw0=performance.now();prev='';document.getElementById('md').textContent=MD[mode]});document.body.style.cursor='pointer';
-function tick(){const s=str();s.split('').forEach((ch,i)=>{if(prev[i]===ch)return;const d=T[i];let k=mode===2&&i>1?7:0;const iv=setInterval(()=>{d.querySelectorAll('span').forEach(sp=>sp.classList.toggle('on',sp.dataset.n==(k<6?(Math.random()*10|0):ch)));if(++k>6)clearInterval(iv)},40)});prev=s}
-tick();setInterval(tick,40);document.getElementById('tz').textContent=Intl.DateTimeFormat().resolvedOptions().timeZone.toUpperCase();
+const D={0:'M30 8C12 8 8 30 8 50C8 72 12 92 30 92C48 92 52 72 52 50C52 30 48 8 30 8Z',1:'M20 22L34 8L34 92',2:'M10 26C10 12 20 8 30 8C42 8 50 16 50 28C50 44 36 58 10 92L52 92',3:'M10 8L50 8L28 42C44 42 52 52 52 66C52 82 42 92 28 92C18 92 10 86 8 80',4:'M40 92L40 8L8 64L54 64',5:'M48 8L15 8L12 44C17 40 22 38 30 38C44 38 52 50 52 64C52 80 42 92 28 92C18 92 10 86 8 80',6:'M44 10C30 20 10 40 10 64C10 80 18 92 30 92C44 92 52 80 52 66C52 52 42 42 30 42C20 42 12 50 10 58',7:'M8 8L52 8L22 92',8:'M30 48C16 48 12 38 12 28C12 16 20 8 30 8C40 8 48 16 48 28C48 38 44 48 30 48C14 48 8 60 8 70C8 84 18 92 30 92C42 92 52 84 52 70C52 60 46 48 30 48Z',9:'M50 42C48 50 40 58 30 58C18 58 8 48 8 34C8 20 18 8 30 8C42 8 50 18 50 34C50 60 32 80 16 90'};
+const ORDER=[1,6,2,7,5,0,4,9,8,3];const row=document.getElementById('row'),T=[];
+for(let i=0;i<6;i++){if(i===2||i===4){const c=document.createElement('div');c.className='col';c.innerHTML='<i></i><i></i>';row.appendChild(c)}
+const t=document.createElement('div');t.className='tube';const st=document.createElement('div');st.className='stack';const L={};ORDER.forEach((n,k)=>{const s=document.createElementNS('http://www.w3.org/2000/svg','svg');s.setAttribute('viewBox','0 0 60 100');s.innerHTML=`<path d="${D[n]}"/>`;s.style.transform=`translateZ(${-k*2.6}px)`;st.appendChild(s);L[n]=s});
+t.innerHTML='<div class="sock"></div><div class="pins"></div>';t.appendChild(st);t.insertAdjacentHTML('beforeend','<div class="mesh"></div><div class="glass"></div>');row.appendChild(t);T.push({L,cur:null,st})}
+// ---------- audio ----------
+let ac,son=false,hum;function A(){if(ac)return;try{ac=new (window.AudioContext||window.webkitAudioContext)()}catch(e){return}const o=ac.createOscillator(),f=ac.createBiquadFilter();o.type='sawtooth';o.frequency.value=100;f.type='bandpass';f.frequency.value=200;hum=ac.createGain();hum.gain.value=0;o.connect(f).connect(hum).connect(ac.destination);o.start()}
+function tick(v=.08){if(!ac||!son)return;const t=ac.currentTime,b=ac.createBuffer(1,200,ac.sampleRate),d=b.getChannelData(0);for(let i=0;i<200;i++)d[i]=(Math.random()*2-1)*(1-i/200);const s=ac.createBufferSource(),f=ac.createBiquadFilter(),g=ac.createGain();s.buffer=b;f.type='highpass';f.frequency.value=3000;g.gain.value=v;s.connect(f).connect(g).connect(ac.destination);s.start(t)}
+function clack(){if(!ac)return;const t=ac.currentTime,o=ac.createOscillator(),g=ac.createGain();o.frequency.setValueAtTime(900,t);o.frequency.exponentialRampToValueAtTime(200,t+.03);g.gain.setValueAtTime(.2,t);g.gain.exponentialRampToValueAtTime(.0001,t+.05);o.connect(g).connect(ac.destination);o.start(t);o.stop(t+.06)}
+// ---------- digits ----------
+function show(i,n){const tb=T[i];if(tb.cur===n)return;const old=tb.cur;if(old!==null){tb.L[old].classList.remove('on');tb.L[old].classList.add('ghost');setTimeout(()=>tb.L[old].classList.remove('ghost'),90)}tb.L[n].classList.add('on');tb.cur=n;tick(.04)}
+let mode=0,sw={run:false,t0:0,acc:0},slot=0,lastMin=-1;const p2=v=>String(v).padStart(2,'0');const MD=['TIME','DATE','STOPWATCH'];
+function str(){const n=new Date();if(mode===1)return[n.getDate(),n.getMonth()+1,n.getFullYear()%100].map(p2).join('');if(mode===2){const e=(sw.acc+(sw.run?performance.now()-sw.t0:0))/10|0;return[Math.floor(e/6000)%100,Math.floor(e/100)%60,e%100].map(p2).join('')}return[n.getHours(),n.getMinutes(),n.getSeconds()].map(p2).join('')}
+document.querySelectorAll('.tg[data-m]').forEach(g=>g.onclick=()=>{A();clack();mode=+g.dataset.m;document.querySelectorAll('.tg[data-m]').forEach(o=>o.classList.toggle('on',o===g));document.getElementById('md').textContent=MD[mode];slot=performance.now()+600});
+document.getElementById('snd').onclick=e=>{A();clack();son=!son;e.currentTarget.classList.toggle('on',son);if(hum)hum.gain.setTargetAtTime(son?.006:0,ac.currentTime,.1)};
+addEventListener('keydown',e=>{if(e.key===' '){e.preventDefault();A();if(mode!==2)document.querySelector('.tg[data-m="2"]').click();if(sw.run){sw.acc+=performance.now()-sw.t0;sw.run=false}else{sw.t0=performance.now();sw.run=true}clack()}if(e.key==='r'||e.key==='R'){sw={run:false,t0:0,acc:0}}if(e.key==='Enter')slot=performance.now()+900});
+addEventListener('pointerdown',A,{once:true});
+// tilt to see the stacked cathodes
+addEventListener('pointermove',e=>{const px=e.clientX/innerWidth-.5,py=e.clientY/innerHeight-.5;T.forEach((t,i)=>{const r=t.st.parentElement.getBoundingClientRect(),dx=(e.clientX-(r.left+r.width/2))/innerWidth;t.st.style.transform=`rotateY(${-dx*70}deg) rotateX(${py*20}deg)`})});
+function frame(now){document.body.style.setProperty('--fl',(.9+Math.random()*.1).toFixed(3));
+const s=str(),d=new Date();if(mode===0&&d.getSeconds()===0&&d.getMinutes()!==lastMin){lastMin=d.getMinutes();slot=now+1100}
+// cathode-poisoning routine: every tube cycles its digits like a slot machine
+if(now<slot){T.forEach((t,i)=>{if(Math.random()<.5)show(i,ORDER[(Math.floor(now/45)+i*3)%10])})}else s.split('').forEach((ch,i)=>show(i,+ch));
+const blink=mode===2?(sw.run?1:.25+.75*(Math.floor(now/500)%2)):(d.getMilliseconds()<500?1:.18);document.querySelectorAll('.col i').forEach(e=>e.style.setProperty('--blink',blink));
+requestAnimationFrame(frame)}requestAnimationFrame(frame);slot=performance.now()+1200;
+document.getElementById('tz').textContent=(Intl.DateTimeFormat().resolvedOptions().timeZone||'LOCAL').toUpperCase().replace(/_/g,' ');
 </script></body></html>
