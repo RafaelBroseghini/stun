@@ -44,12 +44,11 @@ button{font:inherit;color:inherit}
 .wrap{max-width:1480px;margin:0 auto}
 
 /* Masthead */
-.mast{display:grid;grid-template-columns:minmax(0,1fr);align-items:end;gap:24px;padding-block:28px 20px;border-bottom:1px solid var(--fg)}
+.mast{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:24px;padding-block:28px 20px;border-bottom:1px solid var(--fg)}
 .mark{font:700 clamp(84px,19vw,270px)/.78 var(--display);letter-spacing:-.065em;margin:0;display:flex;align-items:flex-end}
-.mark span{display:inline-block;transition:transform .5s cubic-bezier(.2,.9,.2,1.3)}
+.mark span{display:inline-block;will-change:transform}
 .mark .dot{width:.16em;height:.16em;background:var(--accent);border-radius:50%;margin-left:.04em;margin-bottom:.06em;animation:pulse 2.4s ease-in-out infinite}
 @keyframes pulse{50%{transform:scale(.6)}}
-.mark:hover span:nth-child(1){transform:translateY(-6%) rotate(-4deg)}.mark:hover span:nth-child(2){transform:translateY(4%)}.mark:hover span:nth-child(3){transform:translateY(-3%) rotate(3deg)}.mark:hover span:nth-child(4){transform:translateY(5%)}
 .lede{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;padding-block:16px;font-size:17px;max-width:none}
 .lede p{margin:0;max-width:60ch;text-wrap:pretty}
 .lede .mono{font:400 11px/1.7 var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--mute)}
@@ -121,6 +120,45 @@ footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);display
 .stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#0b0b0e}
 .spin{position:absolute;inset:0;display:grid;place-items:center;font:400 11px var(--mono);letter-spacing:.1em;color:#77757f;text-transform:uppercase;pointer-events:none}
 
+
+/* ---- studio layer ---- */
+body::after{content:"";position:fixed;inset:-50%;z-index:60;pointer-events:none;opacity:.05;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");animation:grain .6s steps(3) infinite}
+@keyframes grain{33%{transform:translate(2%,-3%)}66%{transform:translate(-3%,2%)}}
+.mark span{animation:rise .9s cubic-bezier(.2,.8,.2,1) backwards}.mark span:nth-child(2){animation-delay:.06s}.mark span:nth-child(3){animation-delay:.12s}.mark span:nth-child(4){animation-delay:.18s}@keyframes rise{from{opacity:0;translate:0 40%}}
+.now{position:relative;width:min(380px,30vw);display:flex;flex-direction:column;gap:8px;text-decoration:none;cursor:pointer;margin-bottom:6px}
+.now .scr{position:relative;aspect-ratio:16/10;border-radius:4px;overflow:hidden;background:var(--card);box-shadow:0 20px 40px -24px rgba(0,0,0,.45)}
+.now iframe{position:absolute;left:0;top:0;width:1200px;height:750px;border:0;transform-origin:0 0;pointer-events:none;transition:opacity .8s}
+.now img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .8s}
+.now .cap{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font:400 10px/1.4 var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--mute)}
+.now .cap b{font:600 14px/1.2 var(--display);letter-spacing:-.01em;text-transform:none;color:var(--fg)}
+.now .pg{position:absolute;left:0;bottom:0;height:2px;background:var(--accent);width:0}
+.now .tag{position:absolute;left:8px;top:8px;z-index:2;font:500 9px/1 var(--mono);letter-spacing:.08em;background:var(--accent);color:var(--onaccent);padding:5px 7px;border-radius:2px;display:flex;gap:6px;align-items:center}.now .tag::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;animation:pulse 1.4s infinite}
+@media (max-width:900px),(hover:none){.now{display:none}.mast{grid-template-columns:minmax(0,1fr)}}
+.chip b{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--cc,var(--fg));align-self:center;margin-right:-1px}
+.plate{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.2,.8,.2,1),transform .7s cubic-bezier(.2,.8,.2,1);transition-delay:var(--d,0s)}
+.plate.in{opacity:1;transform:none}
+.frame{transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s}
+.plate:hover .frame{box-shadow:0 22px 40px -22px rgba(0,0,0,.5)}
+.frame::after{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;background:radial-gradient(420px circle at var(--gx,50%) var(--gy,50%),rgba(255,255,255,.22),transparent 45%);opacity:0;transition:opacity .3s}
+.plate:hover .frame::after{opacity:1}
+.frame .no{transition:background .3s,color .3s}.plate:hover .frame .no{background:var(--cc,var(--accent));color:#fff}
+.meta h3{transition:color .25s}.plate:hover .meta h3{color:var(--accent)}
+.meta .cat::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--cc,var(--mute));margin-right:6px;vertical-align:1px}
+.row{transition:background .2s,padding .3s cubic-bezier(.2,.8,.2,1)}.row:hover{padding-left:16px}.row:hover b{color:var(--accent)}
+.cur,.cur-r{position:fixed;left:0;top:0;z-index:70;pointer-events:none;border-radius:50%;transform:translate(-50%,-50%)}
+.cur{width:6px;height:6px;background:var(--fg)}
+.cur-r{width:34px;height:34px;border:1px solid var(--fg);display:grid;place-items:center;font:500 9px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--onaccent);transition:width .35s cubic-bezier(.2,.8,.2,1),height .35s cubic-bezier(.2,.8,.2,1),background .3s,border-color .3s,opacity .3s}
+.cur-r span{opacity:0;transition:opacity .2s}
+body.hov .cur-r{width:76px;height:76px;background:var(--accent);border-color:var(--accent)}body.hov .cur-r span{opacity:1}body.hov .cur{opacity:0}
+body.room-open .cur,body.room-open .cur-r{opacity:0}
+@media (hover:none),(pointer:coarse){.cur,.cur-r{display:none}}
+.load{position:absolute;left:0;top:0;height:2px;width:0;background:var(--accent);z-index:3;box-shadow:0 0 10px var(--accent)}
+.load.go{animation:ld 2.4s cubic-bezier(.1,.7,.2,1) forwards}.load.done{width:100%!important;opacity:0;transition:opacity .5s .2s,width .3s}@keyframes ld{to{width:82%}}
+.spin span{display:inline-block;animation:sp 1.2s ease-in-out infinite}@keyframes sp{50%{opacity:.25}}
+.stage iframe{opacity:0;transition:opacity .5s}.stage.ready iframe{opacity:1}
+.count b{color:var(--fg);font-weight:500}
+@media (prefers-reduced-motion:reduce){.plate{opacity:1;transform:none}}
+
 @media (max-width:900px){.ttl .d,.try{display:none}.row{grid-template-columns:3.5em minmax(0,1fr) 7em}.row span,.row .t{display:none}}
 @media (max-width:620px){.chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;flex-basis:100%;padding-bottom:2px}.chips::-webkit-scrollbar{display:none}.chip{flex:none}.lede .mono{display:none}.search input{width:140px}.acts .lbl{display:none}.bar{gap:6px}.ttl{flex-direction:column;gap:0}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -130,6 +168,7 @@ footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);display
 <div class="wrap">
   <header class="mast">
     <h1 class="mark" aria-label="Stun"><span>S</span><span>t</span><span>u</span><span>n</span><i class="dot"></i></h1>
+    <a class="now" id="now" href="#" aria-label="Now showing"><div class="scr"><span class="tag">NOW SHOWING</span><img id="nowImg" alt=""><span class="pg" id="nowPg"></span></div><div class="cap"><b id="nowT"></b><span id="nowN"></span></div></a>
   </header>
   <div class="lede">
     <p>One hundred single-file HTML pieces: generative drawings, physics toys, invented posters, objects you can wind and click, and interfaces for things that don’t exist. Every one is drawn in code. Hover a plate to wake it, open it to step inside.</p>
@@ -166,9 +205,10 @@ footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);display
       <a class="ibtn" id="raw" target="_blank" rel="noopener" title="Open the file on its own"><svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6"/></svg><span class="lbl">Open file</span></a>
     </div>
   </div>
-  <div class="stage"><div class="spin">Loading study…</div><iframe id="frame" title="Study" allow="autoplay; fullscreen"></iframe></div>
+  <div class="stage" id="stage"><i class="load" id="load"></i><div class="spin"><span>Loading study…</span></div><iframe id="frame" title="Study" allow="autoplay; fullscreen"></iframe></div>
 </section>
 
+<div class="cur" id="cur"></div><div class="cur-r" id="curR"><span>Open</span></div>
 <script src="works/manifest.js"></script>
 <script>
 (function(){
@@ -179,6 +219,7 @@ footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);display
   const order = ['All','Generative','Simulation','Scene','Interface','Object','Type & Print','Sound','Play'];
   cats.sort((a,b) => order.indexOf(a) - order.indexOf(b));
 
+  const CC = {Generative:'#ff5a36',Simulation:'#00a8a8',Scene:'#7a4dff',Interface:'#2b6bff',Object:'#c98a1a','Type & Print':'#e0336e',Sound:'#16a34a',Play:'#f59e0b'};
   let cat = 'All', q = '', view = 'grid';
   try { const s = JSON.parse(localStorage.getItem('stun-prefs') || '{}'); if (s.view) view = s.view; if (s.cat && cats.includes(s.cat)) cat = s.cat; } catch(e) {}
   const save = () => { try { localStorage.setItem('stun-prefs', JSON.stringify({view, cat})); } catch(e) {} };
@@ -188,7 +229,7 @@ footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);display
   cats.forEach(c => {
     const b = document.createElement('button');
     b.className = 'chip'; b.type = 'button';
-    b.innerHTML = `${c}<i>${c === 'All' ? W.length : W.filter(w => w.cat === c).length}</i>`;
+    b.innerHTML = `${c}${c === 'All' ? '' : `<b style="--cc:${CC[c]||'currentColor'}"></b>`}<i>${c === 'All' ? W.length : W.filter(w => w.cat === c).length}</i>`;
     b.setAttribute('aria-pressed', c === cat);
     b.onclick = () => { cat = c; [...chips.children].forEach(o => o.setAttribute('aria-pressed', o === b)); save(); render(); };
     chips.appendChild(b);
@@ -198,14 +239,14 @@ footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);display
   const grid = $('grid'), list = $('list');
   const plates = W.map(w => {
     const a = document.createElement('a');
-    a.className = 'plate'; a.href = '#no-' + pad(w.n); a.dataset.n = w.n;
+    a.className = 'plate'; a.href = '#no-' + pad(w.n); a.dataset.n = w.n; a.style.setProperty('--cc', CC[w.cat] || 'var(--accent)');
     a.innerHTML = `<div class="frame"><span class="no">No. ${pad(w.n)}</span><span class="live-tag">LIVE</span><img loading="lazy" decoding="async" alt="" src="${w.thumb}"></div>
       <div class="meta"><h3>${w.title}</h3><span class="cat">${w.cat}</span><p>${w.blurb}</p></div>`;
     return a;
   });
   const rows = W.map(w => {
     const a = document.createElement('a');
-    a.className = 'row'; a.href = '#no-' + pad(w.n);
+    a.className = 'row'; a.href = '#no-' + pad(w.n); a.style.setProperty('--cc', CC[w.cat] || 'var(--accent)');
     a.innerHTML = `<span class="n">No. ${pad(w.n)}</span><b>${w.title}</b><span>${w.blurb}</span><span class="c">${w.cat}</span><span class="t">${w.try}</span>`;
     return a;
   });
@@ -219,7 +260,7 @@ footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);display
     plates.forEach((p, i) => p.hidden = !ids.has(W[i].n));
     rows.forEach((r, i) => r.hidden = !ids.has(W[i].n));
     $('empty').hidden = visible.length > 0;
-    $('count').textContent = `Showing ${visible.length} of ${W.length} studies` + (cat !== 'All' ? ` · ${cat}` : '') + (term ? ` · “${q.trim()}”` : '');
+    $('count').innerHTML = `Showing <b>${visible.length}</b> of ${W.length} studies` + (cat !== 'All' ? ` · ${cat}` : '') + (term ? ` · “${q.trim()}”` : '');
     document.body.classList.toggle('as-list', view === 'list');
     $('vGrid').setAttribute('aria-pressed', view === 'grid'); $('vList').setAttribute('aria-pressed', view === 'list');
   }
@@ -248,7 +289,47 @@ footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);display
     p.addEventListener('mouseleave', stopLive);
   });
 
+
+  // ---- studio layer ----
+  const fine = matchMedia('(hover: hover) and (pointer: fine)').matches, calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // plates rise in as they scroll into view
+  if ('IntersectionObserver' in window && !calm) {
+    const io = new IntersectionObserver(es => { let k = 0; es.forEach(e => { if (e.isIntersecting) { e.target.style.setProperty('--d', (k++ % 8) * 0.06 + 's'); e.target.classList.add('in'); io.unobserve(e.target); } }); }, { rootMargin: '0px 0px -6% 0px' });
+    plates.forEach(p => io.observe(p));
+    setTimeout(() => plates.forEach(p => p.classList.add('in')), 2500);
+  } else plates.forEach(p => p.classList.add('in'));
+  // tilt and glare
+  if (fine) plates.forEach(p => { const fr = p.querySelector('.frame');
+    p.addEventListener('pointermove', e => { const r = fr.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height; fr.style.setProperty('--ry', (x - .5) * 9 + 'deg'); fr.style.setProperty('--rx', (.5 - y) * 7 + 'deg'); fr.style.setProperty('--gx', x * 100 + '%'); fr.style.setProperty('--gy', y * 100 + '%'); });
+    p.addEventListener('pointerleave', () => { fr.style.setProperty('--rx', '0deg'); fr.style.setProperty('--ry', '0deg'); }); });
+  // custom cursor
+  const cur = $('cur'), curR = $('curR'); let cx = -99, cy = -99, rx = -99, ry = -99;
+  if (fine) { addEventListener('pointermove', e => { cx = e.clientX; cy = e.clientY; const t = e.target.closest && e.target.closest('.plate,.row,.now'); document.body.classList.toggle('hov', !!t); }); addEventListener('pointerleave', () => { cx = cy = -99; }); }
+  // the wordmark leans away from the cursor
+  const L = [...document.querySelectorAll('.mark span')].map(el => ({ el, x: 0, y: 0, r: 0, vx: 0, vy: 0, vr: 0 })); let mx = -1e4, my = -1e4;
+  document.querySelector('.mast').addEventListener('pointermove', e => { mx = e.clientX; my = e.clientY; });
+  document.querySelector('.mast').addEventListener('pointerleave', () => { mx = my = -1e4; });
+  function tick() {
+    if (fine) { rx += (cx - rx) * .2; ry += (cy - ry) * .2; cur.style.transform = `translate(${cx}px,${cy}px) translate(-50%,-50%)`; curR.style.transform = `translate(${rx}px,${ry}px) translate(-50%,-50%)`; }
+    if (!calm) L.forEach((l, i) => { const b = l.el.getBoundingClientRect(), ox = b.left + b.width / 2 - l.x, oy = b.top + b.height / 2 - l.y; const dx = ox - mx, dy = oy - my, d = Math.hypot(dx, dy) || 1, f = Math.max(0, 1 - d / (b.height * 1.6)); const tx = dx / d * f * b.height * .22, ty = dy / d * f * b.height * .16, tr = (dx / d) * f * 10;
+      l.vx += (tx - l.x) * .12; l.vy += (ty - l.y) * .12; l.vr += (tr - l.r) * .12; l.vx *= .78; l.vy *= .78; l.vr *= .78; l.x += l.vx; l.y += l.vy; l.r += l.vr; l.el.style.transform = `translate(${l.x.toFixed(2)}px,${l.y.toFixed(2)}px) rotate(${l.r.toFixed(2)}deg)`; });
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+  addEventListener('keydown', e => { if (e.key === '/' && room.hidden && document.activeElement !== $('q')) { e.preventDefault(); $('q').focus(); } });
+  // now showing: a live study in the masthead, changing every few seconds
+  const now = $('now'), scr = now.querySelector('.scr'); let nowF = null, nowW = null, nowT0 = 0;
+  const showcase = W.filter(w => ['Generative', 'Simulation', 'Scene', 'Object', 'Play'].includes(w.cat));
+  function nextNow() { if (!fine || getComputedStyle(now).display === 'none' || !room.hidden) return; const w = showcase[Math.random() * showcase.length | 0]; nowW = w; nowT0 = performance.now();
+    $('nowImg').src = w.thumb; $('nowImg').style.opacity = 1; $('nowT').textContent = w.title; $('nowN').textContent = 'No. ' + pad(w.n) + ' · ' + w.cat; now.href = '#no-' + pad(w.n);
+    const f = document.createElement('iframe'); f.src = w.file; f.tabIndex = -1; f.setAttribute('aria-hidden', 'true'); f.style.opacity = 0; f.style.transform = `scale(${scr.clientWidth / 1200})`;
+    f.onload = () => setTimeout(() => { f.style.opacity = 1; $('nowImg').style.opacity = 0; const old = nowF; nowF = f; if (old && old !== f) setTimeout(() => old.remove(), 900); }, 300); scr.insertBefore(f, $('nowPg')); }
+  (function pg() { if (nowW) { const k = Math.min(1, (performance.now() - nowT0) / 9000); $('nowPg').style.width = k * 100 + '%'; if (k >= 1) nextNow(); } requestAnimationFrame(pg); })();
+  now.addEventListener('click', () => { lastRect = scr.getBoundingClientRect(); });
+  setTimeout(nextNow, 700);
+
   // Viewing room
+  let lastRect = null;
   const room = $('room'), frame = $('frame');
   let current = null;
   function open(n){
@@ -256,12 +337,13 @@ footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);display
     stopLive(); current = w;
     $('rNo').textContent = `No. ${pad(w.n)} / ${W.length}`; $('rTitle').textContent = w.title; $('rDesc').textContent = `${w.cat} · ${w.blurb}`;
     $('rTry').innerHTML = `Try · <b>${w.try}</b>`; $('raw').href = w.file;
-    if (frame.getAttribute('src') !== w.file) frame.src = w.file;
-    room.hidden = false; document.documentElement.style.overflow = 'hidden';
+    if (frame.getAttribute('src') !== w.file) { $('stage').classList.remove('ready'); const ld = $('load'); ld.className = 'load'; void ld.offsetWidth; ld.classList.add('go'); frame.src = w.file; }
+    const wasHidden = room.hidden; room.hidden = false; document.body.classList.add('room-open');
+    if (wasHidden && !calm) { const r = lastRect; room.animate(r ? [{ clipPath: `inset(${r.top}px ${innerWidth - r.right}px ${innerHeight - r.bottom}px ${r.left}px round 4px)` }, { clipPath: 'inset(0 0 0 0 round 0px)' }] : [{ opacity: 0, transform: 'scale(.98)' }, { opacity: 1, transform: 'none' }], { duration: r ? 650 : 350, easing: 'cubic-bezier(.7,0,.2,1)' }); lastRect = null; } document.documentElement.style.overflow = 'hidden';
     document.title = w.title + ' · Stun';
   }
   function close(){
-    room.hidden = true; current = null; frame.removeAttribute('src'); frame.src = 'about:blank';
+    room.hidden = true; current = null; document.body.classList.remove('room-open'); frame.removeAttribute('src'); frame.src = 'about:blank';
     document.documentElement.style.overflow = ''; document.title = 'Stun Index';
   }
   function step(d){
@@ -274,6 +356,8 @@ footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);display
     const m = /^#no-(\d{3})$/.exec(location.hash);
     if (m) open(parseInt(m[1], 10)); else if (!room.hidden) close();
   }
+  frame.addEventListener('load', () => { if (!frame.src || frame.src === 'about:blank') return; $('stage').classList.add('ready'); $('load').classList.add('done'); });
+  plates.forEach(p => p.addEventListener('click', () => { lastRect = p.querySelector('.frame').getBoundingClientRect(); }));
   $('back').onclick = () => { history.length > 1 && /^#no-/.test(location.hash) ? (location.hash = 'index') : close(); };
   $('prev').onclick = () => step(-1); $('next').onclick = () => step(1);
   addEventListener('hashchange', route);
