@@ -2,7 +2,7 @@
 
 One hundred single-file HTML studies and a catalog to browse them.
 
-- `index.html`: the catalog. Filter by discipline, search, switch between grid and list, hover a plate for a live preview, and click to open the study in the viewer (`#no-042`). ← / → move between studies, Esc returns to the index.
+- `index.html`: the catalog. Filter by discipline, search (`/` jumps to the search box), switch between grid and list, hover a plate for a live preview, and click to open the study in the viewer (`#no-042`), which expands out of the plate you clicked. ← / → move between studies, Esc returns to the index. On wide screens a live "Now showing" study rotates in the masthead.
 - `works/NNN-name.html`: the studies. Each is a standalone file with no build step and no bitmaps; everything is drawn with CSS, SVG, Canvas or Web Audio, and every study responds to the cursor, clicks or keys. Some load a typeface from Google Fonts.
 - `works/manifest.js`: titles, disciplines, descriptions and the "try this" hint for each study.
 - `thumbs/NNN.jpg`: catalog thumbnails rendered from the studies.

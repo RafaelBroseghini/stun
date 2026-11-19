@@ -5,7 +5,7 @@ window.STUN_WORKS=[
 "title": "Aurora over the Fjord",
 "cat": "Scene",
 "blurb": "Aurora curtains ripple over a fjord, mirrored in still water.",
-"try": "Move to steer, click for a storm",
+"try": "Steer, click for a storm",
 "thumb": "thumbs/001.jpg"
 },
 {
@@ -14,7 +14,7 @@ window.STUN_WORKS=[
 "title": "Silk Flow Field",
 "cat": "Generative",
 "blurb": "Thousands of particles trace a noise field into woven silk.",
-"try": "Click to reseed",
+"try": "Stir, hold to comb, click",
 "thumb": "thumbs/002.jpg"
 },
 {
@@ -32,7 +32,7 @@ window.STUN_WORKS=[
 "title": "Night Drive",
 "cat": "Scene",
 "blurb": "An endless neon grid racing toward a striped sunset.",
-"try": "Steer, hold to speed up",
+"try": "Steer, hold to floor it",
 "thumb": "thumbs/004.jpg"
 },
 {
@@ -50,7 +50,7 @@ window.STUN_WORKS=[
 "title": "Kiln OS 97",
 "cat": "Interface",
 "blurb": "A retro desktop with draggable windows, a notepad and a paint app.",
-"try": "Drag windows, draw",
+"try": "Open icons, drag windows",
 "thumb": "thumbs/006.jpg"
 },
 {
@@ -59,7 +59,7 @@ window.STUN_WORKS=[
 "title": "Mostly Empty Space",
 "cat": "Generative",
 "blurb": "Words assembled from particles that scatter around your cursor.",
-"try": "Move the cursor",
+"try": "Move, click, hold, space",
 "thumb": "thumbs/007.jpg"
 },
 {
@@ -77,7 +77,7 @@ window.STUN_WORKS=[
 "title": "Low Tide Signals",
 "cat": "Interface",
 "blurb": "A glass music player floating over drifting colour.",
-"try": "Play, like",
+"try": "Press play, ← →",
 "thumb": "thumbs/009.jpg"
 },
 {
@@ -95,7 +95,7 @@ window.STUN_WORKS=[
 "title": "Isometric Dusk City",
 "cat": "Scene",
 "blurb": "A procedurally built isometric city at dusk, traffic glowing.",
-"try": "Click to rebuild",
+"try": "Scroll the hour, click towers",
 "thumb": "thumbs/011.jpg"
 },
 {
@@ -104,7 +104,7 @@ window.STUN_WORKS=[
 "title": "Lava Lamp",
 "cat": "Object",
 "blurb": "A lava lamp with gooey wax blobs rising and sinking.",
-"try": "Click to re-wax",
+"try": "Click, hold to heat, stir",
 "thumb": "thumbs/012.jpg"
 },
 {
@@ -113,7 +113,7 @@ window.STUN_WORKS=[
 "title": "The Brass Orrery",
 "cat": "Object",
 "blurb": "A brass orrery with planets on engraved orbits.",
-"try": "Drag to wind time",
+"try": "Drag sideways to wind time",
 "thumb": "thumbs/013.jpg"
 },
 {
@@ -122,7 +122,7 @@ window.STUN_WORKS=[
 "title": "Neoplastic Composer",
 "cat": "Generative",
 "blurb": "Recursive plane division in the neoplastic manner.",
-"try": "Click to compose",
+"try": "Drag lines, click planes",
 "thumb": "thumbs/014.jpg"
 },
 {
@@ -131,7 +131,7 @@ window.STUN_WORKS=[
 "title": "Kinetic Type",
 "cat": "Type & Print",
 "blurb": "Giant marquee rows of type sliding in opposite directions.",
-"try": "Hover a row",
+"try": "Scroll to speed, click",
 "thumb": "thumbs/015.jpg"
 },
 {
@@ -140,7 +140,7 @@ window.STUN_WORKS=[
 "title": "Sumi Ink in Water",
 "cat": "Generative",
 "blurb": "Sumi ink drops curling through curl-noise water.",
-"try": "Drag to drop ink",
+"try": "Click a drop, drag to comb",
 "thumb": "thumbs/016.jpg"
 },
 {
@@ -149,7 +149,7 @@ window.STUN_WORKS=[
 "title": "Karesansui Garden",
 "cat": "Play",
 "blurb": "A raked gravel garden around three stones.",
-"try": "Drag to rake",
+"try": "Rake, place stones",
 "thumb": "thumbs/017.jpg"
 },
 {
@@ -158,7 +158,7 @@ window.STUN_WORKS=[
 "title": "Flora Imaginaria",
 "cat": "Generative",
 "blurb": "L-system plants growing onto a botanical plate.",
-"try": "Click to regrow",
+"try": "Click a specimen",
 "thumb": "thumbs/018.jpg"
 },
 {
@@ -167,7 +167,7 @@ window.STUN_WORKS=[
 "title": "Hyperspace Corridor",
 "cat": "Scene",
 "blurb": "A starfield corridor that jumps to hyperspace.",
-"try": "Hold to jump",
+"try": "Hold to spool the drive",
 "thumb": "thumbs/019.jpg"
 },
 {
@@ -176,7 +176,7 @@ window.STUN_WORKS=[
 "title": "Platform Four",
 "cat": "Scene",
 "blurb": "Rain sliding down a window over a blur of city lights.",
-"try": "Wipe the misted glass",
+"try": "Wipe the glass, hold to write",
 "thumb": "thumbs/020.jpg"
 },
 {
@@ -185,7 +185,7 @@ window.STUN_WORKS=[
 "title": "The Meridian Express",
 "cat": "Type & Print",
 "blurb": "An Art Deco railway poster with a turning sunburst.",
-"try": "Tilt the poster, click",
+"try": "Tilt, click for the night train",
 "thumb": "thumbs/021.jpg"
 },
 {
@@ -203,7 +203,7 @@ window.STUN_WORKS=[
 "title": "Departures Board",
 "cat": "Interface",
 "blurb": "A split-flap departures board flipping to new flights.",
-"try": "Type a destination",
+"try": "Type a destination, click",
 "thumb": "thumbs/023.jpg"
 },
 {
@@ -212,7 +212,7 @@ window.STUN_WORKS=[
 "title": "Shanshui Scroll",
 "cat": "Generative",
 "blurb": "An ink-wash mountain scroll generated anew each time.",
-"try": "Click to repaint",
+"try": "Drag to unroll, click a seal",
 "thumb": "thumbs/024.jpg"
 },
 {
@@ -221,7 +221,7 @@ window.STUN_WORKS=[
 "title": "Fraunces Specimen",
 "cat": "Type & Print",
 "blurb": "A variable-font specimen with live axis sliders.",
-"try": "Drag axes, type",
+"try": "Move, drag axes, type",
 "thumb": "thumbs/025.jpg"
 },
 {
@@ -230,7 +230,7 @@ window.STUN_WORKS=[
 "title": "Burnt Honey Fig Tart",
 "cat": "Type & Print",
 "blurb": "A dessert recipe spread with a servings scaler.",
-"try": "Change servings",
+"try": "Spin the plate, cut a slice",
 "thumb": "thumbs/026.jpg"
 },
 {
@@ -239,7 +239,7 @@ window.STUN_WORKS=[
 "title": "Contour Survey",
 "cat": "Generative",
 "blurb": "Moving topographic contours from marching squares.",
-"try": "Hover to raise, press to dig",
+"try": "Hover to raise, hold to dig",
 "thumb": "thumbs/027.jpg"
 },
 {
@@ -248,7 +248,7 @@ window.STUN_WORKS=[
 "title": "Skyline Weather",
 "cat": "Interface",
 "blurb": "A weather app cycling through sun, rain, snow and cloud.",
-"try": "Pick a city",
+"try": "Pick a city, scrub the hours",
 "thumb": "thumbs/028.jpg"
 },
 {
@@ -257,7 +257,7 @@ window.STUN_WORKS=[
 "title": "Pixel Dusk",
 "cat": "Scene",
 "blurb": "A dithered pixel-art evening walk with parallax.",
-"try": "Point to walk",
+"try": "Point to walk, space to hop",
 "thumb": "thumbs/029.jpg"
 },
 {
@@ -266,7 +266,7 @@ window.STUN_WORKS=[
 "title": "Netrunner HUD",
 "cat": "Interface",
 "blurb": "A cyberpunk breach HUD with rotating rings and readouts.",
-"try": "Move the cursor",
+"try": "Hold a node to crack it",
 "thumb": "thumbs/030.jpg"
 },
 {
@@ -275,7 +275,7 @@ window.STUN_WORKS=[
 "title": "Gel Pen Spirograph",
 "cat": "Generative",
 "blurb": "A gel-pen spirograph with adjustable gears.",
-"try": "Adjust, new layer",
+"try": "Drag the wheel, layer pens",
 "thumb": "thumbs/031.jpg"
 },
 {
@@ -284,7 +284,7 @@ window.STUN_WORKS=[
 "title": "Brass Kaleidoscope",
 "cat": "Play",
 "blurb": "A brass kaleidoscope of tumbling glass shards.",
-"try": "Move, click to shake",
+"try": "Turn the barrel, click to shake",
 "thumb": "thumbs/032.jpg"
 },
 {
@@ -293,7 +293,7 @@ window.STUN_WORKS=[
 "title": "Rose Window",
 "cat": "Generative",
 "blurb": "A Voronoi stained-glass window lit by a moving sun.",
-"try": "Move the light",
+"try": "Move the sun",
 "thumb": "thumbs/033.jpg"
 },
 {
@@ -302,7 +302,7 @@ window.STUN_WORKS=[
 "title": "The Wind Tree",
 "cat": "Generative",
 "blurb": "A recursive tree bending in the wind, shedding leaves.",
-"try": "Move to steer wind",
+"try": "Sweep to blow, click to shake",
 "thumb": "thumbs/034.jpg"
 },
 {
@@ -311,7 +311,7 @@ window.STUN_WORKS=[
 "title": "Mandelbrot Dive",
 "cat": "Generative",
 "blurb": "A Mandelbrot set explorer with cosine palettes.",
-"try": "Click to dive",
+"try": "Click to dive, wheel, drag",
 "thumb": "thumbs/035.jpg"
 },
 {
@@ -338,7 +338,7 @@ window.STUN_WORKS=[
 "title": "Beat Garden 16",
 "cat": "Sound",
 "blurb": "A 16-step drum machine with synthesised kit.",
-"try": "Press play, edit pads",
+"try": "Press play, tap pads",
 "thumb": "thumbs/038.jpg"
 },
 {
@@ -347,7 +347,7 @@ window.STUN_WORKS=[
 "title": "Pulse Garden",
 "cat": "Sound",
 "blurb": "Twenty-one pendulum voices drifting in and out of phase.",
-"try": "Click for sound",
+"try": "Drag to travel in time",
 "thumb": "thumbs/039.jpg"
 },
 {
@@ -356,7 +356,7 @@ window.STUN_WORKS=[
 "title": "The Unwritten Library",
 "cat": "Object",
 "blurb": "A 3D bookshelf of books that should exist.",
-"try": "Hover a spine",
+"try": "Click a book to open it",
 "thumb": "thumbs/040.jpg"
 },
 {
@@ -365,7 +365,7 @@ window.STUN_WORKS=[
 "title": "Walnut Turntable",
 "cat": "Object",
 "blurb": "A walnut turntable with tonearm and strobe platter.",
-"try": "Stop, 33/45",
+"try": "Drop the needle, scratch",
 "thumb": "thumbs/041.jpg"
 },
 {
@@ -383,7 +383,7 @@ window.STUN_WORKS=[
 "title": "Corkboard of Summers",
 "cat": "Object",
 "blurb": "Polaroids pinned to a corkboard, free to rearrange.",
-"try": "Drag the photos",
+"try": "Fling photos, double-click",
 "thumb": "thumbs/043.jpg"
 },
 {
@@ -392,7 +392,7 @@ window.STUN_WORKS=[
 "title": "Atlas of Invented Skies",
 "cat": "Type & Print",
 "blurb": "A star atlas plate of invented constellations.",
-"try": "Hover constellations",
+"try": "Hover, click, drag the sky",
 "thumb": "thumbs/044.jpg"
 },
 {
@@ -401,7 +401,7 @@ window.STUN_WORKS=[
 "title": "NGC Imaginary",
 "cat": "Scene",
 "blurb": "A rotating barred spiral galaxy of 16,000 stars.",
-"try": "Move to tilt",
+"try": "Orbit, zoom, click",
 "thumb": "thumbs/045.jpg"
 },
 {
@@ -410,7 +410,7 @@ window.STUN_WORKS=[
 "title": "Event Horizon",
 "cat": "Scene",
 "blurb": "A black hole with a Doppler-bright accretion disk.",
-"try": "Move to tilt, click to feed",
+"try": "Move, drag to tilt, click",
 "thumb": "thumbs/046.jpg"
 },
 {
@@ -419,7 +419,7 @@ window.STUN_WORKS=[
 "title": "Dawn Voyage",
 "cat": "Scene",
 "blurb": "A sailboat riding layered waves at dawn.",
-"try": "Move to change the sea",
+"try": "Steer, click to tack",
 "thumb": "thumbs/047.jpg"
 },
 {
@@ -428,7 +428,7 @@ window.STUN_WORKS=[
 "title": "Caravan by Moonlight",
 "cat": "Scene",
 "blurb": "A camel caravan crossing moonlit dunes.",
-"try": "Move the moon, click",
+"try": "Drag the moon, click, hold",
 "thumb": "thumbs/048.jpg"
 },
 {
@@ -437,7 +437,7 @@ window.STUN_WORKS=[
 "title": "Hanami",
 "cat": "Scene",
 "blurb": "Cherry petals tumbling past a blossoming branch.",
-"try": "Move to steer wind",
+"try": "Sweep to blow, click",
 "thumb": "thumbs/049.jpg"
 },
 {
@@ -446,7 +446,7 @@ window.STUN_WORKS=[
 "title": "Harbour Fireworks",
 "cat": "Play",
 "blurb": "Fireworks over a harbour, reflected in the water.",
-"try": "Click to launch",
+"try": "Click or hold the sky",
 "thumb": "thumbs/050.jpg"
 },
 {
@@ -455,7 +455,7 @@ window.STUN_WORKS=[
 "title": "Soap Film",
 "cat": "Object",
 "blurb": "Iridescent soap bubbles drifting upward.",
-"try": "Click to pop",
+"try": "Drag to blow, click to pop",
 "thumb": "thumbs/051.jpg"
 },
 {
@@ -464,7 +464,7 @@ window.STUN_WORKS=[
 "title": "Dispersion Bench",
 "cat": "Simulation",
 "blurb": "A prism splitting a beam into its spectrum, with real refraction.",
-"try": "Move to aim",
+"try": "Drag the beam and the prism",
 "thumb": "thumbs/052.jpg"
 },
 {
@@ -491,7 +491,7 @@ window.STUN_WORKS=[
 "title": "Thunderhead",
 "cat": "Scene",
 "blurb": "A storm with branching lightning and rain.",
-"try": "Click to strike",
+"try": "Click to strike, hold to charge",
 "thumb": "thumbs/055.jpg"
 },
 {
@@ -500,7 +500,7 @@ window.STUN_WORKS=[
 "title": "Murmuration",
 "cat": "Simulation",
 "blurb": "A starling murmuration flocking over the reeds.",
-"try": "Move to play the hawk",
+"try": "Be the hawk, click to stoop",
 "thumb": "thumbs/056.jpg"
 },
 {
@@ -509,7 +509,7 @@ window.STUN_WORKS=[
 "title": "Physarum Network",
 "cat": "Simulation",
 "blurb": "Slime-mould agents weaving a transport network.",
-"try": "Click to drop food",
+"try": "Click for oats, shift-drag salt",
 "thumb": "thumbs/057.jpg"
 },
 {
@@ -518,7 +518,7 @@ window.STUN_WORKS=[
 "title": "Turing Patterns",
 "cat": "Simulation",
 "blurb": "Gray–Scott reaction–diffusion with five presets.",
-"try": "Pick preset, drag",
+"try": "Drag to seed, pick a preset",
 "thumb": "thumbs/058.jpg"
 },
 {
@@ -536,7 +536,7 @@ window.STUN_WORKS=[
 "title": "Tearable Silk",
 "cat": "Simulation",
 "blurb": "A verlet silk cloth that sways, stretches and tears.",
-"try": "Drag, Shift to cut",
+"try": "Drag, right-drag to cut",
 "thumb": "thumbs/060.jpg"
 },
 {
@@ -563,7 +563,7 @@ window.STUN_WORKS=[
 "title": "Kettle Mk II Blueprint",
 "cat": "Type & Print",
 "blurb": "A blueprint of a kettle, drafting itself line by line.",
-"try": "Hover figures, click to redraw",
+"try": "Measure, click parts, explode",
 "thumb": "thumbs/063.jpg"
 },
 {
@@ -572,7 +572,7 @@ window.STUN_WORKS=[
 "title": "Velmora Metro",
 "cat": "Interface",
 "blurb": "A transit diagram of an invented city with moving trains.",
-"try": "Hover a line",
+"try": "Click two stations",
 "thumb": "thumbs/064.jpg"
 },
 {
@@ -581,7 +581,7 @@ window.STUN_WORKS=[
 "title": "Boarding Pass LIS–HND",
 "cat": "Object",
 "blurb": "A boarding pass with a stub you can tear.",
-"try": "Tap the stub",
+"try": "Drag the stub to tear",
 "thumb": "thumbs/065.jpg"
 },
 {
@@ -590,7 +590,7 @@ window.STUN_WORKS=[
 "title": "Observatory Holo Card",
 "cat": "Object",
 "blurb": "A holographic membership card that catches the light.",
-"try": "Move over the card",
+"try": "Move over, click to flip",
 "thumb": "thumbs/066.jpg"
 },
 {
@@ -617,7 +617,7 @@ window.STUN_WORKS=[
 "title": "Tesseract",
 "cat": "Generative",
 "blurb": "A four-dimensional hypercube rotating in projection.",
-"try": "Toggle planes",
+"try": "Drag, shift-drag for 4D",
 "thumb": "thumbs/069.jpg"
 },
 {
@@ -626,7 +626,7 @@ window.STUN_WORKS=[
 "title": "Low-Poly Flyover",
 "cat": "Scene",
 "blurb": "A flat-shaded low-poly flight up a mountain valley.",
-"try": "Steer the flight",
+"try": "Steer, hold to throttle",
 "thumb": "thumbs/070.jpg"
 },
 {
@@ -635,7 +635,7 @@ window.STUN_WORKS=[
 "title": "ASCII Torus",
 "cat": "Generative",
 "blurb": "A spinning torus rendered entirely in ASCII.",
-"try": "Move to spin faster",
+"try": "Drag to spin, wheel to zoom",
 "thumb": "thumbs/071.jpg"
 },
 {
@@ -644,7 +644,7 @@ window.STUN_WORKS=[
 "title": "Signal Lost",
 "cat": "Type & Print",
 "blurb": "A VHS signal-loss title card with RGB tearing.",
-"try": "Hover to interfere",
+"try": "Drag tracking, scroll channels",
 "thumb": "thumbs/072.jpg"
 },
 {
@@ -653,7 +653,7 @@ window.STUN_WORKS=[
 "title": "Wet on Wet",
 "cat": "Generative",
 "blurb": "Watercolour blooms built from layered deformed polygons.",
-"try": "Click to bloom",
+"try": "Drag colour onto damp paper",
 "thumb": "thumbs/073.jpg"
 },
 {
@@ -662,7 +662,7 @@ window.STUN_WORKS=[
 "title": "Small Press Fair",
 "cat": "Type & Print",
 "blurb": "A two-colour risograph poster with misregistration.",
-"try": "Move to misregister, click",
+"try": "Drag to misregister",
 "thumb": "thumbs/074.jpg"
 },
 {
@@ -671,7 +671,7 @@ window.STUN_WORKS=[
 "title": "Hello 1986",
 "cat": "Type & Print",
 "blurb": "An 80s Memphis party invitation full of squiggles.",
-"try": "Chase shapes, click",
+"try": "Fling shapes, hold, click",
 "thumb": "thumbs/075.jpg"
 },
 {
@@ -689,7 +689,7 @@ window.STUN_WORKS=[
 "title": "Moiré Interference",
 "cat": "Generative",
 "blurb": "Interference fringes from overlapping gratings.",
-"try": "Move to slide",
+"try": "Drag the sheet, wheel",
 "thumb": "thumbs/077.jpg"
 },
 {
@@ -698,7 +698,7 @@ window.STUN_WORKS=[
 "title": "Girih Tilework",
 "cat": "Generative",
 "blurb": "Eight-fold girih stars and crosses in tile.",
-"try": "Move the light, click",
+"try": "Move the light, click, wheel",
 "thumb": "thumbs/078.jpg"
 },
 {
@@ -716,7 +716,7 @@ window.STUN_WORKS=[
 "title": "ARPA Radar",
 "cat": "Interface",
 "blurb": "A marine radar sweep with tracked contacts.",
-"try": "Click to plot a contact",
+"try": "Click to plot, drag EBL",
 "thumb": "thumbs/080.jpg"
 },
 {
@@ -734,7 +734,7 @@ window.STUN_WORKS=[
 "title": "Open Late Neon",
 "cat": "Scene",
 "blurb": "Flickering neon signs on a brick wall.",
-"try": "Flip the switch",
+"try": "Tap letters, flip the switch",
 "thumb": "thumbs/082.jpg"
 },
 {
@@ -743,7 +743,7 @@ window.STUN_WORKS=[
 "title": "The Long Rain",
 "cat": "Type & Print",
 "blurb": "A film-noir title sequence behind venetian blinds.",
-"try": "Move the light, click",
+"try": "Move the light, click, ♪ score",
 "thumb": "thumbs/083.jpg"
 },
 {
@@ -751,8 +751,8 @@ window.STUN_WORKS=[
 "file": "works/084-comic-page.html",
 "title": "Midnight Mittens",
 "cat": "Type & Print",
-"blurb": "A comic page about a cat burglar.",
-"try": "Hover and tap panels",
+"blurb": "A comic page read panel by panel, with sound effects.",
+"try": "Tap panels to read",
 "thumb": "thumbs/084.jpg"
 },
 {
@@ -760,8 +760,8 @@ window.STUN_WORKS=[
 "file": "works/085-cave-torch.html",
 "title": "Torchlit Cave",
 "cat": "Scene",
-"blurb": "A torch revealing paintings on a cave wall.",
-"try": "Move the torch",
+"blurb": "A torch revealing cave paintings that stir in the flicker.",
+"try": "Light the paintings, click",
 "thumb": "thumbs/085.jpg"
 },
 {
@@ -769,8 +769,8 @@ window.STUN_WORKS=[
 "file": "works/086-maison-ilex.html",
 "title": "Nuit d'Ambre",
 "cat": "Interface",
-"blurb": "A perfume product page with a drawn glass bottle.",
-"try": "Pick a size",
+"blurb": "A perfume page with a sloshing glass bottle you can spritz.",
+"try": "Tilt, spritz, hover the notes",
 "thumb": "thumbs/086.jpg"
 },
 {
@@ -778,8 +778,8 @@ window.STUN_WORKS=[
 "file": "works/087-nimbus-saas.html",
 "title": "Nimbus Clouds as a Service",
 "cat": "Interface",
-"blurb": "A landing page for clouds as a service.",
-"try": "Scroll",
+"blurb": "A landing page for clouds as a service, with a sky you can fill.",
+"try": "Click the sky, try the API",
 "thumb": "thumbs/087.jpg"
 },
 {
@@ -787,8 +787,8 @@ window.STUN_WORKS=[
 "file": "works/088-atelier-okto.html",
 "title": "Atelier Okto",
 "cat": "Interface",
-"blurb": "An architect's portfolio with axonometric drawings.",
-"try": "Hover projects",
+"blurb": "An architect's portfolio of sunlit axonometric models.",
+"try": "Drag to orbit, slide the sun",
 "thumb": "thumbs/088.jpg"
 },
 {
@@ -796,8 +796,8 @@ window.STUN_WORKS=[
 "file": "works/089-chalk-menu.html",
 "title": "Café Menu Board",
 "cat": "Type & Print",
-"blurb": "A chalkboard café menu.",
-"try": "Draw with chalk",
+"blurb": "A chalkboard café menu you can draw on.",
+"try": "Draw, pick chalk, double-click",
 "thumb": "thumbs/089.jpg"
 },
 {
@@ -806,7 +806,7 @@ window.STUN_WORKS=[
 "title": "A Year of Daylight",
 "cat": "Interface",
 "blurb": "Daylight hours for every day of the year, computed per city.",
-"try": "Pick a city",
+"try": "Scrub the ring, pick a city",
 "thumb": "thumbs/090.jpg"
 },
 {
@@ -814,8 +814,8 @@ window.STUN_WORKS=[
 "file": "works/091-gear-train.html",
 "title": "Gear Train",
 "cat": "Object",
-"blurb": "A meshing gear train with true ratios.",
-"try": "Crank the speed",
+"blurb": "Brass and steel gears meshing at true ratios.",
+"try": "Drag a gear or the crank",
 "thumb": "thumbs/091.jpg"
 },
 {
@@ -823,8 +823,8 @@ window.STUN_WORKS=[
 "file": "works/092-aquarium.html",
 "title": "Reef Tank",
 "cat": "Scene",
-"blurb": "A reef tank where fish chase the food you drop.",
-"try": "Tap to feed",
+"blurb": "A reef tank of schooling fish, coral and a night light.",
+"try": "Tap to feed, try night mode",
 "thumb": "thumbs/092.jpg"
 },
 {
@@ -832,8 +832,8 @@ window.STUN_WORKS=[
 "file": "works/093-snow-globe.html",
 "title": "Snow Globe",
 "cat": "Object",
-"blurb": "A snow globe that swirls when shaken.",
-"try": "Click to shake",
+"blurb": "A snow globe with a music box in its base.",
+"try": "Grab and shake, wind the key",
 "thumb": "thumbs/093.jpg"
 },
 {
@@ -841,8 +841,8 @@ window.STUN_WORKS=[
 "file": "works/094-hourglass.html",
 "title": "One Minute Hourglass",
 "cat": "Object",
-"blurb": "A one-minute hourglass you can turn over.",
-"try": "Click to turn",
+"blurb": "A one-minute hourglass of real falling sand.",
+"try": "Click to turn, drag to tilt",
 "thumb": "thumbs/094.jpg"
 },
 {
@@ -850,8 +850,8 @@ window.STUN_WORKS=[
 "file": "works/095-candle.html",
 "title": "One Candle",
 "cat": "Scene",
-"blurb": "A single candle lighting a dark room.",
-"try": "Click to blow out",
+"blurb": "A single candle throwing light and shadow round a room.",
+"try": "Sweep past, click to blow out",
 "thumb": "thumbs/095.jpg"
 },
 {
@@ -859,8 +859,8 @@ window.STUN_WORKS=[
 "file": "works/096-lighthouse.html",
 "title": "Lighthouse at Skerry Point",
 "cat": "Scene",
-"blurb": "A lighthouse beam sweeping across a night sea.",
-"try": "Hold to aim and sound",
+"blurb": "A lighthouse beam sweeping a night sea, in three weathers.",
+"try": "Hold to aim, change weather",
 "thumb": "thumbs/096.jpg"
 },
 {
@@ -868,8 +868,8 @@ window.STUN_WORKS=[
 "file": "works/097-paper-valley.html",
 "title": "Paper Valley",
 "cat": "Scene",
-"blurb": "Paper-cut hills that shift in parallax.",
-"try": "Move the cursor",
+"blurb": "Paper-cut hills in 3D depth, from noon to night.",
+"try": "Tilt, tap for birds, slide to dusk",
 "thumb": "thumbs/097.jpg"
 },
 {
@@ -877,8 +877,8 @@ window.STUN_WORKS=[
 "file": "works/098-nixie-clock.html",
 "title": "Nixie Clock",
 "cat": "Object",
-"blurb": "A nixie-tube clock showing local time.",
-"try": "Click to change mode",
+"blurb": "A nixie-tube clock with stacked glowing cathodes.",
+"try": "Tilt to see the cathodes",
 "thumb": "thumbs/098.jpg"
 },
 {
@@ -886,8 +886,8 @@ window.STUN_WORKS=[
 "file": "works/099-abyssal-jellies.html",
 "title": "Abyssal Jellies",
 "cat": "Scene",
-"blurb": "Bioluminescent jellyfish pulsing in the deep.",
-"try": "Lead them with light",
+"blurb": "Bioluminescent life drifting in the midnight zone.",
+"try": "Lantern, click to ping, scroll",
 "thumb": "thumbs/099.jpg"
 },
 {
@@ -895,8 +895,8 @@ window.STUN_WORKS=[
 "file": "works/100-frost-growth.html",
 "title": "Frost Growth",
 "cat": "Generative",
-"blurb": "Frost crystals grown by diffusion-limited aggregation.",
-"try": "Click to seed",
+"blurb": "Frost ferns growing across a winter window.",
+"try": "Hold to melt, tap to seed",
 "thumb": "thumbs/100.jpg"
 }
 ];
